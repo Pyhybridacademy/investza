@@ -388,6 +388,32 @@ def generate_withdrawal_code(request):
 
 @login_required
 @staff_required
+def admin_profile(request):
+    """Admin profile — password change only."""
+    if request.method == 'POST':
+        current = request.POST.get('current_password', '')
+        new1    = request.POST.get('new_password1', '')
+        new2    = request.POST.get('new_password2', '')
+
+        if not request.user.check_password(current):
+            messages.error(request, "Current password is incorrect.")
+        elif len(new1) < 8:
+            messages.error(request, "New password must be at least 8 characters.")
+        elif new1 != new2:
+            messages.error(request, "New passwords do not match.")
+        else:
+            request.user.set_password(new1)
+            request.user.save()
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, request.user)
+            messages.success(request, "Password updated successfully.")
+            return redirect('admin_profile')
+
+    return render(request, 'admin_panel/profile.html')
+
+
+@login_required
+@staff_required
 def revoke_withdrawal_code(request, pk):
     if request.method == 'POST':
         updated = WithdrawalCode.objects.filter(

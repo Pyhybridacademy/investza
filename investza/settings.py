@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'apps.accounts.context_processors.platform_settings',
+                'apps.accounts.context_processors.admin_pending_counts',
             ],
         },
     },
@@ -174,3 +175,6 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
 
 SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', default=86400, cast=int)
+
+
+CSRF_TRUSTED_ORIGINS = ['https://investza.onrender.com']

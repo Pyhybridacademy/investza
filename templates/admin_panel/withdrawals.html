@@ -1,0 +1,95 @@
+{% extends "base/admin_base.html" %}
+{% block title %}Withdrawals{% endblock %}
+{% block page_title %}Withdrawals{% endblock %}
+{% block breadcrumb %}Withdrawals{% endblock %}
+{% block page_subtitle %}Review and process withdrawal requests{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Filter bar -->
+  <div class="flex flex-wrap gap-3 items-center fade-up fade-up-1">
+    <a href="?status=" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {% if not status_filter %}text-black{% endif %}"
+       style="{% if not status_filter %}background:linear-gradient(135deg,#e08900,#fac660);color:#0b0f1a;{% else %}background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);{% endif %}">
+      All
+    </a>
+    {% for status in "PENDING,APPROVED,COMPLETED,REJECTED" %}
+    {% with s=status %}
+    <a href="?status={{ s }}" class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+       style="{% if status_filter == s %}background:linear-gradient(135deg,#e08900,#fac660);color:#0b0f1a;{% else %}background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);{% endif %}">
+      {{ s|title }}
+    </a>
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  <!-- Table -->
+  <div class="admin-card overflow-hidden fade-up fade-up-2">
+    <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <h3 class="font-display font-bold text-white">
+        {% if status_filter %}{{ status_filter|title }} Withdrawals{% else %}All Withdrawals{% endif %}
+        <span class="text-sm font-normal ml-2" style="color:#64748b;">({{ withdrawals|length }})</span>
+      </h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>User</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for wd in withdrawals %}
+        <tr>
+          <td class="font-mono text-xs" style="color:#94a3b8;">{{ wd.reference }}</td>
+          <td>
+            <p class="font-medium text-sm" style="color:#e2e8f0;">{{ wd.user.get_full_name }}</p>
+            <p class="text-xs" style="color:#64748b;">{{ wd.user.email }}</p>
+          </td>
+          <td class="font-mono font-bold text-sm" style="color:#fac660;">R {{ wd.amount|floatformat:2 }}</td>
+          <td>
+            <span class="px-2 py-1 rounded-full text-xs font-medium {% if wd.method == 'BANK' %}badge-active{% else %}badge-pending{% endif %}">
+              {{ wd.method }}
+            </span>
+          </td>
+          <td>
+            <span class="px-2 py-1 rounded-full text-xs font-medium
+              {% if wd.status == 'COMPLETED' %}badge-approved
+              {% elif wd.status == 'APPROVED' %}badge-active
+              {% elif wd.status == 'REJECTED' %}badge-rejected
+              {% else %}badge-pending{% endif %}">
+              {{ wd.status }}
+            </span>
+          </td>
+          <td class="text-xs" style="color:#64748b;">{{ wd.created_at|date:"d M Y H:i" }}</td>
+          <td>
+            {% if wd.status == 'PENDING' or wd.status == 'APPROVED' %}
+            <a href="{% url 'admin_process_withdrawal' wd.pk %}" class="text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(245,152,10,0.15);color:#f5980a;border:1px solid rgba(245,152,10,0.25);">
+              Review →
+            </a>
+            {% else %}
+            <a href="{% url 'admin_process_withdrawal' wd.pk %}" class="text-xs" style="color:#475569;">View</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center py-12" style="color:#475569;">
+            <svg class="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"/></svg>
+            No withdrawals found
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

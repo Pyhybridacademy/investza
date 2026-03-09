@@ -1,0 +1,231 @@
+{% extends "base/admin_base.html" %}
+{% block title %}User — {{ profile_user.get_full_name }}{% endblock %}
+{% block page_title %}User Detail{% endblock %}
+{% block breadcrumb %}Users › {{ profile_user.get_full_name }}{% endblock %}
+{% block page_subtitle %}Full account overview and management{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-6xl">
+
+  <!-- User profile header -->
+  <div class="admin-card p-6 fade-up fade-up-1" style="background:linear-gradient(135deg,#111827,#1a2233);border-color:rgba(245,152,10,0.2);">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+      <!-- Avatar -->
+      <div class="w-16 h-16 rounded-xl flex items-center justify-center font-display font-bold text-navy-900 text-2xl flex-shrink-0"
+           style="background:linear-gradient(135deg,#e08900,#fac660);">
+        {{ profile_user.first_name|first|upper }}{{ profile_user.last_name|first|upper }}
+      </div>
+      <!-- Info -->
+      <div class="flex-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <h2 class="font-display font-bold text-white text-xl">{{ profile_user.get_full_name }}</h2>
+          {% if profile_user.is_verified %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-500 text-white">✓ KYC Verified</span>
+          {% else %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500 text-white">⚠ Unverified</span>
+          {% endif %}
+          {% if not profile_user.is_active %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500 text-white">Deactivated</span>
+          {% endif %}
+        </div>
+        <p class="text-sm mt-1" style="color:#94a3b8;">{{ profile_user.email }}</p>
+        {% if profile_user.phone_number %}<p class="text-sm" style="color:#64748b;">{{ profile_user.phone_number }}</p>{% endif %}
+        <p class="text-xs mt-1" style="color:#475569;">Member since {{ profile_user.date_joined|date:"d M Y" }} · A/C {% if wallet %}{{ wallet.account_number }}{% else %}—{% endif %}</p>
+      </div>
+      <!-- Balance -->
+      <div class="text-right flex-shrink-0">
+        <p class="text-xs uppercase tracking-wider" style="color:#64748b;">Available Balance</p>
+        <p class="font-mono font-bold text-2xl mt-1" style="color:#fac660;">R {{ wallet.available_balance|floatformat:2 }}</p>
+        <p class="text-xs mt-0.5" style="color:#475569;">Total deposited</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Actions -->
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 fade-up fade-up-2">
+
+    <!-- KYC / Status actions -->
+    <div class="admin-card p-5">
+      <p class="font-bold text-white mb-4 text-sm uppercase tracking-wide" style="color:#94a3b8;">Account Actions</p>
+      <div class="space-y-3">
+        {% if not profile_user.is_verified %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="verify">
+          <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-white transition-all btn-gold" style="color:#0b0f1a;">
+            ✓ Approve KYC
+          </button>
+        </form>
+        {% else %}
+        <div class="py-2.5 px-4 rounded-lg text-sm text-center" style="background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.2);">
+          KYC Already Verified
+        </div>
+        {% endif %}
+
+        {% if profile_user.is_active %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="deactivate">
+          <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-all" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);"
+                  onclick="return confirm('Deactivate this account?')">
+            🚫 Deactivate Account
+          </button>
+        </form>
+        {% else %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="activate">
+          <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-all" style="background:rgba(34,197,94,0.12);color:#4ade80;border:1px solid rgba(34,197,94,0.25);">
+            ✓ Reactivate Account
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Credit wallet -->
+    <div class="admin-card p-5">
+      <p class="font-bold mb-4 text-sm uppercase tracking-wide" style="color:#94a3b8;">Credit Wallet</p>
+      <form method="post" class="space-y-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="credit">
+        <div>
+          <label class="block text-xs mb-1" style="color:#64748b;">Amount (R)</label>
+          <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required class="form-input text-sm">
+        </div>
+        <div>
+          <label class="block text-xs mb-1" style="color:#64748b;">Note</label>
+          <input type="text" name="note" placeholder="Admin credit" class="form-input text-sm">
+        </div>
+        <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-sm font-bold btn-gold" style="color:#0b0f1a;">
+          + Credit Wallet
+        </button>
+      </form>
+    </div>
+
+    <!-- Debit wallet -->
+    <div class="admin-card p-5">
+      <p class="font-bold mb-4 text-sm uppercase tracking-wide" style="color:#94a3b8;">Debit Wallet</p>
+      <form method="post" class="space-y-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="debit">
+        <div>
+          <label class="block text-xs mb-1" style="color:#64748b;">Amount (R)</label>
+          <input type="number" name="amount" step="0.01" min="0.01" placeholder="0.00" required class="form-input text-sm">
+        </div>
+        <div>
+          <label class="block text-xs mb-1" style="color:#64748b;">Note</label>
+          <input type="text" name="note" placeholder="Admin debit" class="form-input text-sm">
+        </div>
+        <button type="submit" class="w-full py-2.5 px-4 rounded-lg text-sm font-bold transition-all" style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);"
+                onclick="return confirm('Debit this account?')">
+          − Debit Wallet
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Investments -->
+  <div class="admin-card overflow-hidden fade-up fade-up-3">
+    <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <h3 class="font-display font-bold text-white">Investments</h3>
+      <span class="text-xs" style="color:#64748b;">{{ investments.count }} total</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th>Plan</th><th>Amount</th><th>Returns</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for inv in investments %}
+        <tr>
+          <td>
+            <p class="font-medium text-sm" style="color:#e2e8f0;">{{ inv.plan.name }}</p>
+            <p class="text-xs" style="color:#64748b;">{{ inv.plan.category.name }}</p>
+          </td>
+          <td class="font-mono font-bold text-sm" style="color:#e2e8f0;">R {{ inv.amount_invested|floatformat:2 }}</td>
+          <td class="font-mono text-sm" style="color:#4ade80;">R {{ inv.total_return|floatformat:2 }}</td>
+          <td>
+            <span class="px-2 py-1 rounded-full text-xs font-medium
+              {% if inv.status == 'ACTIVE' %}badge-active{% elif inv.status == 'MATURED' %}badge-matured{% else %}badge-pending{% endif %}">
+              {{ inv.status }}
+            </span>
+          </td>
+          <td class="text-xs" style="color:#64748b;">{{ inv.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-8" style="color:#475569;">No investments</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Deposits -->
+  <div class="admin-card overflow-hidden fade-up fade-up-4">
+    <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <h3 class="font-display font-bold text-white">Bank Deposits</h3>
+      <span class="text-xs" style="color:#64748b;">{{ bank_deposits.count }} total</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th>Reference</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for dep in bank_deposits %}
+        <tr>
+          <td class="font-mono text-xs" style="color:#94a3b8;">{{ dep.reference }}</td>
+          <td class="font-mono font-bold" style="color:#e2e8f0;">R {{ dep.amount|floatformat:2 }}</td>
+          <td><span class="px-2 py-1 rounded-full text-xs font-medium badge-{{ dep.status|lower }}">{{ dep.get_status_display }}</span></td>
+          <td class="text-xs" style="color:#64748b;">{{ dep.created_at|date:"d M Y H:i" }}</td>
+          <td>
+            {% if dep.status in 'SUBMITTED,VERIFYING' %}
+            <a href="{% url 'admin_approve_bank_deposit' dep.pk %}" class="text-xs font-medium" style="color:#f5980a;">Review →</a>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-8" style="color:#475569;">No deposits</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Withdrawals -->
+  <div class="admin-card overflow-hidden fade-up fade-up-5">
+    <div class="px-5 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <h3 class="font-display font-bold text-white">Withdrawals</h3>
+      <span class="text-xs" style="color:#64748b;">{{ withdrawals.count }} total</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th>Reference</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for wd in withdrawals %}
+        <tr>
+          <td class="font-mono text-xs" style="color:#94a3b8;">{{ wd.reference }}</td>
+          <td class="font-mono font-bold" style="color:#e2e8f0;">R {{ wd.amount|floatformat:2 }}</td>
+          <td>
+            <span class="px-2 py-1 rounded-full text-xs font-medium {% if wd.method == 'BANK' %}badge-active{% else %}badge-pending{% endif %}">
+              {{ wd.method }}
+            </span>
+          </td>
+          <td><span class="px-2 py-1 rounded-full text-xs font-medium badge-{{ wd.status|lower }}">{{ wd.status }}</span></td>
+          <td class="text-xs" style="color:#64748b;">{{ wd.created_at|date:"d M Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center py-8" style="color:#475569;">No withdrawals</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <div class="fade-up fade-up-5">
+    <a href="{% url 'admin_users' %}" class="inline-flex items-center gap-2 text-sm" style="color:#64748b;">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Back to Users
+    </a>
+  </div>
+
+</div>
+{% endblock %}

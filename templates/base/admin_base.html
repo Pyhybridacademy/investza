@@ -1,0 +1,287 @@
+{% extends "base/base.html" %}
+{% block body %}
+
+<div class="flex min-h-screen" style="background:#0b0f1a;">
+
+  <!-- ── ADMIN SIDEBAR ─────────────────────────────────────────── -->
+  <aside id="admin-sidebar"
+         class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col transition-transform duration-300 lg:translate-x-0 -translate-x-full"
+         style="background: linear-gradient(180deg, #0b0f1a 0%, #111827 60%, #0b0f1a 100%); border-right: 1px solid rgba(245,152,10,0.15);">
+
+    <!-- Logo / Brand -->
+    <div class="flex items-center gap-3 px-6 py-5" style="border-bottom:1px solid rgba(245,152,10,0.12);">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg, #e08900, #fac660); box-shadow:0 0 16px rgba(224,137,0,0.4);">
+        <svg class="w-4 h-4" fill="none" stroke="#0b0f1a" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <div>
+        <span class="font-display font-bold text-white text-base leading-none">{{ PLATFORM_NAME }}</span>
+        <p class="text-xs mt-0.5 font-mono font-bold tracking-widest uppercase" style="color:#f5980a;">Admin Console</p>
+      </div>
+    </div>
+
+    <!-- Admin user card -->
+    <div class="px-4 py-3 mx-3 mt-4 rounded-xl" style="background:rgba(245,152,10,0.07); border:1px solid rgba(245,152,10,0.18);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
+             style="background:linear-gradient(135deg,#e08900,#fac660); color:#0b0f1a;">
+          {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+        </div>
+        <div class="overflow-hidden">
+          <p class="text-white text-sm font-semibold truncate">{{ request.user.get_full_name }}</p>
+          <p class="text-xs font-mono truncate" style="color:#f5980a;">
+            {% if request.user.is_superuser %}Superuser{% else %}Staff Admin{% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-3 py-4 overflow-y-auto">
+
+      <p class="px-3 mb-2 text-xs font-bold uppercase tracking-widest" style="color:rgba(245,152,10,0.5);">Overview</p>
+
+      <a href="{% url 'admin_dashboard' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-4a1 1 0 011-1h4a1 1 0 011 1v8a1 1 0 01-1 1h-4a1 1 0 01-1-1v-8z"/>
+        </svg>
+        Dashboard
+      </a>
+
+      <a href="{% url 'admin_reports' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Reports
+      </a>
+
+      <p class="px-3 mb-2 mt-5 text-xs font-bold uppercase tracking-widest" style="color:rgba(245,152,10,0.5);">Users</p>
+
+      <a href="{% url 'admin_users' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        Manage Users
+      </a>
+
+      <p class="px-3 mb-2 mt-5 text-xs font-bold uppercase tracking-widest" style="color:rgba(245,152,10,0.5);">Finance</p>
+
+      <a href="{% url 'admin_deposits' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m8-8H4"/>
+        </svg>
+        Deposits
+        {% if pending_deposits_count %}
+        <span class="ml-auto px-1.5 py-0.5 rounded-full text-xs font-bold" style="background:rgba(220,53,69,0.85);color:#fff;">{{ pending_deposits_count }}</span>
+        {% endif %}
+      </a>
+
+      <a href="{% url 'admin_withdrawals' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 12H4"/>
+        </svg>
+        Withdrawals
+        {% if pending_withdrawals_count %}
+        <span class="ml-auto px-1.5 py-0.5 rounded-full text-xs font-bold" style="background:rgba(220,53,69,0.85);color:#fff;">{{ pending_withdrawals_count }}</span>
+        {% endif %}
+      </a>
+
+      <a href="{% url 'admin_investments' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+        Investments
+      </a>
+
+      <p class="px-3 mb-2 mt-5 text-xs font-bold uppercase tracking-widest" style="color:rgba(245,152,10,0.5);">Platform</p>
+
+      <a href="{% url 'admin_investment_plans' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Investment Plans
+      </a>
+
+      <a href="{% url 'admin_platform_accounts' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        </svg>
+        Bank Accounts
+      </a>
+
+      <a href="{% url 'admin_withdrawal_codes' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+        </svg>
+        Withdrawal Codes
+      </a>
+
+      <p class="px-3 mb-2 mt-5 text-xs font-bold uppercase tracking-widest" style="color:rgba(245,152,10,0.5);">Account</p>
+
+      <a href="{% url 'admin_profile' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        Change Password
+      </a>
+
+      <!-- Back to user view -->
+      <div class="mt-5 pt-4" style="border-top:1px solid rgba(255,255,255,0.06);">
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150" style="color:rgba(148,163,184,0.7);">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          User Dashboard
+        </a>
+      </div>
+    </nav>
+
+    <!-- Logout -->
+    <div class="p-4" style="border-top:1px solid rgba(255,255,255,0.06);">
+      <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 hover:bg-red-900 hover:bg-opacity-40" style="color:#64748b;">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── MOBILE OVERLAY ── -->
+  <div id="admin-sidebar-overlay" class="fixed inset-0 bg-black/60 z-30 lg:hidden hidden" onclick="closeAdminSidebar()"></div>
+
+  <!-- ── MAIN AREA ──────────────────────────────────────────────── -->
+  <div class="flex-1 flex flex-col lg:ml-64 min-w-0" style="background:#0f1623;">
+
+    <!-- Top bar -->
+    <header class="sticky top-0 z-20" style="background:#111827; border-bottom:1px solid rgba(245,152,10,0.12);">
+      <div class="flex items-center justify-between px-6 py-4">
+        <div class="flex items-center gap-4">
+          <!-- Mobile menu toggle -->
+          <button onclick="toggleAdminSidebar()" class="lg:hidden p-2 rounded-lg transition-colors" style="color:#94a3b8;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background=''">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold px-2 py-0.5 rounded font-mono" style="background:rgba(245,152,10,0.15);color:#f5980a;border:1px solid rgba(245,152,10,0.3);">ADMIN</span>
+              <h1 class="font-display font-bold text-white text-xl leading-none">{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
+            <p class="text-xs mt-0.5" style="color:#64748b;">{% block page_subtitle %}{% endblock %}</p>
+          </div>
+        </div>
+
+        <!-- Right side actions -->
+        <div class="flex items-center gap-3">
+          <!-- Pending alerts badge -->
+          {% if pending_deposits_count or pending_withdrawals_count %}
+          <a href="{% url 'admin_deposits' %}?status=SUBMITTED"
+             class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
+             style="background:rgba(220,53,69,0.15);color:#f87171;border:1px solid rgba(220,53,69,0.3);">
+            <span class="animate-pulse">●</span>
+            {{ pending_deposits_count|add:pending_withdrawals_count }} Pending
+          </a>
+          {% endif %}
+          <!-- Admin identity -->
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg" style="background:rgba(245,152,10,0.08);border:1px solid rgba(245,152,10,0.15);">
+            <div class="w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:linear-gradient(135deg,#e08900,#fac660);color:#0b0f1a;">
+              {{ request.user.first_name|first|upper }}
+            </div>
+            <span class="text-sm font-semibold hidden sm:block" style="color:#fac660;">{{ request.user.first_name }}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="px-6 py-2.5 text-xs flex items-center gap-1.5" style="background:#0f1623;border-bottom:1px solid rgba(255,255,255,0.04);color:#475569;">
+      <a href="{% url 'admin_dashboard' %}" class="hover:text-gold-400 transition-colors" style="color:#64748b;">Admin</a>
+      <span style="color:#334155;">›</span>
+      <span style="color:#94a3b8;">{% block breadcrumb %}Dashboard{% endblock %}</span>
+    </div>
+
+    <!-- Page content -->
+    <main class="flex-1 p-6">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="px-6 py-4 text-center text-xs" style="color:#334155;border-top:1px solid rgba(255,255,255,0.04);">
+      {{ PLATFORM_NAME }} Admin Console — {{ request.user.get_full_name }} — {% now "Y" %}
+    </footer>
+  </div>
+</div>
+
+<style>
+  /* Admin nav active state */
+  .admin-nav-link:hover {
+    background: rgba(255,255,255,0.06);
+    color: #e2e8f0 !important;
+  }
+  .admin-nav-link-active {
+    background: linear-gradient(135deg, rgba(245,152,10,0.15), rgba(224,137,0,0.08)) !important;
+    color: #fac660 !important;
+    border-left: 3px solid #f5980a;
+    padding-left: calc(0.75rem - 3px);
+  }
+  /* Override card colors for dark admin theme */
+  .admin-card {
+    background: #1a2233;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .admin-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.4); transform: translateY(-2px); }
+
+  /* Override data-table for dark theme */
+  .data-table th {
+    background: #0b0f1a;
+    color: #f5980a;
+  }
+  .data-table td { color: #cbd5e1; border-bottom-color: rgba(255,255,255,0.05); }
+  .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* Override card for dark admin theme */
+  .card {
+    background: #1a2233;
+    border-color: rgba(255,255,255,0.07);
+  }
+  .card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+
+  /* Form inputs in dark theme */
+  .form-input, .form-select {
+    background: #0f1623;
+    border-color: rgba(255,255,255,0.12);
+    color: #e2e8f0;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color: #f5980a;
+    box-shadow: 0 0 0 3px rgba(245,152,10,0.12);
+  }
+  .form-input::placeholder { color:#475569; }
+</style>
+
+<script>
+  function toggleAdminSidebar() {
+    document.getElementById('admin-sidebar').classList.toggle('-translate-x-full');
+    document.getElementById('admin-sidebar-overlay').classList.toggle('hidden');
+  }
+  function closeAdminSidebar() {
+    document.getElementById('admin-sidebar').classList.add('-translate-x-full');
+    document.getElementById('admin-sidebar-overlay').classList.add('hidden');
+  }
+
+  // Active nav highlight
+  const path = window.location.pathname;
+  document.querySelectorAll('.admin-nav-link').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === path || (href !== '/' && path.startsWith(href))) {
+      link.classList.add('admin-nav-link-active');
+    }
+  });
+</script>
+
+{% block extra_js %}{% endblock %}
+{% endblock %}

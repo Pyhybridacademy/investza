@@ -19,6 +19,7 @@ urlpatterns = [
 # Withdrawal code management
 from . import views as admin_views
 urlpatterns += [
+    path('profile/',                                 admin_views.admin_profile,           name='admin_profile'),
     path('withdrawal-codes/',                        admin_views.withdrawal_codes,        name='admin_withdrawal_codes'),
     path('withdrawal-codes/generate/',               admin_views.generate_withdrawal_code, name='admin_generate_withdrawal_code'),
     path('withdrawal-codes/<uuid:pk>/revoke/',       admin_views.revoke_withdrawal_code,  name='admin_revoke_withdrawal_code'),

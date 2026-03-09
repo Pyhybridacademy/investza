@@ -1,0 +1,137 @@
+{% extends "base/admin_base.html" %}
+{% block title %}Admin Profile{% endblock %}
+{% block page_title %}Admin Profile{% endblock %}
+{% block breadcrumb %}Profile{% endblock %}
+{% block page_subtitle %}Manage your administrator account security{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+
+  <!-- Admin identity card -->
+  <div class="admin-card p-6 fade-up fade-up-1" style="background:linear-gradient(135deg,#111827,#1a2233);border-color:rgba(245,152,10,0.2);">
+    <div class="flex items-center gap-5">
+      <div class="w-16 h-16 rounded-xl flex items-center justify-center font-display font-bold text-2xl flex-shrink-0"
+           style="background:linear-gradient(135deg,#e08900,#fac660);color:#0b0f1a;box-shadow:0 0 24px rgba(224,137,0,0.35);">
+        {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+      </div>
+      <div>
+        <h2 class="font-display font-bold text-white text-xl">{{ request.user.get_full_name }}</h2>
+        <p class="text-sm mt-0.5" style="color:#94a3b8;">{{ request.user.email }}</p>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="px-2 py-0.5 rounded text-xs font-bold font-mono" style="background:rgba(245,152,10,0.15);color:#f5980a;border:1px solid rgba(245,152,10,0.3);">
+            {% if request.user.is_superuser %}SUPERUSER{% else %}STAFF ADMIN{% endif %}
+          </span>
+          <span class="text-xs" style="color:#475569;">Joined {{ request.user.date_joined|date:"d M Y" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password -->
+  <div class="admin-card p-6 fade-up fade-up-2">
+    <h3 class="font-display font-bold text-white text-lg mb-1">Change Password</h3>
+    <p class="text-sm mb-6" style="color:#64748b;">Use a strong, unique password for your admin account.</p>
+
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color:#94a3b8;">Current Password</label>
+        <input type="password" name="current_password" required autocomplete="current-password"
+               class="form-input" placeholder="Enter current password">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color:#94a3b8;">New Password</label>
+        <input type="password" name="new_password1" required autocomplete="new-password" id="pw1"
+               class="form-input" placeholder="At least 8 characters">
+        <div class="mt-2 h-1.5 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.07);">
+          <div id="pw-strength-bar" class="h-full rounded-full transition-all duration-300" style="width:0;background:#ef4444;"></div>
+        </div>
+        <p id="pw-strength-text" class="text-xs mt-1" style="color:#475569;"></p>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider mb-2" style="color:#94a3b8;">Confirm New Password</label>
+        <input type="password" name="new_password2" required autocomplete="new-password" id="pw2"
+               class="form-input" placeholder="Repeat new password">
+        <p id="pw-match-text" class="text-xs mt-1" style="color:#475569;"></p>
+      </div>
+
+      <!-- Security note -->
+      <div class="p-4 rounded-xl" style="background:rgba(245,152,10,0.06);border:1px solid rgba(245,152,10,0.15);">
+        <p class="text-xs font-semibold mb-1" style="color:#f5980a;">🔒 Security Tips</p>
+        <ul class="text-xs space-y-0.5" style="color:#94a3b8;">
+          <li>• Use at least 8 characters</li>
+          <li>• Mix uppercase, lowercase, numbers and symbols</li>
+          <li>• Never share your admin credentials</li>
+          <li>• Your session will remain active after the change</li>
+        </ul>
+      </div>
+
+      <button type="submit" id="submit-btn" class="w-full py-3 px-6 rounded-xl font-bold text-sm btn-gold" style="color:#0b0f1a;">
+        🔐 Update Password
+      </button>
+    </form>
+  </div>
+
+  <!-- Session info -->
+  <div class="admin-card p-5 fade-up fade-up-3">
+    <h3 class="font-bold text-white mb-4 text-sm uppercase tracking-wide" style="color:#94a3b8;">Session Info</h3>
+    <div class="space-y-2 text-sm">
+      <div class="flex justify-between">
+        <span style="color:#64748b;">Admin Username</span>
+        <span class="font-mono" style="color:#e2e8f0;">{{ request.user.email }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span style="color:#64748b;">Last Login</span>
+        <span style="color:#e2e8f0;">{{ request.user.last_login|date:"d M Y, H:i" }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span style="color:#64748b;">Role</span>
+        <span class="font-mono text-xs px-2 py-0.5 rounded" style="background:rgba(245,152,10,0.12);color:#f5980a;">
+          {% if request.user.is_superuser %}Superuser{% else %}Staff{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Password strength meter
+  const pw1 = document.getElementById('pw1');
+  const pw2 = document.getElementById('pw2');
+  const bar = document.getElementById('pw-strength-bar');
+  const text = document.getElementById('pw-strength-text');
+  const matchText = document.getElementById('pw-match-text');
+
+  pw1.addEventListener('input', function() {
+    const val = pw1.value;
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const widths  = ['0%', '25%', '50%', '75%', '100%'];
+    const colors  = ['#ef4444', '#ef4444', '#f59e0b', '#22c55e', '#22c55e'];
+    const labels  = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+    bar.style.width = widths[score];
+    bar.style.background = colors[score];
+    text.textContent = val.length ? labels[score] : '';
+    text.style.color = colors[score] || '#475569';
+  });
+
+  pw2.addEventListener('input', function() {
+    if (pw2.value.length === 0) { matchText.textContent = ''; return; }
+    if (pw1.value === pw2.value) {
+      matchText.textContent = '✓ Passwords match';
+      matchText.style.color = '#22c55e';
+    } else {
+      matchText.textContent = '✕ Passwords do not match';
+      matchText.style.color = '#ef4444';
+    }
+  });
+</script>
+{% endblock %}
