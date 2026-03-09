@@ -1,188 +1,254 @@
 {% extends "base/dashboard_base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
-{% block page_subtitle %}Welcome back, {{ request.user.first_name }}{% endblock %}
+{% block page_subtitle %}Welcome back, {{ request.user.first_name }} 👋{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
+<div style="display:flex;flex-direction:column;gap:24px;">
 
-  <!-- ── WALLET OVERVIEW CARDS ── -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-
-    <div class="card p-5 fade-up fade-up-1">
-      <div class="flex items-start justify-between mb-4">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #e8f0f9, #b8cfe8);">
-          <svg class="w-5 h-5 text-navy-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-        </div>
-        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-100">Available</span>
-      </div>
-      <p class="text-gray-400 text-xs mb-1">Available Balance</p>
-      <p class="font-mono font-bold text-navy-900 text-2xl stat-number">R {{ wallet.available_balance|floatformat:2 }}</p>
+  <!-- HERO -->
+  <div class="iz-hero iz-up-1">
+    <div class="iz-hero-flag" aria-hidden="true">
+      <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMid slice">
+        <rect y="0" width="900" height="200" fill="#007A4D"/>
+        <rect y="200" width="900" height="200" fill="#DE3831"/>
+        <rect y="400" width="900" height="200" fill="#002395"/>
+        <polygon points="0,0 330,300 0,600" fill="#000"/>
+        <polygon points="0,0 350,300 0,600 0,548 292,300 0,52" fill="#fff"/>
+        <polygon points="0,230 540,230 540,370 0,370" fill="#FFB612"/>
+        <polygon points="292,300 540,230 540,370" fill="#FFB612"/>
+        <polygon points="0,252 510,252 510,348 0,348" fill="#000"/>
+      </svg>
     </div>
-
-    <div class="card p-5 fade-up fade-up-2">
-      <div class="flex items-start justify-between mb-4">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #fdeec0, #fac660);">
-          <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+    <div class="iz-hero-dots" aria-hidden="true"></div>
+    <div class="iz-hero-body">
+      <div class="iz-hero-left">
+        <div class="iz-hero-eyebrow"><span class="iz-hero-eyebrow-dot"></span>Total Portfolio Value</div>
+        <div class="iz-hero-amount">R {{ wallet.available_balance|floatformat:2 }}</div>
+        <p class="iz-hero-sub">R {{ wallet.invested_balance|floatformat:2 }} invested &nbsp;·&nbsp; R {{ wallet.total_earned|floatformat:2 }} earned</p>
+        <div class="iz-hero-actions">
+          <a href="{% url 'deposit_home' %}" class="iz-hero-btn-gold">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            Deposit
+          </a>
+          <a href="{% url 'withdrawal_home' %}" class="iz-hero-btn-ghost">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
+            Withdraw
+          </a>
+          <a href="{% url 'investment_list' %}" class="iz-hero-btn-ghost">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            Invest Now
+          </a>
         </div>
-        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">Active</span>
       </div>
-      <p class="text-gray-400 text-xs mb-1">Invested Capital</p>
-      <p class="font-mono font-bold text-navy-900 text-2xl stat-number">R {{ wallet.invested_balance|floatformat:2 }}</p>
-    </div>
-
-    <div class="card p-5 fade-up fade-up-3">
-      <div class="flex items-start justify-between mb-4">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #d1e7dd, #a3cfbb);">
-          <svg class="w-5 h-5 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <div class="iz-hero-right">
+        <div class="iz-hero-stat-pill">
+          <div class="iz-hero-stat-item">
+            <span class="iz-hero-stat-label">Account</span>
+            <span class="iz-hero-stat-val">{% if wallet %}#{{ wallet.account_number }}{% else %}—{% endif %}</span>
+          </div>
+          <div class="iz-hero-stat-divider"></div>
+          <div class="iz-hero-stat-item">
+            <span class="iz-hero-stat-label">KYC Status</span>
+            <span class="iz-hero-stat-val" style="color:{% if request.user.is_verified %}#34d399{% else %}#fbbf24{% endif %};">
+              {% if request.user.is_verified %}✓ Verified{% else %}⚠ Pending{% endif %}
+            </span>
+          </div>
+          <div class="iz-hero-stat-divider"></div>
+          <div class="iz-hero-stat-item">
+            <span class="iz-hero-stat-label">Member Since</span>
+            <span class="iz-hero-stat-val">{{ request.user.date_joined|date:"M Y" }}</span>
+          </div>
         </div>
-        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-100">Profit</span>
       </div>
-      <p class="text-gray-400 text-xs mb-1">Total Earned</p>
-      <p class="font-mono font-bold text-navy-900 text-2xl stat-number">R {{ wallet.total_earned|floatformat:2 }}</p>
-    </div>
-
-    <div class="card p-5 fade-up fade-up-4">
-      <div class="flex items-start justify-between mb-4">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #f8d7da, #f1aeb5);">
-          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
-        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100">Pending</span>
-      </div>
-      <p class="text-gray-400 text-xs mb-1">Pending Withdrawal</p>
-      <p class="font-mono font-bold text-navy-900 text-2xl stat-number">R {{ wallet.pending_withdrawal|floatformat:2 }}</p>
     </div>
   </div>
 
-  <!-- ── QUICK ACTIONS ── -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 fade-up fade-up-2">
-    <a href="{% url 'deposit_home' %}" class="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-navy-400 hover:bg-navy-50 transition-all group">
-      <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-navy-50 group-hover:bg-navy-100 transition-colors">
-        <svg class="w-4 h-4 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+  <!-- STAT CARDS -->
+  <div class="iz-stats-grid">
+    <div class="iz-stat iz-stat-a iz-up-1">
+      <div class="iz-stat-icon" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+        <svg width="20" height="20" fill="none" stroke="#e08900" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
       </div>
-      <span class="text-navy-700 font-semibold text-sm">Deposit</span>
+      <span class="iz-stat-badge" style="background:#fef3c7;color:#92400e;">Available</span>
+      <p class="iz-stat-label">Available Balance</p>
+      <p class="iz-stat-val">R {{ wallet.available_balance|floatformat:2 }}</p>
+    </div>
+    <div class="iz-stat iz-stat-b iz-up-2">
+      <div class="iz-stat-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);">
+        <svg width="20" height="20" fill="none" stroke="#1d4ed8" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+      </div>
+      <span class="iz-stat-badge" style="background:#dbeafe;color:#1e40af;">Active</span>
+      <p class="iz-stat-label">Invested Capital</p>
+      <p class="iz-stat-val">R {{ wallet.invested_balance|floatformat:2 }}</p>
+    </div>
+    <div class="iz-stat iz-stat-c iz-up-3">
+      <div class="iz-stat-icon" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
+        <svg width="20" height="20" fill="none" stroke="#16a34a" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <span class="iz-stat-badge" style="background:#dcfce7;color:#15803d;">Profit</span>
+      <p class="iz-stat-label">Total Earned</p>
+      <p class="iz-stat-val" style="color:#15803d;">R {{ wallet.total_earned|floatformat:2 }}</p>
+    </div>
+    <div class="iz-stat iz-stat-d iz-up-4">
+      <div class="iz-stat-icon" style="background:linear-gradient(135deg,#fff1f2,#fee2e2);">
+        <svg width="20" height="20" fill="none" stroke="#dc2626" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <span class="iz-stat-badge" style="background:#fee2e2;color:#b91c1c;">Pending</span>
+      <p class="iz-stat-label">Pending Withdrawal</p>
+      <p class="iz-stat-val">R {{ wallet.pending_withdrawal|floatformat:2 }}</p>
+    </div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="iz-actions-row iz-up-2">
+    <a href="{% url 'deposit_home' %}" class="iz-action">
+      <div class="iz-action-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);">
+        <svg width="20" height="20" fill="none" stroke="#1d4ed8" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      </div>
+      <span class="iz-action-label">Deposit</span>
     </a>
-    <a href="{% url 'withdrawal_home' %}" class="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-navy-400 hover:bg-navy-50 transition-all group">
-      <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-navy-50 group-hover:bg-navy-100 transition-colors">
-        <svg class="w-4 h-4 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+    <a href="{% url 'withdrawal_home' %}" class="iz-action">
+      <div class="iz-action-icon" style="background:linear-gradient(135deg,#fff1f2,#fee2e2);">
+        <svg width="20" height="20" fill="none" stroke="#dc2626" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
       </div>
-      <span class="text-navy-700 font-semibold text-sm">Withdraw</span>
+      <span class="iz-action-label">Withdraw</span>
     </a>
-    <a href="{% url 'investment_list' %}" class="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-gold-400 hover:bg-gold-50 transition-all group">
-      <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-gold-50 group-hover:bg-gold-100 transition-colors">
-        <svg class="w-4 h-4 text-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+    <a href="{% url 'investment_list' %}" class="iz-action">
+      <div class="iz-action-icon" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+        <svg width="20" height="20" fill="none" stroke="#e08900" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
       </div>
-      <span class="text-navy-700 font-semibold text-sm">Invest</span>
+      <span class="iz-action-label">Invest</span>
     </a>
-    <a href="{% url 'transaction_history' %}" class="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-navy-400 hover:bg-navy-50 transition-all group">
-      <div class="w-9 h-9 rounded-lg flex items-center justify-center bg-navy-50 group-hover:bg-navy-100 transition-colors">
-        <svg class="w-4 h-4 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    <a href="{% url 'my_investments' %}" class="iz-action">
+      <div class="iz-action-icon" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);">
+        <svg width="20" height="20" fill="none" stroke="#7c3aed" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
       </div>
-      <span class="text-navy-700 font-semibold text-sm">History</span>
+      <span class="iz-action-label">Portfolio</span>
+    </a>
+    <a href="{% url 'transaction_history' %}" class="iz-action">
+      <div class="iz-action-icon" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
+        <svg width="20" height="20" fill="none" stroke="#16a34a" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <span class="iz-action-label">History</span>
+    </a>
+    <a href="{% url 'kyc_verification' %}" class="iz-action">
+      <div class="iz-action-icon" style="background:linear-gradient(135deg,#f8fafc,#e2e8f0);">
+        <svg width="20" height="20" fill="none" stroke="#475569" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <span class="iz-action-label">KYC</span>
     </a>
   </div>
 
-  <div class="grid lg:grid-cols-5 gap-6">
+  <!-- BODY GRID -->
+  <div class="iz-body-grid">
 
-    <!-- ── ACTIVE INVESTMENTS ── -->
-    <div class="lg:col-span-3">
-      <div class="card p-6 fade-up fade-up-3">
-        <div class="flex items-center justify-between mb-5">
-          <h3 class="font-display font-bold text-navy-900 text-lg">Active Investments</h3>
-          <a href="{% url 'my_investments' %}" class="text-xs text-navy-500 hover:text-gold-600 font-medium transition-colors">View all →</a>
-        </div>
-
-        {% if active_investments %}
-        <div class="space-y-4">
-          {% for inv in active_investments %}
-          <div class="p-4 rounded-xl" style="background: #f5f8fd; border: 1px solid #e2e9f3;">
-            <div class="flex items-start justify-between mb-3">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-                     style="background: {% if inv.plan.category.slug == 'gold' %}linear-gradient(135deg,#fdeec0,#fac660){% elif inv.plan.category.slug == 'real-estate' %}linear-gradient(135deg,#e8f0f9,#b8cfe8){% else %}linear-gradient(135deg,#e8f3e8,#a8d5a8){% endif %};">
-                  {% if inv.plan.category.slug == 'gold' %}🪙{% elif inv.plan.category.slug == 'real-estate' %}🏢{% else %}₿{% endif %}
-                </div>
-                <div>
-                  <p class="font-semibold text-navy-900 text-sm">{{ inv.plan.name }}</p>
-                  <p class="text-gray-400 text-xs">{{ inv.plan.category.name }}</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="font-mono font-bold text-navy-900 text-sm">R {{ inv.amount_invested|floatformat:2 }}</p>
-                <p class="text-green-600 text-xs font-medium">+R {{ inv.expected_roi|floatformat:2 }}</p>
-              </div>
-            </div>
-            <div class="progress-track h-1.5">
-              <div class="progress-fill h-1.5" style="width: {{ inv.progress_percentage }}%"></div>
-            </div>
-            <div class="flex justify-between mt-2">
-              <span class="text-gray-400 text-xs">{{ inv.progress_percentage }}% complete</span>
-              <span class="text-navy-600 text-xs font-medium">{{ inv.days_remaining }} days left</span>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        <div class="text-center py-12">
-          <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4"
-               style="background: linear-gradient(135deg, #fdeec0, #fac660);">
-            <span class="text-3xl">💼</span>
-          </div>
-          <p class="text-navy-800 font-semibold mb-1">No active investments</p>
-          <p class="text-gray-400 text-sm mb-4">Start growing your wealth today</p>
-          <a href="{% url 'investment_list' %}" class="btn-gold inline-block px-6 py-2.5 rounded-lg text-navy-900 font-bold text-sm">Browse Plans</a>
-        </div>
-        {% endif %}
+    <!-- Investments -->
+    <div class="iz-card iz-up-3" style="padding:22px;">
+      <div class="iz-section-head">
+        <h3 class="iz-section-title">Active Investments</h3>
+        <a href="{% url 'my_investments' %}" class="iz-section-link">View all <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></a>
       </div>
+      {% if active_investments %}
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        {% for inv in active_investments %}
+        <div class="iz-inv-item">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;background:{% if inv.plan.category.slug == 'gold' %}linear-gradient(135deg,#fdeec0,#fac660){% elif inv.plan.category.slug == 'real-estate' %}linear-gradient(135deg,#e8f0f9,#b8cfe8){% else %}linear-gradient(135deg,#e8f3e8,#a8d5a8){% endif %};">
+                {% if inv.plan.category.slug == 'gold' %}🪙{% elif inv.plan.category.slug == 'real-estate' %}🏢{% else %}₿{% endif %}
+              </div>
+              <div>
+                <p style="font-size:0.86rem;font-weight:600;color:#0a1f44;line-height:1.2;">{{ inv.plan.name }}</p>
+                <p style="font-size:0.68rem;color:#94a3b8;margin-top:2px;">{{ inv.plan.category.name }} · {{ inv.days_remaining }} days left</p>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <p style="font-family:'DM Mono',monospace;font-weight:700;color:#0a1f44;font-size:0.9rem;">R {{ inv.amount_invested|floatformat:2 }}</p>
+              <p style="font-size:0.7rem;color:#16a34a;font-weight:600;margin-top:2px;">+R {{ inv.expected_roi|floatformat:2 }}</p>
+            </div>
+          </div>
+          <div class="iz-progress-track">
+            <div class="iz-progress-fill" data-w="{{ inv.progress_percentage }}"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;">
+            <span style="font-size:0.67rem;color:#94a3b8;">{{ inv.progress_percentage }}% complete</span>
+            <span style="font-size:0.67rem;font-weight:600;color:#1b4792;">{{ inv.plan.roi_percentage }}% ROI</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <a href="{% url 'investment_list' %}" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;padding:11px;border-radius:10px;background:#f5f8fd;border:1.5px dashed rgba(10,31,68,0.1);text-decoration:none;font-size:0.78rem;font-weight:600;color:#1b4792;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Start a new investment
+      </a>
+      {% else %}
+      <div style="text-align:center;padding:36px 20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,#fdeec0,#fac660);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 14px;">💼</div>
+        <p style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#0a1f44;margin-bottom:6px;">No active investments</p>
+        <p style="font-size:0.8rem;color:#94a3b8;margin-bottom:18px;">Start growing your wealth with South Africa's leading investment platform</p>
+        <a href="{% url 'investment_list' %}" style="display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:99px;background:linear-gradient(135deg,#e08900,#fac660);color:#0a1f44;font-weight:700;font-size:0.82rem;text-decoration:none;box-shadow:0 4px 14px rgba(224,137,0,0.3);">Browse Investment Plans →</a>
+      </div>
+      {% endif %}
     </div>
 
-    <!-- ── RECENT TRANSACTIONS ── -->
-    <div class="lg:col-span-2">
-      <div class="card p-6 fade-up fade-up-4">
-        <div class="flex items-center justify-between mb-5">
-          <h3 class="font-display font-bold text-navy-900 text-lg">Recent Activity</h3>
-          <a href="{% url 'transaction_history' %}" class="text-xs text-navy-500 hover:text-gold-600 font-medium transition-colors">View all →</a>
+    <!-- Right: Activity + KYC -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="iz-card iz-up-4" style="padding:22px;">
+        <div class="iz-section-head">
+          <h3 class="iz-section-title">Recent Activity</h3>
+          <a href="{% url 'transaction_history' %}" class="iz-section-link">All <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></a>
         </div>
-
         {% if recent_transactions %}
-        <div class="space-y-3">
+        <div>
           {% for txn in recent_transactions %}
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-sm
-              {% if txn.transaction_type in 'CREDIT,ROI,DEPOSIT' %}bg-green-50 text-green-600
-              {% else %}bg-red-50 text-red-500{% endif %}">
+          <div class="iz-txn-item">
+            <div class="iz-txn-icon {% if txn.transaction_type in 'CREDIT,ROI,DEPOSIT' %}iz-txn-credit{% else %}iz-txn-debit{% endif %}">
               {% if txn.transaction_type in 'CREDIT,ROI,DEPOSIT' %}↓{% else %}↑{% endif %}
             </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-navy-800 text-xs font-medium truncate">{{ txn.description|truncatechars:38 }}</p>
-              <p class="text-gray-400 text-xs">{{ txn.created_at|date:"d M Y, H:i" }}</p>
+            <div style="flex:1;min-width:0;">
+              <p style="font-size:0.8rem;font-weight:500;color:#0a1f44;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ txn.description|truncatechars:36 }}</p>
+              <p style="font-size:0.66rem;color:#94a3b8;margin-top:1px;">{{ txn.created_at|date:"d M Y, H:i" }}</p>
             </div>
-            <div class="text-right flex-shrink-0">
-              <p class="font-mono text-sm font-bold {% if txn.transaction_type in 'CREDIT,ROI,DEPOSIT' %}text-green-600{% else %}text-red-500{% endif %}">
-                {% if txn.transaction_type in 'CREDIT,ROI,DEPOSIT' %}+{% else %}-{% endif %}R {{ txn.amount|floatformat:2 }}
-              </p>
-            </div>
+            <p style="font-family:'DM Mono',monospace;font-size:0.82rem;font-weight:700;flex-shrink:0;color:{% if txn.transaction_type in 'CREDIT,ROI,DEPOSIT' %}#16a34a{% else %}#dc2626{% endif %};">
+              {% if txn.transaction_type in 'CREDIT,ROI,DEPOSIT' %}+{% else %}-{% endif %}R {{ txn.amount|floatformat:2 }}
+            </p>
           </div>
           {% endfor %}
         </div>
         {% else %}
-        <div class="text-center py-10">
-          <p class="text-gray-400 text-sm">No transactions yet</p>
+        <div style="text-align:center;padding:28px 0;color:#94a3b8;">
+          <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 8px;opacity:0.3;display:block;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <p style="font-size:0.8rem;">No transactions yet</p>
         </div>
         {% endif %}
       </div>
 
-      <!-- KYC alert -->
       {% if not request.user.is_verified %}
-      <div class="mt-4 p-5 rounded-xl fade-up fade-up-5" style="background: linear-gradient(135deg, #fff8e8, #fdeec0); border: 1px solid #fac660;">
-        <div class="flex items-start gap-3">
-          <span class="text-2xl">🔐</span>
-          <div>
-            <p class="font-semibold text-amber-900 text-sm">Verify Your Identity</p>
-            <p class="text-amber-700 text-xs mt-1 mb-3">Complete KYC to unlock full withdrawal capabilities and higher investment limits.</p>
-            <a href="{% url 'kyc_verification' %}" class="inline-block px-4 py-2 rounded-lg text-xs font-bold text-navy-900"
-               style="background: linear-gradient(135deg, #e08900, #fac660);">Verify Now →</a>
+      <div class="iz-up-5" style="border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#03071e,#0a1f44);border:1px solid rgba(245,152,10,0.25);padding:20px;position:relative;">
+        <div style="position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(245,152,10,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+        <div style="position:relative;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#e08900,#fac660);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="16" height="16" fill="none" stroke="#0a1f44" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <div>
+              <p style="font-family:'Playfair Display',serif;font-weight:700;color:#fff;font-size:0.95rem;line-height:1.2;">Verify Your Identity</p>
+              <p style="font-size:0.67rem;color:rgba(255,255,255,0.45);margin-top:1px;">KYC required for full access</p>
+            </div>
           </div>
+          <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);line-height:1.5;margin-bottom:14px;">Complete identity verification to unlock withdrawals, higher investment limits and full platform access.</p>
+          <a href="{% url 'kyc_verification' %}" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:99px;background:linear-gradient(135deg,#e08900,#fac660);color:#0a1f44;font-weight:700;font-size:0.78rem;text-decoration:none;box-shadow:0 4px 14px rgba(224,137,0,0.35);">Verify Now →</a>
+        </div>
+      </div>
+      {% else %}
+      <div class="iz-up-5" style="border-radius:14px;background:#f0fdf4;border:1px solid #bbf7d0;padding:16px 18px;display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:9px;background:#dcfce7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="17" height="17" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div>
+          <p style="font-size:0.82rem;font-weight:700;color:#15803d;">Identity Verified</p>
+          <p style="font-size:0.7rem;color:#4ade80;margin-top:1px;">Full platform access · KYC Compliant</p>
         </div>
       </div>
       {% endif %}
@@ -190,4 +256,49 @@
   </div>
 
 </div>
+
+<style>
+.iz-hero{border-radius:18px;overflow:hidden;position:relative;background:linear-gradient(135deg,#03071e 0%,#071535 50%,#0a1f44 100%);border:1px solid rgba(245,152,10,0.18);padding:32px 28px;}
+.iz-hero-flag{position:absolute;inset-y:0;right:0;width:45%;opacity:0.07;filter:blur(1px) saturate(1.4);pointer-events:none;}
+.iz-hero-flag svg{width:100%;height:100%;object-fit:cover;}
+.iz-hero-dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:20px 20px;}
+.iz-hero-body{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;position:relative;flex-wrap:wrap;}
+.iz-hero-left{flex:1;min-width:220px;}
+.iz-hero-right{flex-shrink:0;}
+.iz-hero-eyebrow{display:flex;align-items:center;gap:8px;font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(250,198,96,0.7);margin-bottom:10px;}
+.iz-hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:#f5980a;animation:iz-pulse 2s ease-in-out infinite;}
+.iz-hero-amount{font-family:"Playfair Display",Georgia,serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:700;color:#fff;line-height:1;letter-spacing:-0.03em;margin-bottom:10px;}
+.iz-hero-sub{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-bottom:22px;font-family:"DM Mono",monospace;}
+.iz-hero-actions{display:flex;flex-wrap:wrap;gap:10px;}
+.iz-hero-btn-gold{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:99px;background:linear-gradient(135deg,#e08900,#fac660);color:#0a1f44;font-weight:700;font-size:0.78rem;text-decoration:none;box-shadow:0 4px 16px rgba(224,137,0,0.38);transition:transform 0.15s,box-shadow 0.15s;}
+.iz-hero-btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(224,137,0,0.5);}
+.iz-hero-btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:99px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.75);font-weight:600;font-size:0.78rem;text-decoration:none;transition:background 0.15s,color 0.15s;}
+.iz-hero-btn-ghost:hover{background:rgba(255,255,255,0.12);color:#fff;}
+.iz-hero-stat-pill{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;}
+.iz-hero-stat-item{display:flex;flex-direction:column;padding:14px 18px;gap:4px;}
+.iz-hero-stat-label{font-size:0.6rem;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.1em;text-transform:uppercase;}
+.iz-hero-stat-val{font-size:0.82rem;font-weight:700;color:#fff;font-family:"DM Mono",monospace;}
+.iz-hero-stat-divider{width:1px;background:rgba(255,255,255,0.09);align-self:stretch;}
+@media(max-width:640px){.iz-hero-stat-pill{display:none;}.iz-hero{padding:22px 18px;}}
+.iz-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:900px){.iz-stats-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.iz-stats-grid{grid-template-columns:1fr 1fr;gap:10px;}}
+.iz-actions-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+@media(max-width:900px){.iz-actions-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:480px){.iz-actions-row{grid-template-columns:repeat(3,1fr);gap:8px;}}
+.iz-body-grid{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;}
+@media(max-width:1100px){.iz-body-grid{grid-template-columns:1fr;}}
+.iz-inv-item{padding:14px;border-radius:10px;background:#fafbfe;border:1px solid rgba(10,31,68,0.07);transition:box-shadow 0.2s,transform 0.2s;}
+.iz-inv-item:hover{box-shadow:0 4px 16px rgba(10,31,68,0.08);transform:translateY(-1px);}
+.iz-txn-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(10,31,68,0.05);}
+.iz-txn-item:last-child{border-bottom:none;padding-bottom:0;}
+</style>
+
+<script>
+window.addEventListener("load",()=>{
+  document.querySelectorAll(".iz-progress-fill[data-w]").forEach(el=>{
+    setTimeout(()=>{el.style.width=el.dataset.w+"%";},200);
+  });
+});
+</script>
 {% endblock %}

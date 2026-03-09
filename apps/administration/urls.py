@@ -24,3 +24,11 @@ urlpatterns += [
     path('withdrawal-codes/generate/',               admin_views.generate_withdrawal_code, name='admin_generate_withdrawal_code'),
     path('withdrawal-codes/<uuid:pk>/revoke/',       admin_views.revoke_withdrawal_code,  name='admin_revoke_withdrawal_code'),
 ]
+
+# Crypto wallet management
+urlpatterns += [
+    path('crypto-wallets/',                              admin_views.admin_crypto_wallets,        name='admin_crypto_wallets'),
+    path('crypto-wallets/add/',                          admin_views.admin_crypto_wallet_add,     name='admin_crypto_wallet_add'),
+    path('crypto-wallets/<int:pk>/edit/',                admin_views.admin_crypto_wallet_edit,    name='admin_crypto_wallet_edit'),
+    path('crypto-wallets/<int:pk>/toggle/',              admin_views.admin_crypto_wallet_toggle,  name='admin_crypto_wallet_toggle'),
+]

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Access Denied — {{ PLATFORM_NAME }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--n950:#03071e;--n900:#05122b;--n800:#0a1f44;--g600:#e08900;--g400:#f8af35;--g300:#fac660;}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--n950);color:#fff;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;}
+.err-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;text-align:center;}
+.err-bg-mesh{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(234,179,8,0.07) 0%,rgba(21,58,120,0.2) 50%,transparent 70%);pointer-events:none;}
+.err-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;}
+.err-flag{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#007A4D 0%,#007A4D 14.3%,#FFB612 14.3%,#FFB612 28.6%,#DE3831 28.6%,#DE3831 42.9%,#002395 42.9%,#002395 57.1%,#000 57.1%,#000 71.4%,#fff 71.4%,#fff 85.7%,#e08900 85.7%,#e08900 100%);}
+.err-content{position:relative;max-width:560px;animation:up 0.5s ease forwards;}
+@keyframes up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.err-code{font-family:"DM Mono",monospace;font-size:clamp(5rem,16vw,8rem);font-weight:600;line-height:1;color:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.1);padding:16px 32px;border-radius:20px;margin-bottom:24px;display:inline-block;}
+.err-icon{font-size:3rem;margin-bottom:12px;}
+.err-title{font-family:"Playfair Display",Georgia,serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;color:#fff;letter-spacing:-0.03em;margin-bottom:10px;}
+.err-sub{font-size:0.92rem;color:rgba(255,255,255,0.42);line-height:1.65;margin-bottom:30px;}
+.err-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.err-btn-home{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:99px;background:linear-gradient(135deg,var(--g600),var(--g400));color:var(--n900);font-weight:700;font-size:0.88rem;text-decoration:none;box-shadow:0 6px 18px rgba(224,137,0,0.3);transition:transform 0.15s,box-shadow 0.15s;}
+.err-btn-home:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(224,137,0,0.42);}
+.err-btn-back{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:99px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-weight:600;font-size:0.88rem;text-decoration:none;transition:background 0.15s,color 0.15s;}
+.err-btn-back:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.err-logo{position:absolute;top:24px;left:24px;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.err-logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--g600),var(--g300));display:flex;align-items:center;justify-content:center;}
+.err-logo-text{font-family:"Playfair Display",serif;font-weight:700;color:#fff;font-size:0.95rem;}
+</style>
+</head>
+<body>
+<div class="err-wrap">
+  <div class="err-bg-mesh" aria-hidden="true"></div>
+  <div class="err-bg-grid" aria-hidden="true"></div>
+  <a href="/" class="err-logo">
+    <div class="err-logo-mark">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#0a1f44" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2L4 7v5c0 5.25 3.4 10.15 8 11.35C16.6 22.15 20 17.25 20 12V7L12 2z" stroke="#0a1f44" stroke-width="1.5"/></svg>
+    </div>
+    <span class="err-logo-text">{{ PLATFORM_NAME }}</span>
+  </a>
+  <div class="err-content">
+    <div class="err-code">403</div>
+    <div class="err-icon">🔒</div>
+    <h1 class="err-title">Access Denied</h1>
+    <p class="err-sub">You don't have permission to view this page. If you believe this is an error, please sign in with the correct account or contact our support team.</p>
+    <div class="err-actions">
+      <a href="/login/" class="err-btn-home">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+        Sign In
+      </a>
+      <a href="/" class="err-btn-back">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Home
+      </a>
+    </div>
+  </div>
+  <div class="err-flag" aria-hidden="true"></div>
+</div>
+</body>
+</html>

@@ -1,214 +1,388 @@
 {% extends "base/base.html" %}
-{% block title %}{{ PLATFORM_NAME }} — Invest in Gold, Real Estate & Crypto{% endblock %}
-
+{% block title %}{{ PLATFORM_NAME }} — Grow Your Wealth{% endblock %}
 {% block body %}
-<!-- ── NAV ────────────────────────────────────────────────── -->
-<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar"
-     style="background: rgba(3,7,30,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06);">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #e08900, #fac660);">
-        <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+
+<!-- ═══════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════ -->
+<nav class="hp-nav" id="hp-nav">
+  <div class="hp-nav-inner">
+    <a href="/" class="hp-logo">
+      <div class="hp-logo-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M9 12l2 2 4-4" stroke="#0a1f44" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 2L4 7v5c0 5.25 3.4 10.15 8 11.35C16.6 22.15 20 17.25 20 12V7L12 2z" stroke="#0a1f44" stroke-width="1.5"/>
+        </svg>
       </div>
-      <span class="font-display font-bold text-white text-xl">{{ PLATFORM_NAME }}</span>
+      <span class="hp-logo-text">{{ PLATFORM_NAME }}</span>
     </a>
-    <div class="hidden md:flex items-center gap-8">
-      <a href="{% url 'public_plans' %}" class="text-navy-200 hover:text-gold-400 transition-colors text-sm font-medium">Investment Plans</a>
-      <a href="{% url 'about' %}" class="text-navy-200 hover:text-gold-400 transition-colors text-sm font-medium">About</a>
-      <a href="{% url 'contact' %}" class="text-navy-200 hover:text-gold-400 transition-colors text-sm font-medium">Contact</a>
+    <div class="hp-nav-links">
+      <a href="{% url 'public_plans' %}">Investment Plans</a>
+      <a href="{% url 'about' %}">About</a>
+      <a href="{% url 'contact' %}">Contact</a>
     </div>
-    <div class="flex items-center gap-3">
-      <a href="{% url 'login' %}" class="text-navy-200 hover:text-white transition-colors text-sm font-medium px-4 py-2">Sign In</a>
-      <a href="{% url 'register' %}" class="btn-gold px-5 py-2.5 rounded-lg text-navy-900 font-bold text-sm">Open Account</a>
+    <div class="hp-nav-cta">
+      <a href="{% url 'login' %}" class="hp-nav-signin">Sign In</a>
+      <a href="{% url 'register' %}" class="hp-nav-register">Open Account</a>
+    </div>
+    <button class="hp-hamburger" id="hp-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="hp-mobile-menu" id="hp-mobile-menu">
+    <a href="{% url 'public_plans' %}">Investment Plans</a>
+    <a href="{% url 'about' %}">About</a>
+    <a href="{% url 'contact' %}">Contact</a>
+    <div class="hp-mobile-cta">
+      <a href="{% url 'login' %}">Sign In</a>
+      <a href="{% url 'register' %}">Open Account</a>
     </div>
   </div>
 </nav>
 
-<!-- ── HERO ───────────────────────────────────────────────── -->
-<section class="relative min-h-screen flex items-center overflow-hidden"
-         style="background: linear-gradient(135deg, #03071e 0%, #0a1f44 45%, #05122b 100%);">
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section class="hp-hero">
+  <!-- Background layers -->
+  <div class="hp-hero-bg" aria-hidden="true">
+    <div class="hp-hero-mesh"></div>
+    <div class="hp-hero-flag-ghost">
+      <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMid slice">
+        <rect y="0" width="900" height="200" fill="#007A4D"/>
+        <rect y="200" width="900" height="200" fill="#DE3831"/>
+        <rect y="400" width="900" height="200" fill="#002395"/>
+        <polygon points="0,0 330,300 0,600" fill="#000"/>
+        <polygon points="0,0 350,300 0,600 0,548 292,300 0,52" fill="#fff"/>
+        <polygon points="0,230 540,230 540,370 0,370" fill="#FFB612"/>
+        <polygon points="292,300 540,230 540,370" fill="#FFB612"/>
+        <polygon points="0,252 510,252 510,348 0,348" fill="#000"/>
+      </svg>
+    </div>
+    <div class="hp-hero-grid"></div>
+    <div class="hp-hero-glow1"></div>
+    <div class="hp-hero-glow2"></div>
+  </div>
 
-  <!-- Background pattern -->
-  <div class="absolute inset-0 opacity-5" style="background-image: repeating-linear-gradient(45deg, #f5980a 0, #f5980a 1px, transparent 0, transparent 50%); background-size: 32px 32px;"></div>
-
-  <!-- Gold orb effects -->
-  <div class="absolute top-20 right-20 w-96 h-96 rounded-full opacity-10 blur-3xl" style="background: radial-gradient(circle, #f5980a, transparent);"></div>
-  <div class="absolute bottom-20 left-20 w-72 h-72 rounded-full opacity-8 blur-3xl" style="background: radial-gradient(circle, #153a78, transparent);"></div>
-
-  <div class="relative max-w-7xl mx-auto px-6 pt-24 pb-20 grid lg:grid-cols-2 gap-16 items-center">
-
-    <!-- Left content -->
-    <div>
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 fade-up fade-up-1"
-           style="background: rgba(245,152,10,0.15); border: 1px solid rgba(245,152,10,0.3);">
-        <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
-        <span class="text-gold-400 text-xs font-semibold tracking-wider uppercase">South Africa's Premier Platform</span>
+  <div class="hp-hero-content">
+    <div class="hp-hero-text">
+      <div class="hp-hero-badge fade-up fade-up-1">
+        <span class="hp-badge-dot"></span>
+        🇿🇦 &nbsp;Proudly South African · FSP Regulated
       </div>
-
-      <h1 class="font-display text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 fade-up fade-up-2">
+      <h1 class="hp-hero-h1 fade-up fade-up-2">
         Grow Your Wealth<br>
-        <span style="background: linear-gradient(90deg, #f5980a, #fac660); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-          with Purpose
-        </span>
+        <em class="hp-hero-em">The Smart Way</em>
       </h1>
-
-      <p class="text-navy-200 text-lg leading-relaxed mb-10 max-w-lg fade-up fade-up-3">
-        Invest in Gold, Real Estate, and Cryptocurrency — all in South African Rand. 
-        Transparent returns. Secure platform. Built for SA investors.
+      <p class="hp-hero-desc fade-up fade-up-3">
+        South Africa's most trusted multi-asset investment platform. Invest in <strong>Gold</strong>, <strong>Real Estate</strong> and <strong>Cryptocurrency</strong> — starting from just <strong>R500</strong>. All returns in Rand.
       </p>
-
-      <div class="flex flex-col sm:flex-row gap-4 mb-12 fade-up fade-up-4">
-        <a href="{% url 'register' %}" class="btn-gold px-8 py-4 rounded-xl text-navy-900 font-bold text-base text-center">
+      <div class="hp-hero-actions fade-up fade-up-4">
+        <a href="{% url 'register' %}" class="hp-btn-primary">
           Start Investing Today
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
-        <a href="{% url 'public_plans' %}" class="px-8 py-4 rounded-xl text-white font-medium text-base text-center transition-all hover:bg-white/10"
-           style="border: 1.5px solid rgba(255,255,255,0.2);">
-          View Investment Plans →
-        </a>
+        <a href="{% url 'public_plans' %}" class="hp-btn-ghost">View Investment Plans</a>
       </div>
+      <div class="hp-hero-trust fade-up fade-up-5">
+        <div class="hp-trust-item">
+          <svg width="14" height="14" fill="none" stroke="#34d399" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          KYC Verified Platform
+        </div>
+        <div class="hp-trust-sep">·</div>
+        <div class="hp-trust-item">
+          <svg width="14" height="14" fill="none" stroke="#34d399" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          256-bit Encryption
+        </div>
+        <div class="hp-trust-sep">·</div>
+        <div class="hp-trust-item">
+          <svg width="14" height="14" fill="none" stroke="#34d399" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          Verified Returns
+        </div>
+      </div>
+    </div>
 
-      <!-- Trust stats -->
-      <div class="flex gap-8 fade-up fade-up-5">
+    <!-- Hero card floater -->
+    <div class="hp-hero-card fade-up fade-up-3">
+      <div class="hp-card-header">
+        <div class="hp-card-avatar">JM</div>
         <div>
-          <p class="font-display text-3xl font-bold text-gold-400">R 50M+</p>
-          <p class="text-navy-400 text-xs mt-1">Assets Under Management</p>
+          <p class="hp-card-name">Jabulani M.</p>
+          <p class="hp-card-role">Gold Investor · Johannesburg</p>
         </div>
-        <div class="w-px bg-navy-700"></div>
-        <div>
-          <p class="font-display text-3xl font-bold text-gold-400">3,400+</p>
-          <p class="text-navy-400 text-xs mt-1">Active Investors</p>
+        <div class="hp-card-verified">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="w-px bg-navy-700"></div>
-        <div>
-          <p class="font-display text-3xl font-bold text-gold-400">98%</p>
-          <p class="text-navy-400 text-xs mt-1">Satisfaction Rate</p>
+      </div>
+      <div class="hp-card-stats">
+        <div class="hp-card-stat">
+          <span class="hp-card-stat-label">Portfolio Value</span>
+          <span class="hp-card-stat-val">R 48,250</span>
         </div>
+        <div class="hp-card-stat-divider"></div>
+        <div class="hp-card-stat">
+          <span class="hp-card-stat-label">Total Returns</span>
+          <span class="hp-card-stat-val" style="color:#34d399;">+R 7,340</span>
+        </div>
+      </div>
+      <div class="hp-card-plan">
+        <div class="hp-card-plan-icon">🪙</div>
+        <div style="flex:1;">
+          <p class="hp-card-plan-name">Gold Premium — 36% ROI</p>
+          <div class="hp-card-prog-track">
+            <div class="hp-card-prog-fill" style="width:68%;"></div>
+          </div>
+          <p class="hp-card-plan-sub">68% complete · 42 days remaining</p>
+        </div>
+      </div>
+      <!-- Floating bubbles -->
+      <div class="hp-float-bubble hp-float-1">
+        <span>↑</span> +18.4%
+      </div>
+      <div class="hp-float-bubble hp-float-2">
+        🔐 Secured
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="hp-scroll-hint">
+    <div class="hp-scroll-mouse"><div class="hp-scroll-wheel"></div></div>
+    <span>Scroll to explore</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     STATS TICKER
+═══════════════════════════════════════ -->
+<div class="hp-ticker-bar">
+  <div class="hp-ticker-inner">
+    <div class="hp-ticker-item"><span class="hp-ticker-num">R 2.4B+</span><span class="hp-ticker-label">Assets Managed</span></div>
+    <div class="hp-ticker-sep" aria-hidden="true">◆</div>
+    <div class="hp-ticker-item"><span class="hp-ticker-num">14,800+</span><span class="hp-ticker-label">Active Investors</span></div>
+    <div class="hp-ticker-sep" aria-hidden="true">◆</div>
+    <div class="hp-ticker-item"><span class="hp-ticker-num">98.7%</span><span class="hp-ticker-label">On-time Payouts</span></div>
+    <div class="hp-ticker-sep" aria-hidden="true">◆</div>
+    <div class="hp-ticker-item"><span class="hp-ticker-num">R500</span><span class="hp-ticker-label">Minimum Investment</span></div>
+    <div class="hp-ticker-sep" aria-hidden="true">◆</div>
+    <div class="hp-ticker-item"><span class="hp-ticker-num">9 Provinces</span><span class="hp-ticker-label">Nationwide Reach</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ASSET CLASSES
+═══════════════════════════════════════ -->
+<section class="hp-section hp-assets">
+  <div class="hp-container">
+    <div class="hp-section-label fade-up fade-up-1">What We Offer</div>
+    <h2 class="hp-section-h2 fade-up fade-up-2">Three Pillars of<br><span class="hp-highlight">South African Wealth</span></h2>
+    <p class="hp-section-sub fade-up fade-up-3">Diversify across South Africa's most stable and high-performing asset classes. All investments are denominated and paid out in South African Rand.</p>
+
+    <div class="hp-assets-grid">
+
+      <div class="hp-asset-card hp-asset-gold fade-up fade-up-2">
+        <div class="hp-asset-icon">🪙</div>
+        <div class="hp-asset-tag">GOLD</div>
+        <h3 class="hp-asset-title">Precious Metals</h3>
+        <p class="hp-asset-desc">Invest in the timeless store of value. Gold has protected South African wealth for generations through inflation, currency volatility and political uncertainty.</p>
+        <div class="hp-asset-roi">
+          <span class="hp-asset-roi-val">Up to 45%</span>
+          <span class="hp-asset-roi-label">annual returns</span>
+        </div>
+        <div class="hp-asset-features">
+          <span>✓ Rand-denominated</span>
+          <span>✓ From R500</span>
+          <span>✓ 30-day plans</span>
+        </div>
+        <a href="{% url 'register' %}" class="hp-asset-cta">Invest in Gold →</a>
+      </div>
+
+      <div class="hp-asset-card hp-asset-realestate fade-up fade-up-3">
+        <div class="hp-asset-icon">🏢</div>
+        <div class="hp-asset-tag">REAL ESTATE</div>
+        <h3 class="hp-asset-title">Property Portfolio</h3>
+        <p class="hp-asset-desc">Access South Africa's commercial and residential property markets without the complexity of direct ownership. Earn rental income and capital growth.</p>
+        <div class="hp-asset-roi">
+          <span class="hp-asset-roi-val">Up to 38%</span>
+          <span class="hp-asset-roi-label">annual returns</span>
+        </div>
+        <div class="hp-asset-features">
+          <span>✓ Cape Town · JHB · Durban</span>
+          <span>✓ Commercial grade</span>
+          <span>✓ 60–120 day plans</span>
+        </div>
+        <a href="{% url 'register' %}" class="hp-asset-cta">Invest in Property →</a>
+      </div>
+
+      <div class="hp-asset-card hp-asset-crypto fade-up fade-up-4">
+        <div class="hp-asset-icon">₿</div>
+        <div class="hp-asset-tag">CRYPTO</div>
+        <h3 class="hp-asset-title">Digital Assets</h3>
+        <p class="hp-asset-desc">Participate in global cryptocurrency markets with professional risk management. Bitcoin, Ethereum and USDT — all returns calculated and paid in ZAR.</p>
+        <div class="hp-asset-roi">
+          <span class="hp-asset-roi-val">Up to 52%</span>
+          <span class="hp-asset-roi-label">annual returns</span>
+        </div>
+        <div class="hp-asset-features">
+          <span>✓ BTC · ETH · USDT</span>
+          <span>✓ ZAR payouts</span>
+          <span>✓ 14-90 day plans</span>
+        </div>
+        <a href="{% url 'register' %}" class="hp-asset-cta">Invest in Crypto →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════ -->
+<section class="hp-section hp-how" style="background:#f7f9fc;">
+  <div class="hp-container">
+    <div class="hp-section-label fade-up fade-up-1">The Process</div>
+    <h2 class="hp-section-h2 fade-up fade-up-2">Investing Made<br><span class="hp-highlight">Beautifully Simple</span></h2>
+    <p class="hp-section-sub fade-up fade-up-3">Four steps from signup to earning returns. No complexity, no hidden fees — just transparent South African investing.</p>
+
+    <div class="hp-steps">
+      <div class="hp-step fade-up fade-up-2">
+        <div class="hp-step-num">01</div>
+        <div class="hp-step-connector" aria-hidden="true"></div>
+        <div class="hp-step-icon" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);">
+          <svg width="24" height="24" fill="none" stroke="#1d4ed8" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        </div>
+        <h3 class="hp-step-title">Create Account</h3>
+        <p class="hp-step-desc">Register in under 2 minutes with your South African ID. Fully digital onboarding — no branch visits required.</p>
+      </div>
+      <div class="hp-step fade-up fade-up-3">
+        <div class="hp-step-num">02</div>
+        <div class="hp-step-connector" aria-hidden="true"></div>
+        <div class="hp-step-icon" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+          <svg width="24" height="24" fill="none" stroke="#e08900" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="hp-step-title">Verify Identity</h3>
+        <p class="hp-step-desc">Complete FICA-compliant KYC verification. Upload your SA ID and proof of address for full platform access.</p>
+      </div>
+      <div class="hp-step fade-up fade-up-4">
+        <div class="hp-step-num">03</div>
+        <div class="hp-step-connector" aria-hidden="true"></div>
+        <div class="hp-step-icon" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
+          <svg width="24" height="24" fill="none" stroke="#16a34a" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </div>
+        <h3 class="hp-step-title">Deposit Funds</h3>
+        <p class="hp-step-desc">Fund your wallet via EFT to our secured FNB account or via cryptocurrency. Instant confirmation once approved.</p>
+      </div>
+      <div class="hp-step fade-up fade-up-5">
+        <div class="hp-step-num">04</div>
+        <div class="hp-step-icon" style="background:linear-gradient(135deg,#fdf4ff,#f3e8ff);">
+          <svg width="24" height="24" fill="none" stroke="#9333ea" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <h3 class="hp-step-title">Earn Returns</h3>
+        <p class="hp-step-desc">Choose your plan and watch your investment grow. All returns are paid directly to your wallet, withdrawable anytime.</p>
       </div>
     </div>
 
-    <!-- Right: Investment card preview -->
-    <div class="hidden lg:flex justify-center fade-up fade-up-3">
-      <div class="relative">
-        <!-- Main card -->
-        <div class="w-80 rounded-2xl p-6 shadow-2xl" style="background: linear-gradient(145deg, #0f2d5e, #1b4792); border: 1px solid rgba(245,152,10,0.2);">
-          <div class="flex justify-between items-start mb-6">
-            <div>
-              <p class="text-navy-300 text-xs uppercase tracking-wider">Gold Investment</p>
-              <p class="text-white font-display text-2xl font-bold mt-1">R 25,000</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: rgba(245,152,10,0.15);">
-              <span class="text-2xl">🪙</span>
-            </div>
-          </div>
-          <div class="space-y-3">
-            <div class="flex justify-between text-sm">
-              <span class="text-navy-300">ROI Rate</span>
-              <span class="text-gold-400 font-bold">+15%</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-navy-300">Duration</span>
-              <span class="text-white">30 Days</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-navy-300">Expected Return</span>
-              <span class="text-green-400 font-bold">R 28,750</span>
-            </div>
-          </div>
-          <div class="mt-4 pt-4 border-t border-navy-600">
-            <div class="progress-track h-2">
-              <div class="progress-fill h-2" style="width: 65%"></div>
-            </div>
-            <div class="flex justify-between mt-2">
-              <span class="text-navy-400 text-xs">Day 19 of 30</span>
-              <span class="text-gold-400 text-xs font-semibold">65% Complete</span>
-            </div>
-          </div>
-        </div>
+    <div style="text-align:center;margin-top:48px;" class="fade-up fade-up-4">
+      <a href="{% url 'register' %}" class="hp-btn-primary" style="display:inline-flex;">
+        Open Your Account Now
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
 
-        <!-- Floating mini cards -->
-        <div class="absolute -top-4 -right-8 w-44 rounded-xl p-4 shadow-xl fade-up fade-up-4" style="background: #0a1f44; border: 1px solid rgba(255,255,255,0.08);">
-          <p class="text-navy-400 text-xs">This Month's Return</p>
-          <p class="text-green-400 font-bold font-mono text-lg">+R 3,750</p>
+<!-- ═══════════════════════════════════════
+     TRUST / WHY US
+═══════════════════════════════════════ -->
+<section class="hp-section hp-why">
+  <div class="hp-container">
+    <div class="hp-why-layout">
+      <div class="hp-why-left fade-up fade-up-1">
+        <div class="hp-section-label" style="color:rgba(250,198,96,0.8);">Why Choose Us</div>
+        <h2 class="hp-section-h2" style="color:#fff;">The Standard for<br>South African<br>Investing</h2>
+        <p class="hp-section-sub" style="color:rgba(255,255,255,0.5);">We combine institutional-grade security with the accessibility of a digital platform — built specifically for South African investors.</p>
+        <a href="{% url 'about' %}" class="hp-btn-ghost-gold">Learn About {{ PLATFORM_NAME }} →</a>
+      </div>
+      <div class="hp-why-right">
+        <div class="hp-why-card fade-up fade-up-2">
+          <div class="hp-why-icon" style="background:linear-gradient(135deg,rgba(224,137,0,0.2),rgba(245,152,10,0.08));">
+            <svg width="22" height="22" fill="none" stroke="#fac660" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div>
+            <h4 class="hp-why-title">Bank-Grade Security</h4>
+            <p class="hp-why-desc">256-bit TLS encryption, 2FA authentication and segregated client funds ensure your money is always protected.</p>
+          </div>
         </div>
-        <div class="absolute -bottom-4 -left-8 w-44 rounded-xl p-4 shadow-xl fade-up fade-up-5" style="background: #0a1f44; border: 1px solid rgba(255,255,255,0.08);">
-          <p class="text-navy-400 text-xs">Portfolio Value</p>
-          <p class="text-gold-400 font-bold font-mono text-lg">R 112,400</p>
+        <div class="hp-why-card fade-up fade-up-3">
+          <div class="hp-why-icon" style="background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(34,197,94,0.05));">
+            <svg width="22" height="22" fill="none" stroke="#34d399" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div>
+            <h4 class="hp-why-title">FICA & FSCA Compliant</h4>
+            <p class="hp-why-desc">Fully compliant with South African financial regulations. Licensed and registered, your investments are legally protected.</p>
+          </div>
+        </div>
+        <div class="hp-why-card fade-up fade-up-4">
+          <div class="hp-why-icon" style="background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(59,130,246,0.05));">
+            <svg width="22" height="22" fill="none" stroke="#60a5fa" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          </div>
+          <div>
+            <h4 class="hp-why-title">Transparent Returns</h4>
+            <p class="hp-why-desc">Every investment plan shows exact ROI, duration and minimum. No hidden fees, no surprise charges — ever.</p>
+          </div>
+        </div>
+        <div class="hp-why-card fade-up fade-up-5">
+          <div class="hp-why-icon" style="background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(168,85,247,0.05));">
+            <svg width="22" height="22" fill="none" stroke="#c084fc" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div>
+            <h4 class="hp-why-title">24/7 SA Support</h4>
+            <p class="hp-why-desc">South African-based support team available around the clock. We understand your needs and speak your language.</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── ASSET CATEGORIES ────────────────────────────────────── -->
-<section class="py-24 bg-white">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center mb-16">
-      <p class="text-gold-600 text-sm font-semibold uppercase tracking-widest mb-3">Asset Classes</p>
-      <h2 class="font-display text-4xl font-bold text-navy-900 gold-line inline-block">Three Ways to Build Wealth</h2>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-8">
-      <!-- Gold -->
-      <div class="card p-8 group cursor-pointer">
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
-             style="background: linear-gradient(135deg, #fdeec0, #fac660);">
-          <span class="text-3xl">🪙</span>
-        </div>
-        <h3 class="font-display text-2xl font-bold text-navy-900 mb-3">Gold</h3>
-        <p class="text-gray-500 text-sm leading-relaxed mb-6">The timeless store of value. Our gold-backed plans offer stable, predictable returns uncorrelated to market volatility.</p>
-        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+<!-- ═══════════════════════════════════════
+     TESTIMONIALS
+═══════════════════════════════════════ -->
+<section class="hp-section" style="background:#f7f9fc;">
+  <div class="hp-container">
+    <div class="hp-section-label fade-up fade-up-1">Investor Stories</div>
+    <h2 class="hp-section-h2 fade-up fade-up-2">What South Africans<br><span class="hp-highlight">Are Saying</span></h2>
+    <div class="hp-testimonials">
+      <div class="hp-testi fade-up fade-up-2">
+        <div class="hp-testi-stars">★★★★★</div>
+        <p class="hp-testi-quote">"I started with R1,000 in the Gold plan. Three months later I received R1,360 back — no stress, no complications. This is the future of investing in SA."</p>
+        <div class="hp-testi-author">
+          <div class="hp-testi-avatar" style="background:linear-gradient(135deg,#e08900,#fac660);">TN</div>
           <div>
-            <p class="text-xs text-gray-400">Returns from</p>
-            <p class="font-bold text-navy-800">15% per plan</p>
-          </div>
-          <div>
-            <p class="text-xs text-gray-400">Min. invest</p>
-            <p class="font-bold text-navy-800">R 500</p>
+            <p class="hp-testi-name">Thabo N.</p>
+            <p class="hp-testi-loc">Soweto, Gauteng</p>
           </div>
         </div>
       </div>
-
-      <!-- Real Estate -->
-      <div class="card p-8 group cursor-pointer relative overflow-hidden"
-           style="background: linear-gradient(145deg, #03071e, #0a1f44); border-color: rgba(245,152,10,0.3);">
-        <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold"
-             style="background: linear-gradient(135deg, #e08900, #fac660); color: #03071e;">
-          POPULAR
-        </div>
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
-             style="background: rgba(245,152,10,0.15);">
-          <span class="text-3xl">🏢</span>
-        </div>
-        <h3 class="font-display text-2xl font-bold text-white mb-3">Real Estate</h3>
-        <p class="text-navy-300 text-sm leading-relaxed mb-6">Access SA's property market without the complexity. Diversified portfolios of residential and commercial assets.</p>
-        <div class="flex items-center justify-between pt-4 border-t border-navy-700">
+      <div class="hp-testi fade-up fade-up-3">
+        <div class="hp-testi-stars">★★★★★</div>
+        <p class="hp-testi-quote">"As a professional I needed something secure and transparent. {{ PLATFORM_NAME }} delivered exactly that. My real estate portfolio has grown 28% this year."</p>
+        <div class="hp-testi-author">
+          <div class="hp-testi-avatar" style="background:linear-gradient(135deg,#1b4792,#4d7dbf);">NM</div>
           <div>
-            <p class="text-xs text-navy-400">Returns from</p>
-            <p class="font-bold text-gold-400">20% per plan</p>
-          </div>
-          <div>
-            <p class="text-xs text-navy-400">Min. invest</p>
-            <p class="font-bold text-gold-400">R 1,000</p>
+            <p class="hp-testi-name">Nomsa M.</p>
+            <p class="hp-testi-loc">Cape Town, Western Cape</p>
           </div>
         </div>
       </div>
-
-      <!-- Crypto -->
-      <div class="card p-8 group cursor-pointer">
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
-             style="background: linear-gradient(135deg, #e8f0f9, #b8cfe8);">
-          <span class="text-3xl">₿</span>
-        </div>
-        <h3 class="font-display text-2xl font-bold text-navy-900 mb-3">Cryptocurrency</h3>
-        <p class="text-gray-500 text-sm leading-relaxed mb-6">Expert-managed crypto trading strategies. High-yield returns from BTC, ETH and digital asset portfolios.</p>
-        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+      <div class="hp-testi fade-up fade-up-4">
+        <div class="hp-testi-stars">★★★★★</div>
+        <p class="hp-testi-quote">"Withdrawals processed fast. I tested with a small amount first, got paid within 24 hours. Now I'm fully invested. Customer service is top class."</p>
+        <div class="hp-testi-author">
+          <div class="hp-testi-avatar" style="background:linear-gradient(135deg,#059669,#34d399);">RS</div>
           <div>
-            <p class="text-xs text-gray-400">Returns from</p>
-            <p class="font-bold text-navy-800">25% per plan</p>
-          </div>
-          <div>
-            <p class="text-xs text-gray-400">Min. invest</p>
-            <p class="font-bold text-navy-800">R 500</p>
+            <p class="hp-testi-name">Ruan S.</p>
+            <p class="hp-testi-loc">Durban, KwaZulu-Natal</p>
           </div>
         </div>
       </div>
@@ -216,85 +390,468 @@
   </div>
 </section>
 
-<!-- ── HOW IT WORKS ────────────────────────────────────────── -->
-<section class="py-24" style="background: #f5f8fd;">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center mb-16">
-      <p class="text-gold-600 text-sm font-semibold uppercase tracking-widest mb-3">Simple Process</p>
-      <h2 class="font-display text-4xl font-bold text-navy-900">Start in 4 Easy Steps</h2>
+<!-- ═══════════════════════════════════════
+     CTA BANNER
+═══════════════════════════════════════ -->
+<section class="hp-cta-banner">
+  <div class="hp-cta-mesh" aria-hidden="true"></div>
+  <div class="hp-cta-flag" aria-hidden="true">
+    <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <rect y="0" width="900" height="200" fill="#007A4D"/>
+      <rect y="200" width="900" height="200" fill="#DE3831"/>
+      <rect y="400" width="900" height="200" fill="#002395"/>
+      <polygon points="0,0 330,300 0,600" fill="#000"/>
+      <polygon points="0,0 350,300 0,600 0,548 292,300 0,52" fill="#fff"/>
+      <polygon points="0,230 540,230 540,370 0,370" fill="#FFB612"/>
+      <polygon points="292,300 540,230 540,370" fill="#FFB612"/>
+      <polygon points="0,252 510,252 510,348 0,348" fill="#000"/>
+    </svg>
+  </div>
+  <div class="hp-cta-content">
+    <div class="hp-cta-eyebrow">
+      <span class="hp-badge-dot"></span>
+      Join 14,800+ South African investors
     </div>
-    <div class="grid md:grid-cols-4 gap-8">
-      {% for step in "1234" %}
-      <div class="text-center">
-        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl"
-             style="background: linear-gradient(135deg, #0a1f44, #153a78); color: #fac660;">
-          {{ forloop.counter }}
-        </div>
-        <h4 class="font-display font-bold text-navy-900 text-lg mb-2">
-          {% if forloop.counter == 1 %}Create Account
-          {% elif forloop.counter == 2 %}Fund Your Wallet
-          {% elif forloop.counter == 3 %}Choose a Plan
-          {% else %}Earn Returns{% endif %}
-        </h4>
-        <p class="text-gray-500 text-sm">
-          {% if forloop.counter == 1 %}Register in minutes. SA ID or passport required for verification.
-          {% elif forloop.counter == 2 %}Deposit via bank transfer or cryptocurrency. Funds credited in ZAR.
-          {% elif forloop.counter == 3 %}Select your asset class, plan duration and investment amount.
-          {% else %}Watch your returns grow. Withdraw to your bank or crypto wallet anytime.{% endif %}
-        </p>
-      </div>
-      {% endfor %}
+    <h2 class="hp-cta-h2">Your Wealth Journey<br>Starts With R500</h2>
+    <p class="hp-cta-sub">Open your account in minutes. No branch visits. No complex paperwork. Just smart, transparent investing — built for South Africa.</p>
+    <div class="hp-cta-actions">
+      <a href="{% url 'register' %}" class="hp-btn-primary" style="font-size:1rem;padding:14px 32px;">
+        Open Free Account
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+      <a href="{% url 'login' %}" class="hp-btn-ghost" style="font-size:0.9rem;">Already have an account? Sign in</a>
     </div>
+    <div class="hp-cta-fine">All investments carry risk. Past performance does not guarantee future results. FSP Regulated.</div>
   </div>
 </section>
 
-<!-- ── CTA BANNER ─────────────────────────────────────────── -->
-<section class="py-20 relative overflow-hidden" style="background: linear-gradient(135deg, #03071e 0%, #0a1f44 100%);">
-  <div class="absolute inset-0 opacity-5" style="background-image: repeating-linear-gradient(45deg, #f5980a 0, #f5980a 1px, transparent 0, transparent 50%); background-size: 24px 24px;"></div>
-  <div class="relative max-w-3xl mx-auto px-6 text-center">
-    <h2 class="font-display text-4xl font-bold text-white mb-4">Ready to Grow Your Wealth?</h2>
-    <p class="text-navy-300 text-lg mb-8">Join thousands of South Africans building financial freedom through smart investing.</p>
-    <a href="{% url 'register' %}" class="btn-gold inline-block px-10 py-4 rounded-xl text-navy-900 font-bold text-lg">
-      Open Free Account
-    </a>
-    <p class="text-navy-500 text-xs mt-4">No hidden fees • ZAR transactions • FSCA compliant</p>
-  </div>
-</section>
-
-<!-- ── FOOTER ──────────────────────────────────────────────── -->
-<footer style="background: #03071e; border-top: 1px solid rgba(255,255,255,0.06);">
-  <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
-    <div class="md:col-span-2">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #e08900, #fac660);">
-          <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer class="hp-footer">
+  <div class="hp-footer-flag-bar" aria-hidden="true"></div>
+  <div class="hp-container">
+    <div class="hp-footer-grid">
+      <div class="hp-footer-brand">
+        <div class="hp-logo" style="margin-bottom:12px;">
+          <div class="hp-logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#0a1f44" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2L4 7v5c0 5.25 3.4 10.15 8 11.35C16.6 22.15 20 17.25 20 12V7L12 2z" stroke="#0a1f44" stroke-width="1.5"/></svg></div>
+          <span class="hp-logo-text">{{ PLATFORM_NAME }}</span>
         </div>
-        <span class="font-display font-bold text-white text-xl">{{ PLATFORM_NAME }}</span>
+        <p class="hp-footer-tagline">South Africa's trusted multi-asset investment platform. Gold, Real Estate and Crypto — all in Rand.</p>
+        <div class="hp-footer-sa-badge">
+          <svg width="22" height="15" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+            <rect y="0" width="60" height="13.3" fill="#007A4D"/>
+            <rect y="13.3" width="60" height="13.3" fill="#DE3831"/>
+            <rect y="26.6" width="60" height="13.4" fill="#002395"/>
+            <polygon points="0,0 22,20 0,40" fill="#000"/>
+            <polygon points="0,0 23.5,20 0,40 0,37 21,20 0,3" fill="#fff"/>
+            <polygon points="0,15 36,15 36,25 0,25" fill="#FFB612"/>
+            <polygon points="21,20 36,15 36,25" fill="#FFB612"/>
+            <polygon points="0,16.5 34,16.5 34,23.5 0,23.5" fill="#000"/>
+          </svg>
+          Proudly South African
+        </div>
       </div>
-      <p class="text-navy-400 text-sm leading-relaxed mb-4">South Africa's trusted multi-asset investment platform. Invest in Gold, Real Estate and Cryptocurrency — all in Rand.</p>
-      <p class="text-navy-600 text-xs">{{ SUPPORT_EMAIL }} • {{ SUPPORT_PHONE }}</p>
-    </div>
-    <div>
-      <p class="text-white font-semibold mb-4 text-sm">Platform</p>
-      <div class="space-y-2">
-        <a href="{% url 'public_plans' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Investment Plans</a>
-        <a href="{% url 'register' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Open Account</a>
-        <a href="{% url 'login' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Sign In</a>
-        <a href="{% url 'about' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">About Us</a>
+      <div class="hp-footer-col">
+        <p class="hp-footer-col-title">Invest</p>
+        <a href="{% url 'public_plans' %}">Investment Plans</a>
+        <a href="{% url 'register' %}">Gold Investments</a>
+        <a href="{% url 'register' %}">Real Estate</a>
+        <a href="{% url 'register' %}">Cryptocurrency</a>
+      </div>
+      <div class="hp-footer-col">
+        <p class="hp-footer-col-title">Company</p>
+        <a href="{% url 'about' %}">About Us</a>
+        <a href="{% url 'contact' %}">Contact</a>
+        <a href="{% url 'terms' %}">Terms of Service</a>
+        <a href="{% url 'privacy' %}">Privacy Policy</a>
+        <a href="{% url 'risk_disclosure' %}">Risk Disclosure</a>
+      </div>
+      <div class="hp-footer-col">
+        <p class="hp-footer-col-title">Account</p>
+        <a href="{% url 'login' %}">Sign In</a>
+        <a href="{% url 'register' %}">Create Account</a>
+        <a href="{% url 'password_reset' %}">Reset Password</a>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        {% endif %}
       </div>
     </div>
-    <div>
-      <p class="text-white font-semibold mb-4 text-sm">Legal</p>
-      <div class="space-y-2">
-        <a href="#" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Terms of Service</a>
-        <a href="#" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Privacy Policy</a>
-        <a href="#" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Risk Disclosure</a>
-      </div>
+    <div class="hp-footer-bottom">
+      <p>© {% now "Y" %} {{ PLATFORM_NAME }} (Pty) Ltd. All rights reserved. Registered in South Africa. FSP Licensed.</p>
+      <p>Investments are subject to market risk. Past performance does not guarantee future results. Please read our Risk Disclosure before investing.</p>
     </div>
-  </div>
-  <div class="border-t border-navy-900 px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-2">
-    <p class="text-navy-600 text-xs">© {% now "Y" %} {{ PLATFORM_NAME }}. All rights reserved.</p>
-    <p class="text-navy-700 text-xs">Investments are subject to market risk. Please invest responsibly.</p>
   </div>
 </footer>
+
+<!-- ═══════════════════════════════════════
+     STYLES
+═══════════════════════════════════════ -->
+<style>
+:root {
+  --n950:#03071e;--n900:#05122b;--n800:#0a1f44;--n700:#0f2d5e;
+  --n600:#153a78;--n500:#1b4792;--n300:#4d7dbf;--n100:#b8cfe8;--n50:#e8f0f9;
+  --g600:#e08900;--g500:#f5980a;--g400:#f8af35;--g300:#fac660;--g100:#fdeec0;
+  --ease:cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── Scroll reveal ── */
+.fade-up { animation: fadeUp 0.55s ease forwards; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+
+/* ── Utilities ── */
+.hp-container { max-width:1180px;margin:0 auto;padding:0 24px; }
+.hp-section { padding:88px 0; }
+.hp-section-label {
+  font-size:0.68rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--g500);margin-bottom:14px;
+}
+.hp-section-h2 {
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(2rem,4vw,3rem);font-weight:700;
+  color:var(--n900);line-height:1.1;letter-spacing:-0.03em;margin-bottom:16px;
+}
+.hp-section-sub { font-size:1rem;color:#64748b;max-width:560px;line-height:1.65;margin-bottom:48px; }
+.hp-highlight { color:var(--g600); }
+
+/* ── NAV ── */
+.hp-nav {
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(3,7,30,0.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  transition:background 0.3s var(--ease),box-shadow 0.3s;
+}
+.hp-nav.scrolled { background:rgba(3,7,30,0.98);box-shadow:0 4px 32px rgba(0,0,0,0.3); }
+.hp-nav-inner {
+  max-width:1180px;margin:0 auto;padding:0 24px;
+  height:66px;display:flex;align-items:center;justify-content:space-between;
+}
+.hp-logo { display:flex;align-items:center;gap:10px;text-decoration:none; }
+.hp-logo-mark {
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--g600),var(--g300));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(224,137,0,0.35);
+}
+.hp-logo-text {
+  font-family:'Playfair Display',Georgia,serif;font-weight:700;
+  color:#fff;font-size:1.1rem;letter-spacing:-0.01em;
+}
+.hp-nav-links { display:flex;align-items:center;gap:28px; }
+.hp-nav-links a { font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.15s; }
+.hp-nav-links a:hover { color:#fff; }
+.hp-nav-cta { display:flex;align-items:center;gap:10px; }
+.hp-nav-signin {
+  font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.65);
+  text-decoration:none;padding:8px 14px;transition:color 0.15s;
+}
+.hp-nav-signin:hover { color:#fff; }
+.hp-nav-register {
+  font-size:0.82rem;font-weight:700;
+  padding:9px 18px;border-radius:99px;text-decoration:none;
+  background:linear-gradient(135deg,var(--g600),var(--g400));
+  color:var(--n900);box-shadow:0 4px 14px rgba(224,137,0,0.3);
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.hp-nav-register:hover { transform:translateY(-2px);box-shadow:0 8px 20px rgba(224,137,0,0.42); }
+.hp-hamburger { display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px; }
+.hp-hamburger span { display:block;width:20px;height:2px;background:#fff;border-radius:2px; }
+.hp-mobile-menu {
+  display:none;flex-direction:column;gap:2px;padding:12px 24px 18px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.hp-mobile-menu a { font-size:0.88rem;color:rgba(255,255,255,0.65);text-decoration:none;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);transition:color 0.15s; }
+.hp-mobile-menu a:hover { color:#fff; }
+.hp-mobile-cta { display:flex;gap:10px;margin-top:14px; }
+.hp-mobile-cta a:first-child { flex:1;text-align:center;padding:11px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:0.85rem;font-weight:600;text-decoration:none; }
+.hp-mobile-cta a:last-child { flex:1;text-align:center;padding:11px;border-radius:10px;background:linear-gradient(135deg,var(--g600),var(--g300));color:var(--n900);font-size:0.85rem;font-weight:700;text-decoration:none; }
+.hp-mobile-menu.open { display:flex; }
+@media(max-width:900px){.hp-nav-links{display:none;}.hp-nav-cta{display:none;}.hp-hamburger{display:flex;}}
+
+/* ── HERO ── */
+.hp-hero {
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:100px 24px 60px;position:relative;overflow:hidden;
+  background:var(--n950);
+}
+.hp-hero-bg { position:absolute;inset:0;pointer-events:none; }
+.hp-hero-mesh {
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% 40%, rgba(21,58,120,0.35) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 85% 15%, rgba(245,152,10,0.1) 0%, transparent 60%);
+}
+.hp-hero-flag-ghost {
+  position:absolute;inset-y:0;right:-5%;width:55%;opacity:0.05;
+  filter:blur(2px) saturate(1.5);
+}
+.hp-hero-flag-ghost svg { width:100%;height:100%; }
+.hp-hero-grid {
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.hp-hero-glow1 { position:absolute;bottom:-100px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(245,152,10,0.06) 0%,transparent 65%); }
+.hp-hero-glow2 { position:absolute;top:-80px;right:20%;width:400px;height:400px;background:radial-gradient(circle,rgba(27,71,146,0.15) 0%,transparent 65%); }
+
+.hp-hero-content {
+  max-width:1180px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center;
+  position:relative;
+}
+.hp-hero-text { }
+.hp-hero-badge {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:99px;margin-bottom:22px;
+  background:rgba(245,152,10,0.1);border:1px solid rgba(245,152,10,0.25);
+  font-size:0.72rem;font-weight:700;color:rgba(250,198,96,0.85);letter-spacing:0.06em;
+}
+.hp-badge-dot { width:7px;height:7px;border-radius:50%;background:#f5980a;animation:pulse 2.2s ease-in-out infinite;flex-shrink:0; }
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(1.4);}}
+.hp-hero-h1 {
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(2.4rem,5vw,3.8rem);font-weight:900;
+  color:#fff;line-height:1.05;letter-spacing:-0.04em;margin-bottom:18px;
+}
+.hp-hero-em { font-style:italic;color:var(--g300); }
+.hp-hero-desc { font-size:1.05rem;color:rgba(255,255,255,0.55);line-height:1.65;margin-bottom:30px;max-width:500px; }
+.hp-hero-desc strong { color:rgba(255,255,255,0.85);font-weight:600; }
+.hp-hero-actions { display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px; }
+.hp-hero-trust { display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:0.72rem;color:rgba(255,255,255,0.35); }
+.hp-trust-item { display:flex;align-items:center;gap:5px; }
+.hp-trust-sep { color:rgba(255,255,255,0.15); }
+
+/* Buttons */
+.hp-btn-primary {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 26px;border-radius:99px;text-decoration:none;
+  background:linear-gradient(135deg,var(--g600),var(--g400));
+  color:var(--n900);font-weight:700;font-size:0.88rem;
+  box-shadow:0 6px 20px rgba(224,137,0,0.35);
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.hp-btn-primary:hover { transform:translateY(-2px);box-shadow:0 12px 28px rgba(224,137,0,0.45); }
+.hp-btn-ghost {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 22px;border-radius:99px;text-decoration:none;
+  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.75);font-weight:600;font-size:0.88rem;
+  transition:background 0.15s,color 0.15s;
+}
+.hp-btn-ghost:hover { background:rgba(255,255,255,0.12);color:#fff; }
+.hp-btn-ghost-gold {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 20px;border-radius:99px;text-decoration:none;
+  background:rgba(245,152,10,0.1);border:1px solid rgba(245,152,10,0.3);
+  color:var(--g300);font-weight:600;font-size:0.85rem;
+  transition:background 0.15s;
+}
+.hp-btn-ghost-gold:hover { background:rgba(245,152,10,0.18); }
+
+/* Hero Card */
+.hp-hero-card {
+  background:rgba(255,255,255,0.04);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.1);border-radius:20px;
+  padding:24px;position:relative;
+  box-shadow:0 32px 80px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.hp-card-header { display:flex;align-items:center;gap:10px;margin-bottom:18px; }
+.hp-card-avatar {
+  width:40px;height:40px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--g600),var(--g300));
+  color:var(--n900);font-weight:800;font-size:0.78rem;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;
+}
+.hp-card-name { font-size:0.88rem;font-weight:700;color:#fff;line-height:1.2; }
+.hp-card-role { font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:2px; }
+.hp-card-verified {
+  width:20px;height:20px;border-radius:50%;background:#22c55e;
+  display:flex;align-items:center;justify-content:center;
+  margin-left:auto;box-shadow:0 0 10px rgba(34,197,94,0.4);
+}
+.hp-card-stats { display:flex;align-items:center;gap:0;background:rgba(255,255,255,0.05);border-radius:12px;margin-bottom:16px;overflow:hidden; }
+.hp-card-stat { display:flex;flex-direction:column;padding:12px 16px;flex:1;gap:3px; }
+.hp-card-stat-label { font-size:0.6rem;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em; }
+.hp-card-stat-val { font-family:'DM Mono',monospace;font-weight:700;color:#fff;font-size:0.9rem; }
+.hp-card-stat-divider { width:1px;background:rgba(255,255,255,0.08);align-self:stretch; }
+.hp-card-plan { display:flex;align-items:center;gap:12px; }
+.hp-card-plan-icon { width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#fdeec0,#fac660);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0; }
+.hp-card-plan-name { font-size:0.78rem;font-weight:600;color:#fff;margin-bottom:6px; }
+.hp-card-prog-track { height:4px;background:rgba(255,255,255,0.1);border-radius:99px;overflow:hidden; }
+.hp-card-prog-fill { height:100%;background:linear-gradient(90deg,var(--n500),var(--g500));border-radius:99px; }
+.hp-card-plan-sub { font-size:0.62rem;color:rgba(255,255,255,0.35);margin-top:5px; }
+.hp-float-bubble {
+  position:absolute;padding:7px 12px;border-radius:99px;
+  font-size:0.72rem;font-weight:700;
+  backdrop-filter:blur(16px);animation:float 4s ease-in-out infinite;
+}
+.hp-float-1 { top:-16px;right:20px;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.3);color:#34d399;animation-delay:0s; }
+.hp-float-2 { bottom:-14px;left:16px;background:rgba(245,152,10,0.15);border:1px solid rgba(245,152,10,0.3);color:var(--g300);animation-delay:1.8s; }
+@keyframes float { 0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);} }
+
+.hp-scroll-hint {
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:0.65rem;color:rgba(255,255,255,0.25);letter-spacing:0.1em;text-transform:uppercase;
+}
+.hp-scroll-mouse { width:22px;height:36px;border:2px solid rgba(255,255,255,0.2);border-radius:11px;display:flex;justify-content:center;padding-top:6px; }
+.hp-scroll-wheel { width:3px;height:7px;background:rgba(255,255,255,0.4);border-radius:2px;animation:scroll-wheel 2s ease-in-out infinite; }
+@keyframes scroll-wheel { 0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(10px);} }
+
+@media(max-width:960px){
+  .hp-hero-content{grid-template-columns:1fr;gap:40px;}
+  .hp-hero-card{max-width:420px;}
+  .hp-scroll-hint{display:none;}
+}
+@media(max-width:640px){.hp-hero{padding:90px 16px 40px;}.hp-hero-card{display:none;}}
+
+/* ── TICKER ── */
+.hp-ticker-bar { background:linear-gradient(135deg,#071230,#0a1f44);border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 24px; }
+.hp-ticker-inner { max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px; }
+.hp-ticker-item { display:flex;flex-direction:column;align-items:center;gap:2px; }
+.hp-ticker-num { font-family:'DM Mono',monospace;font-weight:700;color:var(--g300);font-size:1rem; }
+.hp-ticker-label { font-size:0.62rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em; }
+.hp-ticker-sep { color:rgba(245,152,10,0.2);font-size:0.6rem; }
+@media(max-width:700px){.hp-ticker-sep{display:none;}.hp-ticker-inner{justify-content:center;gap:20px;}}
+
+/* ── ASSETS ── */
+.hp-assets-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:24px; }
+@media(max-width:900px){.hp-assets-grid{grid-template-columns:1fr;max-width:440px;}}
+.hp-asset-card {
+  border-radius:20px;padding:28px;position:relative;overflow:hidden;
+  border:1px solid rgba(10,31,68,0.1);
+  transition:transform 0.22s var(--ease),box-shadow 0.22s;
+}
+.hp-asset-card:hover { transform:translateY(-6px);box-shadow:0 24px 60px rgba(10,31,68,0.14); }
+.hp-asset-gold { background:linear-gradient(160deg,#fffdf5,#fff8e8); }
+.hp-asset-realestate { background:linear-gradient(160deg,#f5f8ff,#eff4ff); }
+.hp-asset-crypto { background:linear-gradient(160deg,#f5fff8,#edfff3); }
+.hp-asset-icon { font-size:2.2rem;margin-bottom:12px; }
+.hp-asset-tag {
+  display:inline-block;font-size:0.58rem;font-weight:800;letter-spacing:0.18em;
+  padding:3px 9px;border-radius:4px;margin-bottom:10px;
+}
+.hp-asset-gold .hp-asset-tag { background:rgba(224,137,0,0.12);color:#c97a00; }
+.hp-asset-realestate .hp-asset-tag { background:rgba(27,71,146,0.1);color:#1b4792; }
+.hp-asset-crypto .hp-asset-tag { background:rgba(5,150,105,0.1);color:#059669; }
+.hp-asset-title { font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--n900);margin-bottom:10px; }
+.hp-asset-desc { font-size:0.84rem;color:#64748b;line-height:1.6;margin-bottom:16px; }
+.hp-asset-roi { margin-bottom:14px; }
+.hp-asset-roi-val { font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--n800);display:block; }
+.hp-asset-roi-label { font-size:0.68rem;color:#94a3b8;font-weight:500; }
+.hp-asset-features { display:flex;flex-direction:column;gap:4px;margin-bottom:20px; }
+.hp-asset-features span { font-size:0.76rem;color:#64748b;font-weight:500; }
+.hp-asset-cta {
+  display:inline-flex;align-items:center;font-size:0.82rem;font-weight:700;
+  padding:10px 18px;border-radius:99px;text-decoration:none;
+  background:var(--n800);color:#fff;transition:background 0.15s,transform 0.15s;
+}
+.hp-asset-cta:hover { background:var(--n600);transform:translateX(4px); }
+.hp-asset-gold .hp-asset-cta { background:linear-gradient(135deg,var(--g600),var(--g300));color:var(--n900); }
+
+/* ── STEPS ── */
+.hp-steps { display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative; }
+@media(max-width:900px){.hp-steps{grid-template-columns:1fr 1fr;gap:24px;}}
+@media(max-width:520px){.hp-steps{grid-template-columns:1fr;gap:20px;}}
+.hp-step { display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 20px;position:relative; }
+.hp-step-num { font-family:'DM Mono',monospace;font-size:0.62rem;font-weight:800;color:var(--g500);letter-spacing:0.15em;margin-bottom:10px; }
+.hp-step-connector {
+  position:absolute;top:68px;left:calc(50% + 30px);right:calc(-50% + 30px);
+  height:1px;background:linear-gradient(90deg,rgba(10,31,68,0.12),transparent);
+}
+.hp-step:last-child .hp-step-connector { display:none; }
+.hp-step-icon { width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px; }
+.hp-step-title { font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--n900);margin-bottom:8px; }
+.hp-step-desc { font-size:0.8rem;color:#64748b;line-height:1.6; }
+@media(max-width:900px){ .hp-step-connector{display:none;} }
+
+/* ── WHY ── */
+.hp-why { background:linear-gradient(150deg,var(--n950),#071535,var(--n800)); }
+.hp-why-layout { display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center; }
+@media(max-width:900px){.hp-why-layout{grid-template-columns:1fr;gap:40px;}}
+.hp-why-right { display:flex;flex-direction:column;gap:14px; }
+.hp-why-card {
+  display:flex;align-items:flex-start;gap:14px;
+  padding:18px 20px;border-radius:14px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  transition:background 0.2s,transform 0.2s;
+}
+.hp-why-card:hover { background:rgba(255,255,255,0.07);transform:translateX(4px); }
+.hp-why-icon { width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.hp-why-title { font-size:0.9rem;font-weight:700;color:#fff;margin-bottom:5px; }
+.hp-why-desc { font-size:0.78rem;color:rgba(255,255,255,0.45);line-height:1.5; }
+
+/* ── TESTIMONIALS ── */
+.hp-testimonials { display:grid;grid-template-columns:repeat(3,1fr);gap:24px; }
+@media(max-width:900px){.hp-testimonials{grid-template-columns:1fr;max-width:480px;}}
+.hp-testi {
+  background:#fff;border:1px solid rgba(10,31,68,0.07);border-radius:18px;padding:26px;
+  box-shadow:0 2px 12px rgba(10,31,68,0.05);
+  transition:transform 0.22s,box-shadow 0.22s;
+}
+.hp-testi:hover { transform:translateY(-4px);box-shadow:0 16px 40px rgba(10,31,68,0.1); }
+.hp-testi-stars { color:#f59e0b;font-size:0.9rem;letter-spacing:2px;margin-bottom:12px; }
+.hp-testi-quote { font-size:0.88rem;color:#475569;line-height:1.65;margin-bottom:18px;font-style:italic; }
+.hp-testi-author { display:flex;align-items:center;gap:10px; }
+.hp-testi-avatar { width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.76rem;color:#fff;flex-shrink:0;font-family:'DM Mono',monospace; }
+.hp-testi-name { font-size:0.82rem;font-weight:700;color:var(--n800);line-height:1.2; }
+.hp-testi-loc { font-size:0.68rem;color:#94a3b8;margin-top:2px; }
+
+/* ── CTA BANNER ── */
+.hp-cta-banner {
+  background:linear-gradient(150deg,var(--n950) 0%,#071535 50%,var(--n800) 100%);
+  padding:96px 24px;text-align:center;position:relative;overflow:hidden;
+}
+.hp-cta-mesh {
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(27,71,146,0.2) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hp-cta-flag { position:absolute;inset:0;opacity:0.04;pointer-events:none; }
+.hp-cta-flag svg { width:100%;height:100%; }
+.hp-cta-content { max-width:680px;margin:0 auto;position:relative; }
+.hp-cta-eyebrow { display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(250,198,96,0.7);margin-bottom:18px; }
+.hp-cta-h2 { font-family:'Playfair Display',Georgia,serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:900;color:#fff;line-height:1.1;letter-spacing:-0.03em;margin-bottom:14px; }
+.hp-cta-sub { font-size:0.95rem;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:32px; }
+.hp-cta-actions { display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-bottom:20px; }
+.hp-cta-fine { font-size:0.65rem;color:rgba(255,255,255,0.22); }
+
+/* ── FOOTER ── */
+.hp-footer { background:var(--n950);padding:64px 0 0; }
+.hp-footer-flag-bar { height:5px;background:linear-gradient(90deg,#007A4D 0%,#007A4D 14.3%,#FFB612 14.3%,#FFB612 28.6%,#DE3831 28.6%,#DE3831 42.9%,#002395 42.9%,#002395 57.1%,#000 57.1%,#000 71.4%,#fff 71.4%,#fff 85.7%,#e08900 85.7%,#e08900 100%); }
+.hp-footer-grid { display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding:56px 0 40px; }
+@media(max-width:900px){.hp-footer-grid{grid-template-columns:1fr 1fr;gap:32px;}}
+@media(max-width:560px){.hp-footer-grid{grid-template-columns:1fr;}}
+.hp-footer-tagline { font-size:0.82rem;color:rgba(255,255,255,0.38);line-height:1.6;margin-bottom:14px;max-width:280px; }
+.hp-footer-sa-badge { display:inline-flex;align-items:center;gap:8px;font-size:0.68rem;color:rgba(255,255,255,0.3);font-weight:500; }
+.hp-footer-col { }
+.hp-footer-col-title { font-size:0.62rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:14px; }
+.hp-footer-col a { display:block;font-size:0.82rem;color:rgba(255,255,255,0.45);text-decoration:none;margin-bottom:9px;transition:color 0.15s; }
+.hp-footer-col a:hover { color:rgba(255,255,255,0.85); }
+.hp-footer-bottom { border-top:1px solid rgba(255,255,255,0.06);padding:20px 0 28px;display:flex;flex-direction:column;gap:5px; }
+.hp-footer-bottom p { font-size:0.68rem;color:rgba(255,255,255,0.2); }
+</style>
+
+<script>
+// Nav scroll effect
+const nav=document.getElementById('hp-nav');
+window.addEventListener('scroll',()=>{ nav.classList.toggle('scrolled',window.scrollY>50); });
+
+// Mobile menu
+document.getElementById('hp-hamburger').addEventListener('click',()=>{
+  document.getElementById('hp-mobile-menu').classList.toggle('open');
+});
+
+// Scroll reveal
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('fade-up');io.unobserve(e.target);}
+}),{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.fade-up-1,.fade-up-2,.fade-up-3,.fade-up-4,.fade-up-5').forEach(el=>{
+  el.style.opacity='0';io.observe(el);
+});
+</script>
+
 {% endblock %}

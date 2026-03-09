@@ -1,0 +1,276 @@
+{% extends "base/admin_base.html" %}
+{% block title %}Crypto Wallets{% endblock %}
+{% block page_title %}Crypto Wallets{% endblock %}
+{% block page_subtitle %}Platform cryptocurrency receiving addresses shown to users{% endblock %}
+{% block breadcrumb %}Crypto Wallets{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header row -->
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-sm text-gray-400">Manage the wallet addresses users send crypto deposits to. Keep these accurate — incorrect addresses will cause permanent loss of funds.</p>
+    </div>
+    <button onclick="openAddModal()" class="btn-gold px-5 py-2.5 rounded-xl text-navy-900 font-bold text-sm flex items-center gap-2">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+      Add Crypto Wallet
+    </button>
+  </div>
+
+  <!-- Alert -->
+  <div class="rounded-xl p-4 flex items-start gap-3" style="background:rgba(245,152,10,0.08);border:1px solid rgba(245,152,10,0.25);">
+    <svg width="18" height="18" fill="none" stroke="#fac660" stroke-width="2" viewBox="0 0 24 24" class="flex-shrink-0 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+    <div>
+      <p class="text-gold-300 font-bold text-sm">Critical: Double-check all wallet addresses</p>
+      <p class="text-gold-400 text-xs mt-1 opacity-80">Cryptocurrency transactions are irreversible. Verify every address before saving. Wrong addresses will result in permanent fund loss for your users.</p>
+    </div>
+  </div>
+
+  <!-- Wallet Cards -->
+  {% if cryptocurrencies %}
+  <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+    {% for crypto in cryptocurrencies %}
+    <div class="card p-6 relative overflow-hidden">
+      <!-- Status bar -->
+      <div class="absolute top-0 left-0 right-0 h-1 {% if crypto.is_active %}bg-gradient-to-r from-green-400 to-emerald-500{% else %}bg-gray-200{% endif %}"></div>
+
+      <!-- Header -->
+      <div class="flex items-start justify-between mb-4 mt-2">
+        <div class="flex items-center gap-3">
+          {% if crypto.logo %}
+          <img src="{{ crypto.logo.url }}" alt="{{ crypto.symbol }}" class="w-10 h-10 rounded-xl object-cover">
+          {% else %}
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-sm"
+               style="background:linear-gradient(135deg,rgba(245,152,10,0.15),rgba(224,137,0,0.08));color:#fac660;border:1px solid rgba(245,152,10,0.2);">
+            {{ crypto.symbol|slice:":2" }}
+          </div>
+          {% endif %}
+          <div>
+            <h3 class="font-bold text-white">{{ crypto.name }}</h3>
+            <p class="text-xs text-gray-400 font-mono">{{ crypto.symbol }}{% if crypto.network %} · {{ crypto.network }}{% endif %}</p>
+          </div>
+        </div>
+        <span class="text-xs font-bold px-2.5 py-1 rounded-full {% if crypto.is_active %}text-green-400 bg-green-400/10 border border-green-400/20{% else %}text-gray-500 bg-gray-400/10 border border-gray-400/20{% endif %}">
+          {% if crypto.is_active %}Active{% else %}Inactive{% endif %}
+        </span>
+      </div>
+
+      <!-- Wallet Address -->
+      <div class="mb-4">
+        <p class="text-xs text-gray-500 font-semibold uppercase tracking-widest mb-2">Wallet Address</p>
+        <div class="p-3 rounded-lg flex items-center gap-2" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+          <p class="font-mono text-xs text-gray-300 flex-1 break-all leading-relaxed">{{ crypto.wallet_address }}</p>
+          <button onclick="copyAddress('{{ crypto.wallet_address }}', this)" class="flex-shrink-0 p-1.5 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white" title="Copy address">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Details row -->
+      <div class="flex items-center justify-between mb-4 text-xs">
+        <div>
+          <span class="text-gray-500">Min deposit</span>
+          <span class="font-mono font-bold text-white ml-2">{{ crypto.minimum_deposit }} {{ crypto.symbol }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">Order</span>
+          <span class="font-mono text-white ml-1">#{{ crypto.display_order }}</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2 pt-3 border-t border-white/5">
+        <button onclick="openEditModal({{ crypto.pk }}, '{{ crypto.name }}', '{{ crypto.symbol }}', '{{ crypto.wallet_address }}', '{{ crypto.network }}', {{ crypto.is_active|yesno:'true,false' }}, '{{ crypto.minimum_deposit }}', {{ crypto.display_order }})"
+                class="flex-1 py-2 rounded-lg text-xs font-bold text-navy-200 hover:text-white hover:bg-white/10 transition-colors border border-white/10">
+          Edit
+        </button>
+        <form method="post" action="{% url 'admin_crypto_wallet_toggle' crypto.pk %}" class="flex-1">
+          {% csrf_token %}
+          <button type="submit" class="w-full py-2 rounded-lg text-xs font-bold transition-colors
+            {% if crypto.is_active %}text-red-400 hover:bg-red-400/10 border border-red-400/20{% else %}text-green-400 hover:bg-green-400/10 border border-green-400/20{% endif %}">
+            {% if crypto.is_active %}Deactivate{% else %}Activate{% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="card p-16 text-center">
+    <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-3xl mb-4" style="background:rgba(245,152,10,0.1);">₿</div>
+    <p class="text-white font-bold text-lg mb-2">No crypto wallets configured</p>
+    <p class="text-gray-400 text-sm mb-6">Add your platform's cryptocurrency wallet addresses so users can make deposits.</p>
+    <button onclick="openAddModal()" class="btn-gold px-6 py-2.5 rounded-xl text-navy-900 font-bold text-sm inline-flex items-center gap-2">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+      Add First Wallet
+    </button>
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- ══════════ ADD WALLET MODAL ══════════ -->
+<div id="add-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background:rgba(3,7,30,0.85);backdrop-filter:blur(6px);">
+  <div class="w-full max-w-lg rounded-2xl p-6" style="background:#0a1628;border:1px solid rgba(255,255,255,0.1);">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="font-display font-bold text-white text-lg">Add Crypto Wallet</h3>
+      <button onclick="closeAddModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">✕</button>
+    </div>
+    <form method="post" action="{% url 'admin_crypto_wallet_add' %}" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Name *</label>
+          <input type="text" name="name" placeholder="e.g. Bitcoin" required
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-gold-500 transition-colors">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Symbol *</label>
+          <input type="text" name="symbol" placeholder="e.g. BTC" maxlength="10" required
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-gold-500 transition-colors font-mono">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Wallet Address *</label>
+        <textarea name="wallet_address" placeholder="Enter the full wallet address" rows="2" required
+                  class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-gold-500 transition-colors font-mono resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Network</label>
+          <input type="text" name="network" placeholder="e.g. ERC-20, TRC-20"
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-gold-500 transition-colors">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Min Deposit</label>
+          <input type="number" name="minimum_deposit" value="0.001" step="0.00000001" min="0"
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors font-mono">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Display Order</label>
+          <input type="number" name="display_order" value="0" min="0"
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Logo (optional)</label>
+          <input type="file" name="logo" accept="image/*"
+                 class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-xs focus:outline-none focus:border-gold-500 transition-colors">
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" name="is_active" id="add-active" checked class="w-4 h-4 accent-gold-500">
+        <label for="add-active" class="text-sm text-gray-300">Active (visible to users immediately)</label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" onclick="closeAddModal()" class="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-gray-400 hover:text-white font-semibold transition-colors">Cancel</button>
+        <button type="submit" class="flex-1 py-2.5 rounded-xl btn-gold text-navy-900 font-bold text-sm">Add Wallet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════ EDIT WALLET MODAL ══════════ -->
+<div id="edit-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background:rgba(3,7,30,0.85);backdrop-filter:blur(6px);">
+  <div class="w-full max-w-lg rounded-2xl p-6" style="background:#0a1628;border:1px solid rgba(255,255,255,0.1);">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="font-display font-bold text-white text-lg">Edit Crypto Wallet</h3>
+      <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">✕</button>
+    </div>
+    <form method="post" id="edit-form" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Name *</label>
+          <input type="text" name="name" id="edit-name" required
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Symbol *</label>
+          <input type="text" name="symbol" id="edit-symbol" maxlength="10" required
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors font-mono">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Wallet Address *</label>
+        <textarea name="wallet_address" id="edit-address" rows="2" required
+                  class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors font-mono resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Network</label>
+          <input type="text" name="network" id="edit-network"
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Min Deposit</label>
+          <input type="number" name="minimum_deposit" id="edit-min" step="0.00000001" min="0"
+                 class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors font-mono">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Display Order</label>
+        <input type="number" name="display_order" id="edit-order" min="0"
+               class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm focus:outline-none focus:border-gold-500 transition-colors font-mono">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">New Logo (optional — leave blank to keep current)</label>
+        <input type="file" name="logo" accept="image/*"
+               class="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-xs focus:outline-none focus:border-gold-500 transition-colors">
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" name="is_active" id="edit-active" class="w-4 h-4 accent-gold-500">
+        <label for="edit-active" class="text-sm text-gray-300">Active (visible to users)</label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" onclick="closeEditModal()" class="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-gray-400 hover:text-white font-semibold transition-colors">Cancel</button>
+        <button type="submit" class="flex-1 py-2.5 rounded-xl btn-gold text-navy-900 font-bold text-sm">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openAddModal(){
+  const m=document.getElementById('add-modal');
+  m.classList.remove('hidden');m.classList.add('flex');
+}
+function closeAddModal(){
+  const m=document.getElementById('add-modal');
+  m.classList.add('hidden');m.classList.remove('flex');
+}
+function openEditModal(pk,name,symbol,address,network,active,minDep,order){
+  document.getElementById('edit-name').value=name;
+  document.getElementById('edit-symbol').value=symbol;
+  document.getElementById('edit-address').value=address;
+  document.getElementById('edit-network').value=network;
+  document.getElementById('edit-active').checked=active;
+  document.getElementById('edit-min').value=minDep;
+  document.getElementById('edit-order').value=order;
+  document.getElementById('edit-form').action=`/admin-panel/crypto-wallets/${pk}/edit/`;
+  const m=document.getElementById('edit-modal');
+  m.classList.remove('hidden');m.classList.add('flex');
+}
+function closeEditModal(){
+  const m=document.getElementById('edit-modal');
+  m.classList.add('hidden');m.classList.remove('flex');
+}
+function copyAddress(addr,btn){
+  navigator.clipboard.writeText(addr).then(()=>{
+    const orig=btn.innerHTML;
+    btn.innerHTML=`<svg width="14" height="14" fill="none" stroke="#34d399" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
+    btn.style.color='#34d399';
+    setTimeout(()=>{btn.innerHTML=orig;btn.style.color='';},2000);
+  });
+}
+// Close modals on backdrop click
+document.getElementById('add-modal').addEventListener('click',function(e){if(e.target===this)closeAddModal();});
+document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+</script>
+{% endblock %}

@@ -424,3 +424,88 @@ def revoke_withdrawal_code(request, pk):
         else:
             messages.error(request, "Code not found or already inactive.")
     return redirect('admin_withdrawal_codes')
+
+
+# ── CRYPTO WALLETS ─────────────────────────────────────────────────
+@login_required
+@staff_required
+def admin_crypto_wallets(request):
+    from apps.deposits.models import CryptoCurrency
+    cryptocurrencies = CryptoCurrency.objects.all().order_by('display_order', 'name')
+    return render(request, 'admin_panel/crypto_wallets.html', {'cryptocurrencies': cryptocurrencies})
+
+
+@login_required
+@staff_required
+def admin_crypto_wallet_add(request):
+    if request.method == 'POST':
+        from apps.deposits.models import CryptoCurrency
+        name = request.POST.get('name', '').strip()
+        symbol = request.POST.get('symbol', '').strip().upper()
+        wallet_address = request.POST.get('wallet_address', '').strip()
+        network = request.POST.get('network', '').strip()
+        minimum_deposit = request.POST.get('minimum_deposit', '0.001')
+        display_order = request.POST.get('display_order', '0')
+        is_active = request.POST.get('is_active') == 'on'
+
+        if name and symbol and wallet_address:
+            try:
+                crypto = CryptoCurrency(
+                    name=name,
+                    symbol=symbol,
+                    wallet_address=wallet_address,
+                    network=network,
+                    minimum_deposit=minimum_deposit,
+                    display_order=int(display_order),
+                    is_active=is_active,
+                )
+                if 'logo' in request.FILES:
+                    crypto.logo = request.FILES['logo']
+                crypto.save()
+                messages.success(request, f'{name} ({symbol}) wallet added successfully.')
+            except Exception as e:
+                messages.error(request, f'Error adding wallet: {e}')
+        else:
+            messages.error(request, 'Name, symbol and wallet address are required.')
+    return redirect('admin_crypto_wallets')
+
+
+@login_required
+@staff_required
+def admin_crypto_wallet_edit(request, pk):
+    if request.method == 'POST':
+        from apps.deposits.models import CryptoCurrency
+        try:
+            crypto = CryptoCurrency.objects.get(pk=pk)
+            crypto.name = request.POST.get('name', crypto.name).strip()
+            crypto.symbol = request.POST.get('symbol', crypto.symbol).strip().upper()
+            crypto.wallet_address = request.POST.get('wallet_address', crypto.wallet_address).strip()
+            crypto.network = request.POST.get('network', '').strip()
+            crypto.minimum_deposit = request.POST.get('minimum_deposit', crypto.minimum_deposit)
+            crypto.display_order = int(request.POST.get('display_order', crypto.display_order))
+            crypto.is_active = request.POST.get('is_active') == 'on'
+            if 'logo' in request.FILES:
+                crypto.logo = request.FILES['logo']
+            crypto.save()
+            messages.success(request, f'{crypto.name} updated successfully.')
+        except CryptoCurrency.DoesNotExist:
+            messages.error(request, 'Cryptocurrency not found.')
+        except Exception as e:
+            messages.error(request, f'Error updating wallet: {e}')
+    return redirect('admin_crypto_wallets')
+
+
+@login_required
+@staff_required
+def admin_crypto_wallet_toggle(request, pk):
+    if request.method == 'POST':
+        from apps.deposits.models import CryptoCurrency
+        try:
+            crypto = CryptoCurrency.objects.get(pk=pk)
+            crypto.is_active = not crypto.is_active
+            crypto.save()
+            status = 'activated' if crypto.is_active else 'deactivated'
+            messages.success(request, f'{crypto.name} {status}.')
+        except CryptoCurrency.DoesNotExist:
+            messages.error(request, 'Cryptocurrency not found.')
+    return redirect('admin_crypto_wallets')
