@@ -7,12 +7,10 @@
 <div class="space-y-6">
   <!-- Filter -->
   <div class="flex gap-2 flex-wrap">
-    <a href="?status=" class="px-4 py-2 rounded-lg text-sm font-medium {% if not status_filter %}bg-navy-800 text-white{% else %}bg-white border text-gray-600 hover:bg-gray-50{% endif %} transition-colors">All</a>
-    {% for s,label in 'SUBMITTED:Submitted,VERIFYING:Verifying,APPROVED:Approved,REJECTED:Rejected'|split:',' %}
-    {% endfor %}
-    <a href="?status=SUBMITTED" class="px-4 py-2 rounded-lg text-sm font-medium {% if status_filter == 'SUBMITTED' %}bg-navy-800 text-white{% else %}bg-white border text-gray-600 hover:bg-gray-50{% endif %} transition-colors">Submitted</a>
-    <a href="?status=APPROVED" class="px-4 py-2 rounded-lg text-sm font-medium {% if status_filter == 'APPROVED' %}bg-navy-800 text-white{% else %}bg-white border text-gray-600 hover:bg-gray-50{% endif %} transition-colors">Approved</a>
-  </div>
+    <a href="?status=" ...>All</a>
+    <a href="?status=SUBMITTED" ...>Submitted</a>
+    <a href="?status=APPROVED" ...>Approved</a>
+</div>
 
   <div class="card overflow-hidden fade-up fade-up-1">
     <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-xl">Bank Deposits</h3></div>
