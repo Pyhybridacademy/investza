@@ -204,32 +204,76 @@
   });
 
   // ── Fetch live rate ─────────────────────────────────────────────
-  function fetchRate(symbol) {
+  let _retryTimer = null;
+  let _retryCount = 0;
+  const MAX_RETRIES = 3;
+  const RETRY_DELAYS = [2000, 4000, 8000]; // ms between retries
+
+  function fetchRate(symbol, isRetry) {
     rate = null;
+    if (!isRetry) { _retryCount = 0; }
+    clearTimeout(_retryTimer);
+
     setSpinner(true);
     document.getElementById('badge-live').classList.add('hidden');
     document.getElementById('badge-manual').classList.add('hidden');
     document.getElementById('manual-section').classList.add('hidden');
-    document.getElementById('rate-display').textContent = 'Fetching live rate…';
+    document.getElementById('rate-display').textContent =
+      isRetry ? `Retrying… (attempt ${_retryCount + 1}/${MAX_RETRIES})` : 'Fetching live rate…';
 
-    fetch(`/deposits/api/crypto-price/?symbol=${encodeURIComponent(symbol)}`)
-      .then(r => r.json())
+    // Use fetch with AbortController for a client-side timeout safety net
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    fetch(`/deposits/api/crypto-price/?symbol=${encodeURIComponent(symbol)}`, {
+      signal: controller.signal,
+    })
+      .then(r => {
+        clearTimeout(timeoutId);
+        return r.json();
+      })
       .then(d => {
         setSpinner(false);
-        if (d.price_zar) {
+        if (d.price_zar && d.price_zar > 0) {
           rate = d.price_zar;
           document.getElementById('f-rate').value = rate;
           document.getElementById('rate-display').textContent =
             `1 ${symbol} = R ${rate.toLocaleString('en-ZA', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
           document.getElementById('badge-live').classList.remove('hidden');
+          _retryCount = 0;
           recalc();
-        } else { showManual(); }
+        } else {
+          // Server returned an error — retry if we have attempts left
+          handleRateFail(symbol);
+        }
       })
-      .catch(() => { setSpinner(false); showManual(); });
+      .catch(() => {
+        clearTimeout(timeoutId);
+        setSpinner(false);
+        handleRateFail(symbol);
+      });
   }
 
-  function showManual() {
-    document.getElementById('rate-display').textContent = 'Price unavailable';
+  function handleRateFail(symbol) {
+    setSpinner(false);
+    if (_retryCount < MAX_RETRIES) {
+      const delay = RETRY_DELAYS[_retryCount] || 8000;
+      const secs  = Math.round(delay / 1000);
+      document.getElementById('rate-display').textContent =
+        `Retrying in ${secs}s… (${_retryCount + 1}/${MAX_RETRIES})`;
+      _retryCount++;
+      _retryTimer = setTimeout(() => fetchRate(symbol, true), delay);
+    } else {
+      showManual(symbol);
+    }
+  }
+
+  function showManual(symbol) {
+    const sym = symbol || sel || '—';
+    document.getElementById('rate-display').innerHTML =
+      `Price unavailable &nbsp;<button onclick="fetchRate('${sym}')" ` +
+      `style="font-size:0.7rem;padding:2px 8px;border-radius:6px;background:#1b4792;` +
+      `color:#fff;border:none;cursor:pointer;font-weight:700;">↺ Retry</button>`;
     document.getElementById('badge-manual').classList.remove('hidden');
     document.getElementById('manual-section').classList.remove('hidden');
   }
