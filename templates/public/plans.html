@@ -1,5 +1,20 @@
 {% extends "base/base.html" %}
 {% block title %}Investment Plans — {{ PLATFORM_NAME }}{% endblock %}
+{% block meta_description %}Explore InvestZA's investment plans — Gold, Real Estate and Crypto. Minimum deposit R500. FSP regulated. Start growing your wealth in ZAR today.{% endblock %}
+{% block meta_keywords %}investment plans South Africa, gold investment plan, crypto investment plan ZAR, real estate investment plan SA{% endblock %}
+{% block og_title %}Investment Plans — {{ PLATFORM_NAME }}{% endblock %}
+{% block og_description %}Explore Gold, Real Estate and Crypto investment plans. Minimum R500. FSP regulated South African investment platform.{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "{{ PLATFORM_NAME }} Investment Plans",
+  "description": "Multi-asset investment plans for South African investors",
+  "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
 {% block body %}
 <nav style="background:#03071e; border-bottom:1px solid rgba(255,255,255,0.08);">
   <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">

@@ -1,5 +1,38 @@
 {% extends "base/base.html" %}
-{% block title %}{{ PLATFORM_NAME }} — Grow Your Wealth{% endblock %}
+{% block title %}{{ PLATFORM_NAME }} — Grow Your Wealth in South Africa{% endblock %}
+{% block meta_description %}InvestZA is South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto in ZAR. FSP regulated, proudly South African.{% endblock %}
+{% block meta_keywords %}investment platform South Africa, gold investment, crypto investment ZAR, real estate investment SA, FSP regulated investment{% endblock %}
+{% block og_title %}{{ PLATFORM_NAME }} — Grow Your Wealth in South Africa{% endblock %}
+{% block og_description %}South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto. FSP Regulated.{% endblock %}
+{% block twitter_title %}{{ PLATFORM_NAME }} — Grow Your Wealth{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "FinancialService",
+      "name": "{{ PLATFORM_NAME }}",
+      "description": "South Africa's premier multi-asset investment platform.",
+      "url": "{{ request.scheme }}://{{ request.get_host }}",
+      "areaServed": {"@type":"Country","name":"South Africa"},
+      "currenciesAccepted": "ZAR",
+      "contactPoint": {"@type":"ContactPoint","email":"{{ SUPPORT_EMAIL }}","contactType":"customer support"}
+    },
+    {
+      "@type": "WebSite",
+      "name": "{{ PLATFORM_NAME }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ request.scheme }}://{{ request.get_host }}/plans/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
 {% block body %}
 
 <!-- ═══════════════════════════════════════

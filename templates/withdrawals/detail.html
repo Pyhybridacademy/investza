@@ -1,4 +1,5 @@
 {% extends "base/dashboard_base.html" %}
+{% block meta_robots %}noindex, nofollow{% endblock %}
 {% block title %}Withdrawal {{ withdrawal.reference }}{% endblock %}
 {% block page_title %}Withdrawal Detail{% endblock %}
 {% block page_subtitle %}{{ withdrawal.reference }}{% endblock %}

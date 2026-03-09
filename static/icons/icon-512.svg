@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="512" height="512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="42" fill="#03071e"/>
+  <!-- Subtle radial glow -->
+  <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+    <stop offset="0%" stop-color="#f5980a" stop-opacity="0.15"/>
+    <stop offset="100%" stop-color="#03071e" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="512" height="512" rx="42" fill="url(#glow)"/>
+  <!-- Shield -->
+  <path d="M96 32 L152 52 L152 98 C152 128 128 150 96 164 C64 150 40 128 40 98 L40 52 Z"
+        fill="none" stroke="#f5980a" stroke-width="5" stroke-linejoin="round"/>
+  <!-- Shield fill gradient -->
+  <linearGradient id="sfill" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#f5980a" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#e08900" stop-opacity="0.06"/>
+  </linearGradient>
+  <path d="M96 32 L152 52 L152 98 C152 128 128 150 96 164 C64 150 40 128 40 98 L40 52 Z"
+        fill="url(#sfill)"/>
+  <!-- Checkmark -->
+  <path d="M74 98 L88 112 L118 80"
+        stroke="#fac660" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Gold bottom bar (SA flag nod) -->
+  <rect x="0" y="180" width="192" height="12" rx="0" fill="#e08900" opacity="0.6"/>
+  <rect x="0" y="186" width="192" height="6" rx="0" fill="#007A4D" opacity="0.5"/>
+</svg>

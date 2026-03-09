@@ -1,4 +1,5 @@
 {% extends "base/dashboard_base.html" %}
+{% block meta_robots %}noindex, nofollow{% endblock %}
 {% block title %}Dashboard{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 {% block page_subtitle %}Welcome back, {{ request.user.first_name }} 👋{% endblock %}

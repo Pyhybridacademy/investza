@@ -1,15 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
+{% load static %}<!DOCTYPE html>
+<html lang="en-ZA" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}{{ PLATFORM_NAME }}{% endblock %} — Invest with Confidence</title>
-  <meta name="description" content="{% block meta_description %}South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto in ZAR.{% endblock %}">
 
-  <!-- Fonts -->
+  <!-- ══ PRIMARY META ══════════════════════════════════════════════════════ -->
+  {% block canonical_url %}<link rel="canonical" href="{{ request.build_absolute_uri }}">{% endblock %}
+  <title>{% block title %}{{ PLATFORM_NAME }}{% endblock %} — Invest with Confidence</title>
+  <meta name="description"    content="{% block meta_description %}South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto in ZAR. FSP Regulated. Proudly South African.{% endblock %}">
+  <meta name="keywords"       content="{% block meta_keywords %}investment platform South Africa, gold investment ZAR, crypto investment SA, real estate investment, FSP regulated, InvestZA{% endblock %}">
+  <meta name="author"         content="{{ PLATFORM_NAME }}">
+  <meta name="robots"         content="{% block meta_robots %}index, follow{% endblock %}">
+  <meta name="theme-color"    content="#0a1f44">
+  <meta name="color-scheme"   content="light">
+  <meta name="geo.region"     content="ZA">
+  <meta name="geo.placename"  content="South Africa">
+  <meta name="language"       content="en-ZA">
+  <meta name="rating"         content="general">
+
+  <!-- ══ OPEN GRAPH (Facebook / LinkedIn / WhatsApp) ══════════════════════ -->
+  <meta property="og:type"          content="{% block og_type %}website{% endblock %}">
+  <meta property="og:site_name"     content="{{ PLATFORM_NAME }}">
+  <meta property="og:title"         content="{% block og_title %}{{ PLATFORM_NAME }} — Invest with Confidence{% endblock %}">
+  <meta property="og:description"   content="{% block og_description %}South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto in ZAR.{% endblock %}">
+  <meta property="og:url"           content="{{ request.build_absolute_uri }}">
+  <meta property="og:image"         content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'icons/icon-512.svg' %}{% endblock %}">
+  <meta property="og:image:width"   content="512">
+  <meta property="og:image:height"  content="512">
+  <meta property="og:image:alt"     content="{{ PLATFORM_NAME }} — Investment Platform">
+  <meta property="og:locale"        content="en_ZA">
+
+  <!-- ══ TWITTER / X CARD ════════════════════════════════════════════════ -->
+  <meta name="twitter:card"        content="summary">
+  <meta name="twitter:title"       content="{% block twitter_title %}{{ PLATFORM_NAME }} — Invest with Confidence{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}South Africa's premier multi-asset investment platform.{% endblock %}">
+  <meta name="twitter:image"       content="{{ request.scheme }}://{{ request.get_host }}{% static 'icons/icon-512.svg' %}">
+  <meta name="twitter:image:alt"   content="{{ PLATFORM_NAME }}">
+
+  <!-- ══ PWA / APP META ═══════════════════════════════════════════════════ -->
+  <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
+  <meta name="mobile-web-app-capable"                content="yes">
+  <meta name="apple-mobile-web-app-capable"          content="yes">
+  <meta name="apple-mobile-web-app-title"            content="{{ PLATFORM_NAME }}">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="{% static 'icons/icon-192.svg' %}">
+  <link rel="icon" type="image/svg+xml" href="{% static 'icons/icon-192.svg' %}">
+  <link rel="shortcut icon"              href="{% static 'icons/icon-192.svg' %}">
+  <meta name="msapplication-TileColor"  content="#0a1f44">
+  <meta name="msapplication-TileImage"  content="{% static 'icons/icon-192.svg' %}">
+  <meta name="application-name"         content="{{ PLATFORM_NAME }}">
+
+  <!-- ══ JSON-LD STRUCTURED DATA ══════════════════════════════════════════ -->
+  {% block structured_data %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FinancialService",
+    "name": "{{ PLATFORM_NAME }}",
+    "description": "South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto in ZAR.",
+    "url": "{{ request.scheme }}://{{ request.get_host }}",
+    "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'icons/icon-512.svg' %}",
+    "image": "{{ request.scheme }}://{{ request.get_host }}{% static 'icons/icon-512.svg' %}",
+    "areaServed": { "@type": "Country", "name": "South Africa" },
+    "currenciesAccepted": "ZAR",
+    "priceRange": "R500 - R5,000,000",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "{{ SUPPORT_EMAIL }}",
+      "telephone": "{{ SUPPORT_PHONE }}",
+      "contactType": "customer support",
+      "availableLanguage": ["English","Afrikaans","isiZulu","isiXhosa"]
+    },
+    "serviceType": ["Investment Management","Wealth Management","Asset Management"]
+  }
+  </script>
+  {% endblock %}
+
+  <!-- ══ FONTS — preconnect first, async load ══════════════════════════════ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"></noscript>
 
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -299,11 +370,13 @@
     pointer-events: none;
   }
 
-  /* Blurred dark backdrop */
+  /* Frosted glass backdrop — see-through blur */
   .iz-pre-backdrop {
     position: absolute;
     inset: 0;
-    background: linear-gradient(145deg, #03071e 0%, #071230 55%, #0a1f44 100%);
+    background: rgba(239, 243, 250, 0.72);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
   }
   /* Subtle noise texture overlay */
   .iz-pre-backdrop::after {
@@ -311,7 +384,7 @@
     position: absolute;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-    opacity: 0.4;
+    opacity: 0.25;
     pointer-events: none;
   }
   /* Soft radial glow behind shield */
@@ -324,7 +397,7 @@
     width: 420px;
     height: 420px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(245,152,10,0.09) 0%, transparent 68%);
+    background: radial-gradient(circle, rgba(245,152,10,0.08) 0%, transparent 68%);
     pointer-events: none;
   }
 
@@ -341,7 +414,7 @@
   .iz-pre-shield {
     width: 80px;
     height: 92px;
-    filter: drop-shadow(0 8px 28px rgba(245,152,10,0.3));
+    filter: drop-shadow(0 8px 20px rgba(224,137,0,0.25)) drop-shadow(0 2px 8px rgba(10,31,68,0.12));
   }
 
   /* Liquid fill animation */
@@ -382,7 +455,7 @@
     font-family: 'Playfair Display', Georgia, serif;
     font-size: 1.65rem;
     font-weight: 700;
-    color: #fff;
+    color: #0a1f44;
     letter-spacing: 0.01em;
     opacity: 0;
     transform: translateY(8px);
@@ -394,7 +467,7 @@
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: rgba(245,152,10,0.65);
+    color: rgba(224,137,0,0.75);
     opacity: 0;
     animation: iz-rise 0.45s ease 0.65s forwards;
   }
@@ -406,7 +479,7 @@
   .iz-pre-bar-track {
     width: 140px;
     height: 2px;
-    background: rgba(255,255,255,0.07);
+    background: rgba(10, 31, 68, 0.12);
     border-radius: 99px;
     overflow: hidden;
     opacity: 0;
@@ -783,6 +856,128 @@
     document.head.appendChild(style);
   })();
   </script>
+
+
+  <!-- ══ SERVICE WORKER + PWA INSTALL ════════════════════════════════════ -->
+  <script>
+  (function(){
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(function(reg) {
+            // Check for updates on navigation
+            reg.addEventListener('updatefound', function() {
+              var newWorker = reg.installing;
+              newWorker.addEventListener('statechange', function() {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New version available — show subtle refresh nudge
+                  showUpdateBanner();
+                }
+              });
+            });
+          })
+          .catch(function(err) { console.warn('SW registration failed:', err); });
+      });
+    }
+
+    // PWA install prompt — slim gold bar, non-intrusive
+    var deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Only show if user hasn't dismissed before
+      if (!localStorage.getItem('iz_pwa_dismissed')) {
+        setTimeout(showInstallBanner, 3000);
+      }
+    });
+
+    function showInstallBanner() {
+      if (document.getElementById('iz-pwa-bar')) return;
+      var bar = document.createElement('div');
+      bar.id = 'iz-pwa-bar';
+      bar.innerHTML =
+        '<svg width="14" height="14" viewBox="0 0 192 192" fill="none" style="flex-shrink:0">' +
+        '<path d="M96 20L148 40L148 90C148 118 126 140 96 154C66 140 44 118 44 90L44 40Z" stroke="#f5980a" stroke-width="10" fill="rgba(245,152,10,0.15)"/>' +
+        '<path d="M72 92L86 106L120 72" stroke="#fac660" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+        '<span>Add <strong>InvestZA</strong> to your home screen for quick access</span>' +
+        '<button id="iz-pwa-install" onclick="izInstall()">Install</button>' +
+        '<button id="iz-pwa-close" onclick="izDismiss()" aria-label="Dismiss">×</button>';
+      document.body.appendChild(bar);
+      // Animate in
+      requestAnimationFrame(function(){ bar.style.transform = 'translateY(0)'; bar.style.opacity = '1'; });
+    }
+
+    function showUpdateBanner() {
+      if (document.getElementById('iz-update-bar')) return;
+      var bar = document.createElement('div');
+      bar.id = 'iz-update-bar';
+      bar.style.cssText = document.getElementById('iz-pwa-bar') ?
+        '' : 'position:fixed;bottom:0;left:0;right:0;z-index:9998;' +
+        'background:#0a1f44;color:#fff;padding:10px 16px;' +
+        'display:flex;align-items:center;gap:10px;font-size:0.78rem;';
+      bar.innerHTML = '<span style="flex:1">A new version of InvestZA is available.</span>' +
+        '<button onclick="location.reload()" style="padding:5px 14px;background:#f5980a;color:#03071e;border:none;border-radius:99px;font-weight:700;cursor:pointer;font-size:0.75rem;">Refresh</button>';
+      document.body.appendChild(bar);
+    }
+
+    window.izInstall = function() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(result) {
+        deferredPrompt = null;
+        izDismiss();
+      });
+    };
+
+    window.izDismiss = function() {
+      var bar = document.getElementById('iz-pwa-bar');
+      if (bar) { bar.style.opacity = '0'; setTimeout(function(){ bar.remove(); }, 300); }
+      localStorage.setItem('iz_pwa_dismissed', '1');
+    };
+  })();
+  </script>
+
+  <style>
+  #iz-pwa-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 9998;
+    background: linear-gradient(135deg, #03071e, #0a1f44);
+    border-top: 1px solid rgba(245,152,10,0.25);
+    color: #e2e8f0;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease;
+  }
+  #iz-pwa-bar span { flex: 1; line-height: 1.4; }
+  #iz-pwa-bar strong { color: #fac660; }
+  #iz-pwa-install {
+    padding: 5px 16px;
+    background: linear-gradient(135deg, #e08900, #f8af35);
+    color: #03071e;
+    border: none; border-radius: 99px;
+    font-weight: 700; font-size: 0.74rem;
+    cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  }
+  #iz-pwa-close {
+    background: none; border: none;
+    color: rgba(255,255,255,0.35);
+    font-size: 1.1rem; cursor: pointer;
+    padding: 2px 4px; line-height: 1;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  #iz-pwa-close:hover { color: rgba(255,255,255,0.7); }
+  </style>
+  <!-- ══ END PWA ══════════════════════════════════════════════════════════ -->
 
   {% block extra_js %}{% endblock %}
 </body>

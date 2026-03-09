@@ -1,4 +1,5 @@
 {% extends "base/admin_base.html" %}
+{% block meta_robots %}noindex, nofollow{% endblock %}
 {% block title %}{{ investment.reference }}{% endblock %}
 {% block page_title %}Investment Detail{% endblock %}
 {% block page_subtitle %}{{ investment.reference }} — {{ investment.user.get_full_name }}{% endblock %}

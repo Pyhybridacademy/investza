@@ -1,0 +1,80 @@
+{
+  "name": "InvestZA — Investment Platform",
+  "short_name": "InvestZA",
+  "description": "South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto in ZAR.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#03071e",
+  "theme_color": "#0a1f44",
+  "lang": "en-ZA",
+  "dir": "ltr",
+  "categories": ["finance", "business"],
+  "icons": [
+    {
+      "src": "/static/icons/icon-72.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-96.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-128.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/icons/screenshot-wide.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "InvestZA Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your investment dashboard",
+      "url": "/dashboard/",
+      "icons": [{ "src": "/static/icons/icon-96.svg", "sizes": "96x96", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Deposit Funds",
+      "short_name": "Deposit",
+      "description": "Deposit funds into your account",
+      "url": "/deposits/",
+      "icons": [{ "src": "/static/icons/icon-96.svg", "sizes": "96x96", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "My Portfolio",
+      "short_name": "Portfolio",
+      "description": "View your investment portfolio",
+      "url": "/investments/portfolio/",
+      "icons": [{ "src": "/static/icons/icon-96.svg", "sizes": "96x96", "type": "image/svg+xml" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
