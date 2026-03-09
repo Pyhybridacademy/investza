@@ -1,4 +1,19 @@
 {% extends "base/base.html" %}
+
+{% block extra_head %}
+<style>
+  /* FOUC guard: hide shell until fonts & styles are ready */
+  .iz-shell { visibility: hidden; }
+</style>
+<script>
+  /* Reveal shell once document is interactive — eliminates unstyled flash */
+  document.addEventListener('DOMContentLoaded', function() {
+    var s = document.querySelector('.iz-shell');
+    if (s) s.style.visibility = 'visible';
+  });
+</script>
+{% endblock %}
+
 {% block body %}
 
 <div class="iz-shell">

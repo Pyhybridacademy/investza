@@ -235,6 +235,305 @@
 </head>
 <body class="bg-gray-50 text-navy-900 antialiased">
 
+  <!-- ══ IZ PRELOADER ══ -->
+  <div id="iz-preloader" aria-hidden="true">
+    <div class="iz-pre-backdrop"></div>
+    <div class="iz-pre-center">
+      <!-- Shield SVG -->
+      <svg class="iz-pre-shield" viewBox="0 0 80 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e08900"/>
+            <stop offset="50%" stop-color="#fac660"/>
+            <stop offset="100%" stop-color="#f5980a"/>
+          </linearGradient>
+          <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#f5980a" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#fdeec0" stop-opacity="0.5"/>
+          </linearGradient>
+          <clipPath id="shieldClip">
+            <path d="M40 4 L74 16 L74 46 C74 64 58 78 40 88 C22 78 6 64 6 46 L6 16 Z"/>
+          </clipPath>
+        </defs>
+        <!-- Liquid fill (animated via JS height) -->
+        <rect id="iz-fill-rect" x="0" y="92" width="80" height="92" fill="url(#fillGrad)" clip-path="url(#shieldClip)" class="iz-pre-liquid"/>
+        <!-- Shield outline -->
+        <path d="M40 4 L74 16 L74 46 C74 64 58 78 40 88 C22 78 6 64 6 46 L6 16 Z"
+              stroke="url(#goldGrad)" stroke-width="2.5" fill="none" class="iz-pre-outline"/>
+        <!-- Inner checkmark -->
+        <path d="M27 46 L36 55 L54 36" stroke="#fdeec0" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="iz-pre-check"/>
+      </svg>
+      <!-- Brand wordmark -->
+      <div class="iz-pre-brand">
+        <span class="iz-pre-name">{{ PLATFORM_NAME|default:"Investza" }}</span>
+        <span class="iz-pre-tag">Investment Platform</span>
+      </div>
+      <!-- Progress line -->
+      <div class="iz-pre-bar-track">
+        <div class="iz-pre-bar-fill" id="iz-bar"></div>
+      </div>
+    </div>
+    <!-- Particle container -->
+    <div class="iz-pre-particles" id="iz-particles"></div>
+  </div>
+
+  <style>
+  /* ══════════════════════════════
+     PRELOADER
+  ══════════════════════════════ */
+  #iz-preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+    /* Transition out */
+    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #iz-preloader.iz-pre-done {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+
+  /* Blurred dark backdrop */
+  .iz-pre-backdrop {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #03071e 0%, #071230 55%, #0a1f44 100%);
+  }
+  /* Subtle noise texture overlay */
+  .iz-pre-backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  /* Soft radial glow behind shield */
+  .iz-pre-backdrop::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,152,10,0.09) 0%, transparent 68%);
+    pointer-events: none;
+  }
+
+  .iz-pre-center {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  /* Shield */
+  .iz-pre-shield {
+    width: 80px;
+    height: 92px;
+    filter: drop-shadow(0 8px 28px rgba(245,152,10,0.3));
+  }
+
+  /* Liquid fill animation */
+  .iz-pre-liquid {
+    transition: y 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Shield outline draw-in */
+  .iz-pre-outline {
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    animation: iz-draw-shield 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
+  }
+  @keyframes iz-draw-shield {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Checkmark draw-in (after shield) */
+  .iz-pre-check {
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    opacity: 0;
+    animation: iz-draw-check 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.95s forwards;
+  }
+  @keyframes iz-draw-check {
+    0%  { stroke-dashoffset: 50; opacity: 1; }
+    100%{ stroke-dashoffset: 0;  opacity: 1; }
+  }
+
+  /* Brand name */
+  .iz-pre-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .iz-pre-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: iz-rise 0.45s ease 0.5s forwards;
+  }
+  .iz-pre-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,152,10,0.65);
+    opacity: 0;
+    animation: iz-rise 0.45s ease 0.65s forwards;
+  }
+  @keyframes iz-rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Progress bar */
+  .iz-pre-bar-track {
+    width: 140px;
+    height: 2px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 99px;
+    overflow: hidden;
+    opacity: 0;
+    animation: iz-rise 0.3s ease 0.8s forwards;
+  }
+  .iz-pre-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #e08900, #fac660);
+    border-radius: 99px;
+    transition: width 0.12s linear;
+    box-shadow: 0 0 8px rgba(245,152,10,0.6);
+  }
+
+  /* Particles */
+  .iz-pre-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .iz-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: #f5980a;
+    opacity: 0;
+    animation: iz-particle-out var(--dur, 0.6s) cubic-bezier(0.2, 0, 0.8, 1) var(--delay, 0s) forwards;
+  }
+  @keyframes iz-particle-out {
+    0%  { opacity: 0.9; transform: translate(0, 0) scale(1); }
+    100%{ opacity: 0;   transform: translate(var(--tx), var(--ty)) scale(0.1); }
+  }
+
+  /* Body locked during load */
+  body.iz-loading {
+    overflow: hidden;
+  }
+  </style>
+
+  <script>
+  (function(){
+    // Lock scroll
+    document.body.classList.add('iz-loading');
+
+    var pre  = document.getElementById('iz-preloader');
+    var bar  = document.getElementById('iz-bar');
+    var fill = document.getElementById('iz-fill-rect');
+    var pcnt = document.getElementById('iz-particles');
+
+    // Simulated progress (snappy, not linear)
+    var prog = 0;
+    var raf;
+
+    function setProgress(p) {
+      prog = Math.min(p, 100);
+      bar.style.width = prog + '%';
+      // Liquid fill: map 0-100 to y: 92 -> 0
+      var y = 92 - (prog / 100) * 92;
+      fill.setAttribute('y', y);
+    }
+
+    // Quick ramp to ~80%, hold, then complete on load
+    var fake = 0;
+    var fakeTimer = setInterval(function(){
+      fake += (80 - fake) * 0.12 + 0.5;
+      setProgress(fake);
+      if(fake >= 79) clearInterval(fakeTimer);
+    }, 40);
+
+    function spawnParticles() {
+      var cx = window.innerWidth  / 2;
+      var cy = window.innerHeight / 2;
+      var colors = ['#f5980a','#fac660','#e08900','#fdeec0','#fff'];
+      for(var i = 0; i < 28; i++){
+        var p = document.createElement('div');
+        p.className = 'iz-particle';
+        var size = 3 + Math.random() * 5;
+        var angle = Math.random() * Math.PI * 2;
+        var dist  = 60 + Math.random() * 160;
+        var tx = Math.cos(angle) * dist;
+        var ty = Math.sin(angle) * dist;
+        p.style.cssText = [
+          'width:' + size + 'px',
+          'height:' + size + 'px',
+          'left:' + (cx - size/2) + 'px',
+          'top:'  + (cy - size/2) + 'px',
+          'background:' + colors[Math.floor(Math.random()*colors.length)],
+          '--tx:' + tx + 'px',
+          '--ty:' + ty + 'px',
+          '--dur:' + (0.45 + Math.random() * 0.35) + 's',
+          '--delay:' + (Math.random() * 0.12) + 's'
+        ].join(';');
+        pcnt.appendChild(p);
+      }
+    }
+
+    function dismiss() {
+      clearInterval(fakeTimer);
+      setProgress(100);
+      setTimeout(function(){
+        spawnParticles();
+        setTimeout(function(){
+          pre.classList.add('iz-pre-done');
+          document.body.classList.remove('iz-loading');
+          setTimeout(function(){
+            pre.style.display = 'none';
+          }, 500);
+        }, 180);
+      }, 220);
+    }
+
+    // Dismiss on window load, with a small minimum display time for smoothness
+    var startTime = Date.now();
+    var MIN_SHOW  = 900; // ms — just long enough to feel premium, not annoying
+
+    window.addEventListener('load', function(){
+      var elapsed = Date.now() - startTime;
+      var wait    = Math.max(0, MIN_SHOW - elapsed);
+      setTimeout(dismiss, wait);
+    });
+
+    // Hard fallback: never block for more than 3.5s
+    setTimeout(dismiss, 3500);
+  })();
+  </script>
+  <!-- ══ END PRELOADER ══ -->
+
   {% block body %}{% endblock %}
 
   <!-- Django Messages -->
