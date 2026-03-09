@@ -32,3 +32,13 @@ urlpatterns += [
     path('crypto-wallets/<int:pk>/edit/',                admin_views.admin_crypto_wallet_edit,    name='admin_crypto_wallet_edit'),
     path('crypto-wallets/<int:pk>/toggle/',              admin_views.admin_crypto_wallet_toggle,  name='admin_crypto_wallet_toggle'),
 ]
+
+# Investment management
+urlpatterns += [
+    path('investments/create/',            admin_views.admin_investment_create,   name='admin_investment_create'),
+    path('investments/<uuid:pk>/',         admin_views.admin_investment_detail,   name='admin_investment_detail'),
+    path('investments/<uuid:pk>/activate/',admin_views.admin_investment_activate, name='admin_investment_activate'),
+    path('investments/<uuid:pk>/cancel/',  admin_views.admin_investment_cancel,   name='admin_investment_cancel'),
+    path('investments/<uuid:pk>/complete/',admin_views.admin_investment_complete, name='admin_investment_complete'),
+    path('investments/<uuid:pk>/adjust/',  admin_views.admin_investment_adjust,   name='admin_investment_adjust'),
+]

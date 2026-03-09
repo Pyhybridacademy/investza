@@ -2,6 +2,7 @@
 administration/views.py
 Admin panel - full management of users, investments, deposits, withdrawals
 """
+from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -235,14 +236,39 @@ def admin_process_withdrawal(request, pk):
 @login_required
 @staff_required
 def admin_investments(request):
-    from apps.investments.models import Investment
-    investments  = Investment.objects.select_related('user','plan__category').order_by('-created_at')
-    total_active = investments.filter(status='ACTIVE').aggregate(
-        total=Sum('amount_invested')
-    )['total'] or 0
+    from apps.investments.models import Investment, InvestmentPlan
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    status_tabs = [
+        ('All',       ''),
+        ('Active',    'ACTIVE'),
+        ('Pending',   'PENDING'),
+        ('Matured',   'MATURED'),
+        ('Cancelled', 'CANCELLED'),
+    ]
+    current_status = request.GET.get('status', '')
+
+    qs = Investment.objects.select_related('user', 'plan__category').order_by('-created_at')
+    if current_status:
+        qs = qs.filter(status=current_status)
+
+    total_active  = Investment.objects.filter(status='ACTIVE').aggregate(total=Sum('amount_invested'))['total'] or 0
+    active_count  = Investment.objects.filter(status='ACTIVE').count()
+    pending_count = Investment.objects.filter(status='PENDING').count()
+
+    all_users = User.objects.filter(is_active=True).order_by('first_name', 'last_name')
+    all_plans = InvestmentPlan.objects.filter(is_active=True).select_related('category').order_by('category', 'display_order')
+
     return render(request, 'admin_panel/investments.html', {
-        'investments':  investments[:100],
-        'total_active': total_active,
+        'investments':     qs[:200],
+        'total_active':    total_active,
+        'active_count':    active_count,
+        'pending_count':   pending_count,
+        'status_tabs':     status_tabs,
+        'current_status':  current_status,
+        'all_users':       all_users,
+        'all_plans':       all_plans,
     })
 
 
@@ -509,3 +535,208 @@ def admin_crypto_wallet_toggle(request, pk):
         except CryptoCurrency.DoesNotExist:
             messages.error(request, 'Cryptocurrency not found.')
     return redirect('admin_crypto_wallets')
+
+
+# ── INVESTMENT MANAGEMENT ──────────────────────────────────────────
+@login_required
+@staff_required
+def admin_investment_detail(request, pk):
+    """View a single investment with full detail and management actions."""
+    from apps.investments.models import Investment
+    investment = get_object_or_404(Investment, pk=pk)
+    return render(request, 'admin_panel/investment_detail.html', {'investment': investment})
+
+
+@login_required
+@staff_required
+def admin_investment_activate(request, pk):
+    """Activate a PENDING investment."""
+    if request.method != 'POST':
+        return redirect('admin_investments')
+    from apps.investments.models import Investment
+    investment = get_object_or_404(Investment, pk=pk)
+    if investment.status == 'PENDING':
+        investment.activate()
+        messages.success(request, f'Investment {investment.reference} activated.')
+    else:
+        messages.error(request, 'Only PENDING investments can be activated.')
+    return redirect('admin_investment_detail', pk=pk)
+
+
+@login_required
+@staff_required
+def admin_investment_cancel(request, pk):
+    """Cancel an investment and refund the user's wallet."""
+    if request.method != 'POST':
+        return redirect('admin_investments')
+    from apps.investments.models import Investment
+    from apps.accounts.models import Wallet
+    from decimal import Decimal
+    from django.db import transaction as db_transaction
+
+    investment = get_object_or_404(Investment, pk=pk)
+    if investment.status not in ('PENDING', 'ACTIVE'):
+        messages.error(request, 'Only PENDING or ACTIVE investments can be cancelled.')
+        return redirect('admin_investment_detail', pk=pk)
+
+    reason = request.POST.get('reason', 'Cancelled by admin').strip() or 'Cancelled by admin'
+
+    with db_transaction.atomic():
+        wallet = investment.user.get_wallet()
+        refund = investment.amount_invested
+
+        # Return capital to available balance
+        wallet.credit(refund, f'Investment cancelled — refund: {investment.reference}')
+
+        # Remove from invested balance (if it was active)
+        if investment.status == 'ACTIVE':
+            Wallet.objects.filter(pk=wallet.pk).update(
+                invested_balance=models.F('invested_balance') - refund
+            )
+
+        investment.status = 'CANCELLED'
+        investment.save(update_fields=['status', 'updated_at'])
+
+    messages.success(request, f'Investment {investment.reference} cancelled. R{refund:,.2f} refunded to user.')
+    return redirect('admin_investment_detail', pk=pk)
+
+
+@login_required
+@staff_required
+def admin_investment_complete(request, pk):
+    """Manually mark an investment as matured and pay out ROI + principal."""
+    if request.method != 'POST':
+        return redirect('admin_investments')
+    from apps.investments.models import Investment, ROIPayment
+    from apps.accounts.models import Wallet
+    from decimal import Decimal
+    from django.db import transaction as db_transaction
+
+    investment = get_object_or_404(Investment, pk=pk)
+    if investment.status != 'ACTIVE':
+        messages.error(request, 'Only ACTIVE investments can be completed.')
+        return redirect('admin_investment_detail', pk=pk)
+
+    with db_transaction.atomic():
+        wallet = investment.user.get_wallet()
+        roi = investment.expected_roi
+
+        # Pay ROI to wallet
+        wallet.credit(roi, f'ROI payout — {investment.reference}')
+
+        # Track ROI payment
+        ROIPayment.objects.create(
+            investment=investment,
+            amount=roi,
+            notes='Manual payout by admin'
+        )
+
+        # Return principal if plan says so
+        if investment.plan.returns_principal:
+            Wallet.objects.filter(pk=wallet.pk).update(
+                invested_balance=models.F('invested_balance') - investment.amount_invested
+            )
+
+        # Update investment totals
+        investment.actual_roi_paid = roi
+        investment.status = 'MATURED'
+        from django.utils import timezone
+        investment.completed_at = timezone.now()
+        investment.save(update_fields=['actual_roi_paid', 'status', 'completed_at', 'updated_at'])
+
+        # Update total_earned on wallet
+        Wallet.objects.filter(pk=wallet.pk).update(
+            total_earned=models.F('total_earned') + roi
+        )
+
+    messages.success(request, f'Investment {investment.reference} completed. R{roi:,.2f} ROI paid to user.')
+    return redirect('admin_investment_detail', pk=pk)
+
+
+@login_required
+@staff_required
+def admin_investment_adjust(request, pk):
+    """Adjust the investment amount or expected ROI manually."""
+    if request.method != 'POST':
+        return redirect('admin_investments')
+    from apps.investments.models import Investment
+    from decimal import Decimal, InvalidOperation
+
+    investment = get_object_or_404(Investment, pk=pk)
+    try:
+        new_amount = request.POST.get('amount_invested', '').strip()
+        new_roi = request.POST.get('expected_roi', '').strip()
+        notes = request.POST.get('notes', 'Admin adjustment').strip()
+
+        changed = []
+        if new_amount:
+            investment.amount_invested = Decimal(new_amount)
+            investment.expected_total = investment.plan.calculate_total_return(investment.amount_invested)
+            changed.append('amount')
+        if new_roi:
+            investment.expected_roi = Decimal(new_roi)
+            investment.expected_total = investment.amount_invested + investment.expected_roi
+            changed.append('ROI')
+        if changed:
+            investment.save()
+            messages.success(request, f'Investment {investment.reference} updated: {", ".join(changed)} adjusted.')
+        else:
+            messages.warning(request, 'No changes submitted.')
+    except (InvalidOperation, ValueError) as e:
+        messages.error(request, f'Invalid value: {e}')
+    return redirect('admin_investment_detail', pk=pk)
+
+
+@login_required
+@staff_required
+def admin_investment_create(request):
+    """Admin creates an investment on behalf of a user."""
+    if request.method == 'POST':
+        from apps.investments.models import Investment, InvestmentPlan
+        from apps.accounts.models import Wallet
+        from decimal import Decimal, InvalidOperation
+        from django.db import transaction as db_transaction
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        try:
+            user_id   = request.POST.get('user_id')
+            plan_id   = request.POST.get('plan_id')
+            amount    = Decimal(request.POST.get('amount', '0'))
+            activate  = request.POST.get('activate') == 'on'
+
+            user = get_object_or_404(User, pk=user_id)
+            plan = get_object_or_404(InvestmentPlan, pk=plan_id)
+
+            if amount < plan.minimum_amount:
+                messages.error(request, f'Amount below minimum (R{plan.minimum_amount:,.2f}).')
+                return redirect('admin_investments')
+            if amount > plan.maximum_amount:
+                messages.error(request, f'Amount above maximum (R{plan.maximum_amount:,.2f}).')
+                return redirect('admin_investments')
+
+            with db_transaction.atomic():
+                investment = Investment(
+                    user=user,
+                    plan=plan,
+                    amount_invested=amount,
+                    expected_roi=plan.calculate_roi(amount),
+                    expected_total=plan.calculate_total_return(amount),
+                )
+                investment.save()
+
+                if activate:
+                    # Debit wallet and move to invested balance
+                    wallet = user.get_wallet()
+                    wallet.debit(amount, f'Investment in {plan.name} — Ref: {investment.reference} (admin)')
+                    Wallet.objects.filter(pk=wallet.pk).update(
+                        invested_balance=models.F('invested_balance') + amount
+                    )
+                    investment.activate()
+
+            messages.success(request, f'Investment {investment.reference} created for {user.get_full_name()}.')
+            return redirect('admin_investment_detail', pk=investment.pk)
+
+        except (InvalidOperation, ValueError) as e:
+            messages.error(request, f'Error: {e}')
+    return redirect('admin_investments')

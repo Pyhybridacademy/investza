@@ -1,26 +1,199 @@
 {% extends "base/admin_base.html" %}
-{% block title %}All Investments{% endblock %}
+{% block title %}Investments{% endblock %}
 {% block page_title %}Investments{% endblock %}
+{% block page_subtitle %}Create, activate, complete and cancel user investments{% endblock %}
 {% block breadcrumb %}Investments{% endblock %}
-{% block page_subtitle %}Monitor all active and completed investments{% endblock %}
+
 {% block content %}
-<div class="space-y-4">
-  <div class="grid grid-cols-2 gap-4 fade-up fade-up-1">
-    <div class="card p-5"><p class="text-xs text-gray-400 mb-1">Total Active Volume</p><p class="font-display font-bold text-navy-900 text-3xl">R {{ total_active|floatformat:0 }}</p></div>
-    <div class="card p-5"><p class="text-xs text-gray-400 mb-1">Total Records</p><p class="font-display font-bold text-navy-900 text-3xl">{{ investments.count }}</p></div>
+<div class="space-y-5">
+
+  <!-- Summary cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 fade-up fade-up-1">
+    {% with active=investments|length %}
+    <div class="card p-5">
+      <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest font-bold">Active Volume</p>
+      <p class="font-display font-bold text-white text-2xl">R {{ total_active|floatformat:0 }}</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest font-bold">Total Records</p>
+      <p class="font-display font-bold text-white text-2xl">{{ investments|length }}</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest font-bold">Active</p>
+      <p class="font-display font-bold text-green-400 text-2xl">{{ active_count }}</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest font-bold">Pending</p>
+      <p class="font-display font-bold text-amber-400 text-2xl">{{ pending_count }}</p>
+    </div>
+    {% endwith %}
   </div>
+
+  <!-- Actions bar -->
+  <div class="flex items-center justify-between gap-4 fade-up fade-up-2">
+    <!-- Filter tabs -->
+    <div class="flex items-center gap-1 p-1 rounded-xl" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+      {% for label, val in status_tabs %}
+      <a href="?status={{ val }}"
+         class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all
+           {% if current_status == val %}text-navy-900 bg-gold-400{% else %}text-gray-400 hover:text-white{% endif %}">
+        {{ label }}
+      </a>
+      {% endfor %}
+    </div>
+    <button onclick="openCreateModal()" class="btn-gold px-4 py-2 rounded-xl text-navy-900 font-bold text-sm flex items-center gap-2 flex-shrink-0">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+      New Investment
+    </button>
+  </div>
+
+  <!-- Table -->
   <div class="card overflow-hidden fade-up fade-up-2">
-    <table class="data-table"><thead><tr><th>Reference</th><th>User</th><th>Plan</th><th>Amount</th><th>ROI</th><th>Status</th><th>Maturity</th></tr></thead><tbody>
-    {% for inv in investments %}<tr>
-    <td class="font-mono text-xs text-navy-700">{{ inv.reference }}</td>
-    <td><p class="font-medium text-navy-800 text-sm">{{ inv.user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ inv.user.email }}</p></td>
-    <td><p class="text-navy-800 text-sm">{{ inv.plan.name }}</p><p class="text-gray-400 text-xs">{{ inv.plan.category.name }}</p></td>
-    <td class="font-mono font-bold text-navy-800">R {{ inv.amount_invested|floatformat:2 }}</td>
-    <td class="font-bold text-gold-600">{{ inv.plan.roi_percentage }}%</td>
-    <td><span class="px-2 py-1 rounded-full text-xs font-medium {% if inv.status == 'ACTIVE' %}badge-active{% elif inv.status == 'MATURED' %}badge-matured{% else %}badge-pending{% endif %}">{{ inv.get_status_display }}</span></td>
-    <td class="text-gray-400 text-xs">{{ inv.maturity_date|date:"d M Y"|default:"—" }}</td>
-    </tr>{% empty %}<tr><td colspan="7" class="text-center text-gray-400 py-10">No investments found</td></tr>{% endfor %}
-    </tbody></table>
+    <div class="overflow-x-auto">
+      <table class="data-table w-full">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>User</th>
+            <th>Plan</th>
+            <th>Amount</th>
+            <th>Expected ROI</th>
+            <th>Status</th>
+            <th>Maturity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in investments %}
+          <tr class="hover:bg-white/5 transition-colors">
+            <td><span class="font-mono text-xs text-navy-300">{{ inv.reference }}</span></td>
+            <td>
+              <p class="font-semibold text-white text-sm">{{ inv.user.get_full_name }}</p>
+              <p class="text-gray-500 text-xs">{{ inv.user.email }}</p>
+            </td>
+            <td>
+              <p class="text-gray-200 text-sm">{{ inv.plan.name }}</p>
+              <p class="text-gray-500 text-xs">{{ inv.plan.category.name }} · {{ inv.plan.roi_percentage }}%</p>
+            </td>
+            <td><span class="font-mono font-bold text-white">R {{ inv.amount_invested|floatformat:2 }}</span></td>
+            <td><span class="font-mono text-green-400 font-bold">R {{ inv.expected_roi|floatformat:2 }}</span></td>
+            <td>
+              {% if inv.status == 'ACTIVE' %}
+                <span class="badge-approved px-2.5 py-1 rounded-full text-xs font-bold">Active</span>
+              {% elif inv.status == 'PENDING' %}
+                <span class="badge-pending px-2.5 py-1 rounded-full text-xs font-bold">Pending</span>
+              {% elif inv.status == 'MATURED' %}
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold" style="background:rgba(99,102,241,0.15);color:#a5b4fc;">Matured</span>
+              {% elif inv.status == 'CANCELLED' %}
+                <span class="badge-rejected px-2.5 py-1 rounded-full text-xs font-bold">Cancelled</span>
+              {% else %}
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-700 text-gray-300">{{ inv.get_status_display }}</span>
+              {% endif %}
+            </td>
+            <td class="text-gray-400 text-xs font-mono">{{ inv.maturity_date|date:"d M Y"|default:"—" }}</td>
+            <td>
+              <a href="{% url 'admin_investment_detail' inv.pk %}"
+                 class="px-3 py-1.5 rounded-lg text-xs font-bold text-navy-200 hover:text-white border border-white/10 hover:bg-white/10 transition-colors">
+                Manage →
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" class="text-center text-gray-500 py-14">No investments found</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- CREATE MODAL -->
+<div id="create-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+     style="background:rgba(3,7,30,0.88);backdrop-filter:blur(6px);">
+  <div class="w-full max-w-lg rounded-2xl p-6 overflow-y-auto max-h-screen"
+       style="background:#0a1628;border:1px solid rgba(255,255,255,0.1);">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-display font-bold text-white text-lg">Create Investment for User</h3>
+      <button onclick="closeCreateModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">✕</button>
+    </div>
+    <form method="post" action="{% url 'admin_investment_create' %}" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="iz-field-label">User *</label>
+        <select name="user_id" required
+          class="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500 transition-colors"
+          style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+          <option value="">— Select user —</option>
+          {% for u in all_users %}
+          <option value="{{ u.pk }}">{{ u.get_full_name }} ({{ u.email }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="iz-field-label">Investment Plan *</label>
+        <select name="plan_id" required
+          class="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500 transition-colors"
+          style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+          <option value="">— Select plan —</option>
+          {% for plan in all_plans %}
+          <option value="{{ plan.pk }}" data-min="{{ plan.minimum_amount }}" data-max="{{ plan.maximum_amount }}">
+            {{ plan.category.name }} — {{ plan.name }} ({{ plan.roi_percentage }}% ROI, R{{ plan.minimum_amount|floatformat:0 }}–R{{ plan.maximum_amount|floatformat:0 }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="iz-field-label">Amount (ZAR) *</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-bold">R</span>
+          <input type="number" name="amount" id="create-amount" step="0.01" min="0" required
+            placeholder="0.00"
+            class="w-full pl-7 pr-4 py-2.5 rounded-xl text-white text-sm focus:outline-none focus:border-gold-500 transition-colors font-mono"
+            style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+        </div>
+        <p id="plan-limits" class="text-xs text-gray-500 mt-1.5"></p>
+      </div>
+      <div class="flex items-center gap-3 p-3 rounded-xl" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);">
+        <input type="checkbox" name="activate" id="create-activate" checked
+          class="w-4 h-4 accent-yellow-400 flex-shrink-0">
+        <div>
+          <label for="create-activate" class="text-sm text-gray-200 font-semibold cursor-pointer">Activate immediately</label>
+          <p class="text-xs text-gray-500 mt-0.5">Deducts from user wallet and starts the plan. Uncheck to create as Pending.</p>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" onclick="closeCreateModal()"
+          class="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-gray-400 hover:text-white font-semibold transition-colors">Cancel</button>
+        <button type="submit"
+          class="flex-1 py-2.5 rounded-xl btn-gold text-navy-900 font-bold text-sm">Create Investment</button>
+      </div>
+    </form>
   </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openCreateModal(){
+  const m=document.getElementById('create-modal');
+  m.classList.remove('hidden');m.classList.add('flex');
+}
+function closeCreateModal(){
+  const m=document.getElementById('create-modal');
+  m.classList.add('hidden');m.classList.remove('flex');
+}
+document.getElementById('create-modal').addEventListener('click',function(e){if(e.target===this)closeCreateModal();});
+
+// Show plan limits when plan is selected
+document.querySelector('[name="plan_id"]').addEventListener('change',function(){
+  const opt=this.options[this.selectedIndex];
+  const min=opt.dataset.min, max=opt.dataset.max;
+  const p=document.getElementById('plan-limits');
+  if(min&&max){
+    p.textContent=`Min: R${parseFloat(min).toLocaleString('en-ZA',{minimumFractionDigits:2})} · Max: R${parseFloat(max).toLocaleString('en-ZA',{minimumFractionDigits:2})}`;
+  } else { p.textContent=''; }
+});
+</script>
 {% endblock %}

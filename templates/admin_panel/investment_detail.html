@@ -1,0 +1,386 @@
+{% extends "base/admin_base.html" %}
+{% block title %}{{ investment.reference }}{% endblock %}
+{% block page_title %}Investment Detail{% endblock %}
+{% block page_subtitle %}{{ investment.reference }} — {{ investment.user.get_full_name }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'admin_investments' %}" class="hover:text-gold-400 transition-colors">Investments</a> / {{ investment.reference }}{% endblock %}
+
+{% block content %}
+<div class="space-y-5">
+
+  <!-- Top action bar -->
+  <div class="flex items-center gap-3 flex-wrap fade-up fade-up-1">
+    <a href="{% url 'admin_investments' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white border border-white/10 hover:bg-white/10 transition-colors">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      Back
+    </a>
+    <a href="{% url 'admin_user_detail' investment.user.pk %}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white border border-white/10 hover:bg-white/10 transition-colors">
+      View User Profile →
+    </a>
+
+    {% if investment.status == 'PENDING' %}
+    <div class="ml-auto flex items-center gap-2">
+      <form method="post" action="{% url 'admin_investment_activate' investment.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="px-4 py-2 rounded-xl btn-gold text-navy-900 font-bold text-sm flex items-center gap-2">
+          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Activate
+        </button>
+      </form>
+      <button onclick="openCancelModal()" class="px-4 py-2 rounded-xl font-bold text-sm"
+        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;">
+        Cancel
+      </button>
+    </div>
+    {% elif investment.status == 'ACTIVE' %}
+    <div class="ml-auto flex items-center gap-2">
+      <button onclick="openCompleteModal()" class="px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2"
+        style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Complete & Pay Out
+      </button>
+      <button onclick="openCancelModal()" class="px-4 py-2 rounded-xl font-bold text-sm"
+        style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;">
+        Cancel
+      </button>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Main grid -->
+  <div class="grid lg:grid-cols-3 gap-5">
+
+    <!-- Left: Investment details (2/3) -->
+    <div class="lg:col-span-2 space-y-5">
+
+      <!-- Status banner -->
+      <div class="rounded-2xl p-5 fade-up fade-up-1 relative overflow-hidden"
+        style="background:linear-gradient(135deg,#03071e,#0a1f44);border:1px solid
+          {% if investment.status == 'ACTIVE' %}rgba(34,197,94,0.3)
+          {% elif investment.status == 'PENDING' %}rgba(245,152,10,0.3)
+          {% elif investment.status == 'MATURED' %}rgba(99,102,241,0.3)
+          {% else %}rgba(239,68,68,0.25){% endif %};">
+        <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,
+          {% if investment.status == 'ACTIVE' %}rgba(34,197,94,0.08)
+          {% elif investment.status == 'MATURED' %}rgba(99,102,241,0.1)
+          {% else %}rgba(245,152,10,0.08){% endif %} 0%,transparent 70%);pointer-events:none;"></div>
+        <div class="flex items-start justify-between relative">
+          <div>
+            <p class="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">Reference</p>
+            <p class="font-mono font-bold text-white text-xl mb-4">{{ investment.reference }}</p>
+            <div class="flex flex-wrap items-center gap-4">
+              <div>
+                <p class="text-xs text-gray-500 mb-0.5">Amount Invested</p>
+                <p class="font-mono font-bold text-white text-lg">R {{ investment.amount_invested|floatformat:2 }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 mb-0.5">Expected ROI</p>
+                <p class="font-mono font-bold text-green-400 text-lg">+R {{ investment.expected_roi|floatformat:2 }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 mb-0.5">Total Return</p>
+                <p class="font-mono font-bold text-white text-lg">R {{ investment.expected_total|floatformat:2 }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex-shrink-0">
+            {% if investment.status == 'ACTIVE' %}
+              <span class="badge-approved px-3 py-1.5 rounded-full text-sm font-bold">● Active</span>
+            {% elif investment.status == 'PENDING' %}
+              <span class="badge-pending px-3 py-1.5 rounded-full text-sm font-bold">○ Pending</span>
+            {% elif investment.status == 'MATURED' %}
+              <span class="px-3 py-1.5 rounded-full text-sm font-bold" style="background:rgba(99,102,241,0.15);color:#a5b4fc;">✓ Matured</span>
+            {% elif investment.status == 'CANCELLED' %}
+              <span class="badge-rejected px-3 py-1.5 rounded-full text-sm font-bold">✕ Cancelled</span>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if investment.status == 'ACTIVE' %}
+        <!-- Progress bar -->
+        <div class="mt-5">
+          <div class="flex justify-between text-xs text-gray-500 mb-1.5">
+            <span>{{ investment.progress_percentage }}% complete</span>
+            <span>{{ investment.days_remaining }} days remaining</span>
+          </div>
+          <div class="h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.07);">
+            <div class="h-full rounded-full transition-all duration-1000"
+              style="width:{{ investment.progress_percentage }}%;background:linear-gradient(90deg,#1b4792,#f5980a);"></div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Timeline -->
+      <div class="card p-5 fade-up fade-up-2">
+        <h4 class="font-display font-bold text-white mb-4 text-sm">Timeline</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <p class="text-xs text-gray-500 mb-1">Created</p>
+            <p class="text-sm font-semibold text-gray-200">{{ investment.created_at|date:"d M Y" }}</p>
+            <p class="text-xs text-gray-500">{{ investment.created_at|date:"H:i" }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 mb-1">Start Date</p>
+            <p class="text-sm font-semibold text-gray-200">{{ investment.start_date|date:"d M Y"|default:"—" }}</p>
+            {% if investment.start_date %}<p class="text-xs text-gray-500">{{ investment.start_date|date:"H:i" }}</p>{% endif %}
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 mb-1">Maturity Date</p>
+            <p class="text-sm font-semibold {% if investment.is_matured %}text-amber-400{% else %}text-gray-200{% endif %}">
+              {{ investment.maturity_date|date:"d M Y"|default:"—" }}
+            </p>
+            {% if investment.is_matured and investment.status == 'ACTIVE' %}
+            <p class="text-xs text-amber-400">Matured — needs payout</p>
+            {% endif %}
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 mb-1">Completed</p>
+            <p class="text-sm font-semibold text-gray-200">{{ investment.completed_at|date:"d M Y"|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adjust form -->
+      {% if investment.status == 'PENDING' or investment.status == 'ACTIVE' %}
+      <div class="card p-5 fade-up fade-up-3">
+        <h4 class="font-display font-bold text-white mb-1 text-sm">Manual Adjustment</h4>
+        <p class="text-xs text-gray-500 mb-4">Override investment amount or expected ROI. Use carefully — this does not affect wallet balance.</p>
+        <form method="post" action="{% url 'admin_investment_adjust' investment.pk %}" class="space-y-3">
+          {% csrf_token %}
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="iz-field-label">Amount Invested (R)</label>
+              <input type="number" name="amount_invested" step="0.01" min="0"
+                placeholder="{{ investment.amount_invested }}"
+                class="w-full px-3 py-2 rounded-xl text-white text-sm font-mono focus:outline-none transition-colors"
+                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
+            </div>
+            <div>
+              <label class="iz-field-label">Expected ROI (R)</label>
+              <input type="number" name="expected_roi" step="0.01" min="0"
+                placeholder="{{ investment.expected_roi }}"
+                class="w-full px-3 py-2 rounded-xl text-white text-sm font-mono focus:outline-none transition-colors"
+                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
+            </div>
+          </div>
+          <div>
+            <label class="iz-field-label">Notes</label>
+            <input type="text" name="notes" placeholder="Reason for adjustment"
+              class="w-full px-3 py-2 rounded-xl text-white text-sm focus:outline-none transition-colors"
+              style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
+          </div>
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold transition-colors"
+            style="background:rgba(245,152,10,0.12);border:1px solid rgba(245,152,10,0.3);color:#fac660;">
+            Save Adjustment
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      <!-- ROI Payment history -->
+      {% if investment.roi_payments.all %}
+      <div class="card p-5 fade-up fade-up-4">
+        <h4 class="font-display font-bold text-white mb-4 text-sm">ROI Payment History</h4>
+        <table class="data-table w-full">
+          <thead>
+            <tr><th>Date</th><th>Amount</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            {% for p in investment.roi_payments.all %}
+            <tr>
+              <td class="text-xs font-mono text-gray-400">{{ p.payment_date|date:"d M Y H:i" }}</td>
+              <td class="font-mono font-bold text-green-400">R {{ p.amount|floatformat:2 }}</td>
+              <td class="text-gray-400 text-xs">{{ p.notes|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Right: User + Plan info (1/3) -->
+    <div class="space-y-4 fade-up fade-up-2">
+
+      <!-- User card -->
+      <div class="card p-5">
+        <h4 class="font-display font-bold text-white mb-4 text-sm">Investor</h4>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-sm flex-shrink-0"
+            style="background:linear-gradient(135deg,#e08900,#fac660);color:#0a1f44;">
+            {{ investment.user.first_name|first|upper }}{{ investment.user.last_name|first|upper }}
+          </div>
+          <div class="min-w-0">
+            <p class="font-bold text-white text-sm truncate">{{ investment.user.get_full_name }}</p>
+            <p class="text-xs text-gray-500 truncate">{{ investment.user.email }}</p>
+          </div>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between">
+            <span class="text-gray-500">KYC Status</span>
+            <span class="font-bold {% if investment.user.is_verified %}text-green-400{% else %}text-amber-400{% endif %}">
+              {% if investment.user.is_verified %}✓ Verified{% else %}⚠ Unverified{% endif %}
+            </span>
+          </div>
+          {% if investment.user.wallet %}
+          <div class="flex justify-between">
+            <span class="text-gray-500">Wallet Balance</span>
+            <span class="font-mono font-bold text-white">R {{ investment.user.wallet.available_balance|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Invested Total</span>
+            <span class="font-mono font-bold text-white">R {{ investment.user.wallet.invested_balance|floatformat:2 }}</span>
+          </div>
+          {% endif %}
+        </div>
+        <a href="{% url 'admin_user_detail' investment.user.pk %}"
+           class="mt-4 block text-center py-2 rounded-xl text-xs font-bold text-navy-200 hover:text-white border border-white/10 hover:bg-white/10 transition-colors">
+          View Full Profile →
+        </a>
+      </div>
+
+      <!-- Plan card -->
+      <div class="card p-5">
+        <h4 class="font-display font-bold text-white mb-4 text-sm">Investment Plan</h4>
+        <div class="space-y-2.5 text-xs">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Plan Name</span>
+            <span class="font-bold text-white text-right">{{ investment.plan.name }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Category</span>
+            <span class="font-bold text-white">{{ investment.plan.category.name }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">ROI Rate</span>
+            <span class="font-mono font-bold text-green-400">{{ investment.plan.roi_percentage }}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Duration</span>
+            <span class="font-bold text-white">{{ investment.plan.duration_value }} {{ investment.plan.get_duration_unit_display }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Returns Principal</span>
+            <span class="font-bold {% if investment.plan.returns_principal %}text-green-400{% else %}text-gray-400{% endif %}">
+              {% if investment.plan.returns_principal %}Yes{% else %}No{% endif %}
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Min / Max</span>
+            <span class="font-mono text-white">R{{ investment.plan.minimum_amount|floatformat:0 }} / R{{ investment.plan.maximum_amount|floatformat:0 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actual ROI paid -->
+      <div class="card p-5">
+        <h4 class="font-display font-bold text-white mb-3 text-sm">Payout Summary</h4>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between">
+            <span class="text-gray-500">Expected ROI</span>
+            <span class="font-mono font-bold text-green-400">R {{ investment.expected_roi|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">Actual Paid</span>
+            <span class="font-mono font-bold text-white">R {{ investment.actual_roi_paid|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between pt-2 border-t border-white/5">
+            <span class="text-gray-500">Remaining</span>
+            <span class="font-mono font-bold {% if investment.expected_roi > investment.actual_roi_paid %}text-amber-400{% else %}text-green-400{% endif %}">
+              R {{ investment.expected_roi|floatformat:2 }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETE MODAL -->
+<div id="complete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+     style="background:rgba(3,7,30,0.88);backdrop-filter:blur(6px);">
+  <div class="w-full max-w-md rounded-2xl p-6" style="background:#0a1628;border:1px solid rgba(99,102,241,0.3);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(99,102,241,0.15);">
+        <svg width="18" height="18" fill="none" stroke="#a5b4fc" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div>
+        <h3 class="font-display font-bold text-white">Complete & Pay Out</h3>
+        <p class="text-xs text-gray-500">This will pay ROI and mark investment as Matured.</p>
+      </div>
+    </div>
+    <div class="p-4 rounded-xl mb-5" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);">
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-gray-400">ROI to pay</span>
+        <span class="font-mono font-bold text-green-400">R {{ investment.expected_roi|floatformat:2 }}</span>
+      </div>
+      {% if investment.plan.returns_principal %}
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-gray-400">Principal returned</span>
+        <span class="font-mono font-bold text-white">R {{ investment.amount_invested|floatformat:2 }}</span>
+      </div>
+      {% endif %}
+      <div class="flex justify-between text-sm pt-2 border-t border-white/5">
+        <span class="text-gray-300 font-semibold">User receives</span>
+        <span class="font-mono font-bold text-white">R {{ investment.expected_total|floatformat:2 }}</span>
+      </div>
+    </div>
+    <form method="post" action="{% url 'admin_investment_complete' investment.pk %}" class="flex gap-3">
+      {% csrf_token %}
+      <button type="button" onclick="closeCompleteModal()" class="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-gray-400 hover:text-white font-semibold transition-colors">Cancel</button>
+      <button type="submit" class="flex-1 py-2.5 rounded-xl font-bold text-sm" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:#a5b4fc;">Confirm Payout</button>
+    </form>
+  </div>
+</div>
+
+<!-- CANCEL MODAL -->
+<div id="cancel-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+     style="background:rgba(3,7,30,0.88);backdrop-filter:blur(6px);">
+  <div class="w-full max-w-md rounded-2xl p-6" style="background:#0a1628;border:1px solid rgba(239,68,68,0.25);">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.1);">
+        <svg width="18" height="18" fill="none" stroke="#fca5a5" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div>
+        <h3 class="font-display font-bold text-white">Cancel Investment</h3>
+        <p class="text-xs text-gray-500">Capital will be refunded to user wallet.</p>
+      </div>
+    </div>
+    <div class="p-4 rounded-xl mb-4" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);">
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-400">Refund to user</span>
+        <span class="font-mono font-bold text-white">R {{ investment.amount_invested|floatformat:2 }}</span>
+      </div>
+    </div>
+    <form method="post" action="{% url 'admin_investment_cancel' investment.pk %}" class="space-y-3">
+      {% csrf_token %}
+      <div>
+        <label class="iz-field-label">Reason (optional)</label>
+        <input type="text" name="reason" placeholder="e.g. User requested cancellation"
+          class="w-full px-3 py-2 rounded-xl text-white text-sm focus:outline-none transition-colors"
+          style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
+      </div>
+      <div class="flex gap-3">
+        <button type="button" onclick="closeCancelModal()" class="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-gray-400 hover:text-white font-semibold transition-colors">Keep</button>
+        <button type="submit" class="flex-1 py-2.5 rounded-xl font-bold text-sm" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;">Confirm Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<style>.iz-field-label{display:block;font-size:0.6rem;font-weight:800;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:6px;}</style>
+<script>
+function openCompleteModal(){const m=document.getElementById('complete-modal');m.classList.remove('hidden');m.classList.add('flex');}
+function closeCompleteModal(){const m=document.getElementById('complete-modal');m.classList.add('hidden');m.classList.remove('flex');}
+function openCancelModal(){const m=document.getElementById('cancel-modal');m.classList.remove('hidden');m.classList.add('flex');}
+function closeCancelModal(){const m=document.getElementById('cancel-modal');m.classList.add('hidden');m.classList.remove('flex');}
+['complete-modal','cancel-modal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)this.classList.add('hidden'),this.classList.remove('flex');});
+});
+</script>
+{% endblock %}
