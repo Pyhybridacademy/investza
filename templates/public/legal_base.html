@@ -1,0 +1,71 @@
+{% extends "base/base.html" %}
+{% block body %}
+<nav class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#e08900,#fac660);">
+        <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+      </div>
+      <span class="font-display font-bold text-navy-900 text-xl">{{ PLATFORM_NAME }}</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <a href="{% url 'login' %}" class="text-navy-700 font-medium text-sm">Sign In</a>
+      <a href="{% url 'register' %}" class="btn-gold px-5 py-2.5 rounded-xl text-navy-900 font-bold text-sm">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page hero -->
+<div class="py-14 px-6 text-center relative overflow-hidden" style="background:linear-gradient(160deg,#03071e,#0a1f44);">
+  <div class="max-w-3xl mx-auto relative fade-up fade-up-1">
+    <p class="text-gold-400 font-mono text-xs uppercase tracking-widest mb-3">{% block doc_label %}Legal{% endblock %}</p>
+    <h1 class="font-display font-bold text-white text-4xl mb-3">{% block doc_title %}Document{% endblock %}</h1>
+    <p class="text-navy-400 text-sm">Last updated: {% block doc_date %}January 2025{% endblock %}</p>
+  </div>
+</div>
+
+<!-- Document body -->
+<div class="py-16 px-6 bg-white">
+  <div class="max-w-3xl mx-auto">
+
+    <!-- Quick-nav sidebar (desktop) -->
+    <div class="lg:grid lg:grid-cols-4 lg:gap-12">
+      <aside class="hidden lg:block col-span-1">
+        <div class="sticky top-24 rounded-xl p-4" style="background:#f5f8fd;border:1px solid #e2e9f3;">
+          <p class="text-navy-800 font-bold text-xs uppercase tracking-wider mb-3">Contents</p>
+          <nav class="space-y-1 text-sm" id="doc-toc">{% block doc_toc %}{% endblock %}</nav>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <article class="col-span-3 prose-custom fade-up fade-up-1">
+        <style>
+          .prose-custom h2 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:#0a1f44; margin:2.5rem 0 0.75rem; padding-top:1rem; border-top:2px solid #e8f0f9; }
+          .prose-custom h3 { font-size:1.1rem; font-weight:700; color:#0a1f44; margin:1.5rem 0 0.5rem; }
+          .prose-custom p  { color:#4a5568; line-height:1.8; margin-bottom:1rem; font-size:0.95rem; }
+          .prose-custom ul { margin:0.75rem 0 1rem 1.25rem; }
+          .prose-custom li { color:#4a5568; line-height:1.8; font-size:0.95rem; margin-bottom:0.25rem; }
+          .prose-custom li::marker { color:#e08900; }
+          .prose-custom a  { color:#153a78; text-decoration:underline; }
+          .prose-custom .highlight-box { background:#f5f8fd; border:1px solid #e2e9f3; border-left:4px solid #e08900; border-radius:8px; padding:1rem 1.25rem; margin:1.5rem 0; }
+          .prose-custom .warning-box  { background:#fff8e8; border:1px solid #fac660; border-left:4px solid #f5980a; border-radius:8px; padding:1rem 1.25rem; margin:1.5rem 0; }
+        </style>
+        {% block doc_content %}{% endblock %}
+      </article>
+    </div>
+  </div>
+</div>
+
+<footer class="py-8 px-6 bg-white border-t border-gray-100">
+  <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="text-gray-400 text-sm">© {% now "Y" %} {{ PLATFORM_NAME }} — South Africa</p>
+    <div class="flex flex-wrap gap-5 text-sm text-gray-500">
+      <a href="{% url 'about' %}" class="hover:text-navy-700">About</a>
+      <a href="{% url 'contact' %}" class="hover:text-navy-700">Contact</a>
+      <a href="{% url 'terms' %}" class="hover:text-navy-700">Terms</a>
+      <a href="{% url 'privacy' %}" class="hover:text-navy-700">Privacy</a>
+      <a href="{% url 'risk_disclosure' %}" class="hover:text-navy-700">Risk Disclosure</a>
+    </div>
+  </div>
+</footer>
+{% endblock %}

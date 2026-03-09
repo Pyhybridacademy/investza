@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ PLATFORM_NAME }}{% endblock %} — Invest with Confidence</title>
+  <meta name="description" content="{% block meta_description %}South Africa's premier multi-asset investment platform. Invest in Gold, Real Estate and Crypto in ZAR.{% endblock %}">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#03071e',
+              900: '#05122b',
+              800: '#0a1f44',
+              700: '#0f2d5e',
+              600: '#153a78',
+              500: '#1b4792',
+              400: '#2e5fa8',
+              300: '#4d7dbf',
+              200: '#7aa0d4',
+              100: '#b8cfe8',
+              50:  '#e8f0f9',
+            },
+            gold: {
+              900: '#7a4a00',
+              800: '#a36200',
+              700: '#c97a00',
+              600: '#e08900',
+              500: '#f5980a',
+              400: '#f8af35',
+              300: '#fac660',
+              200: '#fcd98a',
+              100: '#fdeec0',
+              50:  '#fff8e8',
+            },
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'Georgia', 'serif'],
+            body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"DM Mono"', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'DM Sans', system-ui, sans-serif; }
+    h1,h2,h3,.font-display { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f0f4f8; }
+    ::-webkit-scrollbar-thumb { background: #153a78; border-radius: 3px; }
+
+    /* ── Page fade-in ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.55s ease forwards; }
+    .fade-up-1 { animation-delay: 0.05s; opacity: 0; }
+    .fade-up-2 { animation-delay: 0.12s; opacity: 0; }
+    .fade-up-3 { animation-delay: 0.20s; opacity: 0; }
+    .fade-up-4 { animation-delay: 0.28s; opacity: 0; }
+    .fade-up-5 { animation-delay: 0.36s; opacity: 0; }
+
+    /* ── Gold shimmer on hover ── */
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #e08900, #f5980a, #fac660, #e08900);
+      background-size: 200% auto;
+      transition: background-position 0.5s ease, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-gold:hover {
+      background-position: right center;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(224,137,0,0.35);
+    }
+
+    /* ── Navy button ── */
+    .btn-navy {
+      background: #0a1f44;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-navy:hover {
+      background: #153a78;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(10,31,68,0.3);
+    }
+
+    /* ── Card elevation ── */
+    .card {
+      background: #fff;
+      border: 1px solid #e2e9f3;
+      border-radius: 12px;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .card:hover { box-shadow: 0 12px 40px rgba(10,31,68,0.1); transform: translateY(-2px); }
+
+    /* ── Status badges ── */
+    .badge-pending   { background:#fff3cd; color:#856404; border:1px solid #ffc107; }
+    .badge-approved  { background:#d1e7dd; color:#0f5132; border:1px solid #198754; }
+    .badge-rejected  { background:#f8d7da; color:#842029; border:1px solid #dc3545; }
+    .badge-active    { background:#cfe2ff; color:#084298; border:1px solid #0d6efd; }
+    .badge-matured   { background:#e2d9f3; color:#432874; border:1px solid #6f42c1; }
+    .badge-completed { background:#d1e7dd; color:#0f5132; border:1px solid #198754; }
+
+    /* ── Form inputs ── */
+    .form-input {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid #c8d6e8;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9375rem;
+      color: #0a1f44;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: #153a78;
+      box-shadow: 0 0 0 3px rgba(21,58,120,0.12);
+    }
+    .form-select {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid #c8d6e8;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9375rem;
+      color: #0a1f44;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230a1f44' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+    }
+    .form-select:focus { border-color: #153a78; box-shadow: 0 0 0 3px rgba(21,58,120,0.12); }
+
+    /* ── Gold accent line ── */
+    .gold-line::after {
+      content: '';
+      display: block;
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, #e08900, #fac660);
+      margin-top: 10px;
+      border-radius: 2px;
+    }
+
+    /* ── Diagonal section divider ── */
+    .diagonal-section {
+      clip-path: polygon(0 4%, 100% 0, 100% 96%, 0 100%);
+    }
+
+    /* ── Table styles ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      background: #0a1f44;
+      color: #fdeec0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    .data-table td {
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid #e8f0f9;
+      font-size: 0.9rem;
+      color: #1e2d4a;
+    }
+    .data-table tr:hover td { background: #f5f8fd; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* ── Sidebar nav active ── */
+    .nav-link-active {
+      background: linear-gradient(135deg, #0f2d5e, #153a78);
+      color: #fdeec0 !important;
+      border-left: 3px solid #f5980a;
+    }
+
+    /* ── Number counter animation ── */
+    @keyframes countUp {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .stat-number { animation: countUp 0.6s ease forwards; }
+
+    /* ── Progress bar ── */
+    .progress-track { background: #e8f0f9; border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #153a78, #f5980a);
+      border-radius: 99px;
+      transition: width 1s ease;
+    }
+
+    /* ── Notification dot ── */
+    .notif-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: #f5980a;
+      border-radius: 50%;
+      margin-left: 6px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(1.3); }
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-navy-900 antialiased">
+
+  {% block body %}{% endblock %}
+
+  <!-- Django Messages -->
+  {% if messages %}
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3" style="max-width:380px;">
+    {% for message in messages %}
+    <div class="toast-msg flex items-start gap-3 px-5 py-4 rounded-xl shadow-2xl border fade-up
+      {% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-900
+      {% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-900
+      {% elif message.tags == 'warning' %}bg-amber-50 border-amber-200 text-amber-900
+      {% else %}bg-navy-800 border-navy-600 text-white{% endif %}">
+      <span class="text-xl mt-0.5">
+        {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✕{% elif message.tags == 'warning' %}⚠{% else %}ℹ{% endif %}
+      </span>
+      <p class="text-sm font-medium leading-relaxed flex-1">{{ message }}</p>
+      <button onclick="this.parentElement.remove()" class="opacity-50 hover:opacity-100 text-lg leading-none ml-1">×</button>
+    </div>
+    {% endfor %}
+  </div>
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.toast-msg').forEach(el => {
+        el.style.transition = 'opacity 0.4s, transform 0.4s';
+        el.style.opacity = '0'; el.style.transform = 'translateX(30px)';
+        setTimeout(() => el.remove(), 400);
+      });
+    }, 5000);
+  </script>
+  {% endif %}
+
+
+  <!-- ══ LANGUAGE TRANSLATE WIDGET ══ -->
+  <!-- Uses Google Translate API — no API key needed for basic toggle -->
+  <div id="translate-widget" class="fixed bottom-6 left-6 z-50 flex flex-col items-start gap-2">
+
+    <!-- Expanded panel -->
+    <div id="translate-panel"
+         class="hidden mb-1 rounded-2xl shadow-2xl overflow-hidden"
+         style="background: linear-gradient(145deg, #03071e, #0a1f44); border: 1px solid rgba(245,152,10,0.3); min-width: 200px;">
+
+      <!-- Header -->
+      <div class="px-4 py-3 flex items-center justify-between border-b" style="border-color:rgba(255,255,255,0.08);">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+          </svg>
+          <span class="text-white text-xs font-semibold">Language</span>
+        </div>
+        <button onclick="closeTranslate()" class="text-navy-400 hover:text-white transition-colors text-sm leading-none">✕</button>
+      </div>
+
+      <!-- Language options -->
+      <div class="p-3 space-y-1">
+        <button onclick="setLang('en')" id="lang-en"
+                class="lang-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-white text-sm font-medium"
+                style="background:rgba(245,152,10,0.15); border:1px solid rgba(245,152,10,0.3);">
+          <span class="text-lg">🇿🇦</span>
+          <div>
+            <p class="text-xs font-bold leading-none">English</p>
+            <p class="text-navy-400 text-xs leading-none mt-0.5">Default</p>
+          </div>
+          <span id="check-en" class="ml-auto text-gold-400 text-xs">✓</span>
+        </button>
+
+        <button onclick="setLang('zu')" id="lang-zu"
+                class="lang-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-navy-200 hover:text-white text-sm font-medium"
+                style="border:1px solid transparent;">
+          <span class="text-lg">🇿🇦</span>
+          <div>
+            <p class="text-xs font-bold leading-none">isiZulu</p>
+            <p class="text-navy-500 text-xs leading-none mt-0.5">Zulu</p>
+          </div>
+          <span id="check-zu" class="ml-auto text-gold-400 text-xs hidden">✓</span>
+        </button>
+
+        <button onclick="setLang('xh')" id="lang-xh"
+                class="lang-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-navy-200 hover:text-white text-sm font-medium"
+                style="border:1px solid transparent;">
+          <span class="text-lg">🇿🇦</span>
+          <div>
+            <p class="text-xs font-bold leading-none">isiXhosa</p>
+            <p class="text-navy-500 text-xs leading-none mt-0.5">Xhosa</p>
+          </div>
+          <span id="check-xh" class="ml-auto text-gold-400 text-xs hidden">✓</span>
+        </button>
+
+        <button onclick="setLang('af')" id="lang-af"
+                class="lang-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all text-navy-200 hover:text-white text-sm font-medium"
+                style="border:1px solid transparent;">
+          <span class="text-lg">🇿🇦</span>
+          <div>
+            <p class="text-xs font-bold leading-none">Afrikaans</p>
+            <p class="text-navy-500 text-xs leading-none mt-0.5">Afrikaans</p>
+          </div>
+          <span id="check-af" class="ml-auto text-gold-400 text-xs hidden">✓</span>
+        </button>
+      </div>
+
+      <!-- Powered by note -->
+      <div class="px-4 pb-3 text-center">
+        <p class="text-navy-600 text-xs">Powered by Google Translate</p>
+      </div>
+    </div>
+
+    <!-- Floating trigger button -->
+    <button onclick="toggleTranslate()" id="translate-btn"
+            title="Translate page"
+            class="flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl transition-all duration-200 hover:-translate-y-0.5"
+            style="background: linear-gradient(135deg, #03071e, #0a1f44); border: 1px solid rgba(245,152,10,0.4);">
+      <!-- SA flag mini -->
+      <div class="w-6 h-4 rounded-sm overflow-hidden flex-shrink-0 shadow-sm">
+        <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+          <rect y="0"  width="60" height="13.3" fill="#007A4D"/>
+          <rect y="13.3" width="60" height="13.3" fill="#DE3831"/>
+          <rect y="26.6" width="60" height="13.4" fill="#002395"/>
+          <polygon points="0,0 22,20 0,40" fill="#000"/>
+          <polygon points="0,0 23.5,20 0,40 0,37 21,20 0,3" fill="#fff"/>
+          <polygon points="0,15 36,15 36,25 0,25" fill="#FFB612"/>
+          <polygon points="21,20 36,15 36,25" fill="#FFB612"/>
+          <polygon points="0,16.5 34,16.5 34,23.5 0,23.5" fill="#000"/>
+        </svg>
+      </div>
+      <span id="translate-label" class="text-white text-sm font-semibold">EN</span>
+      <svg class="w-3.5 h-3.5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Google Translate script (loads on demand) -->
+  <div id="google_translate_element" style="display:none;"></div>
+
+  <script>
+  (function() {
+    const LANGS = {
+      en: { label: 'EN', name: 'English' },
+      zu: { label: 'ZU', name: 'isiZulu' },
+      xh: { label: 'XH', name: 'isiXhosa' },
+      af: { label: 'AF', name: 'Afrikaans' }
+    };
+
+    let currentLang = localStorage.getItem('iz_lang') || 'en';
+    let gtReady = false;
+
+    // Load Google Translate
+    window.googleTranslateElementInit = function() {
+      gtReady = true;
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en', autoDisplay: false },
+        'google_translate_element'
+      );
+      // Apply saved language if not English
+      if (currentLang !== 'en') _applyGT(currentLang);
+    };
+
+    function loadGT() {
+      if (document.getElementById('gt-script')) return;
+      const s = document.createElement('script');
+      s.id = 'gt-script';
+      s.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      document.body.appendChild(s);
+    }
+
+    function _applyGT(lang) {
+      // Google Translate sets a cookie — we simulate the select change
+      const tryApply = (tries) => {
+        const combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+          combo.value = lang;
+          combo.dispatchEvent(new Event('change'));
+        } else if (tries > 0) {
+          setTimeout(() => tryApply(tries - 1), 350);
+        }
+      };
+      tryApply(15);
+    }
+
+    function _resetToEnglish() {
+      const iframe = document.querySelector('.goog-te-banner-frame');
+      if (iframe) {
+        const closeBtn = iframe.contentDocument?.querySelector('.goog-close-link');
+        if (closeBtn) { closeBtn.click(); return; }
+      }
+      // Fallback: reload without GT cookie
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname;
+      location.reload();
+    }
+
+    window.setLang = function(lang) {
+      currentLang = lang;
+      localStorage.setItem('iz_lang', lang);
+
+      // Update UI
+      document.getElementById('translate-label').textContent = LANGS[lang].label;
+      Object.keys(LANGS).forEach(l => {
+        const btn = document.getElementById('lang-' + l);
+        const chk = document.getElementById('check-' + l);
+        if (l === lang) {
+          btn.style.background = 'rgba(245,152,10,0.15)';
+          btn.style.border = '1px solid rgba(245,152,10,0.3)';
+          btn.classList.remove('text-navy-200');
+          btn.classList.add('text-white');
+          chk.classList.remove('hidden');
+        } else {
+          btn.style.background = '';
+          btn.style.border = '1px solid transparent';
+          btn.classList.add('text-navy-200');
+          btn.classList.remove('text-white');
+          chk.classList.add('hidden');
+        }
+      });
+
+      if (lang === 'en') {
+        _resetToEnglish();
+      } else {
+        loadGT();
+        if (gtReady) _applyGT(lang); else setTimeout(() => _applyGT(lang), 1800);
+      }
+
+      closeTranslate();
+    };
+
+    window.toggleTranslate = function() {
+      document.getElementById('translate-panel').classList.toggle('hidden');
+    };
+    window.closeTranslate = function() {
+      document.getElementById('translate-panel').classList.add('hidden');
+    };
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (!document.getElementById('translate-widget').contains(e.target)) closeTranslate();
+    });
+
+    // Restore previous language on page load
+    if (currentLang !== 'en') {
+      loadGT();
+      document.getElementById('translate-label').textContent = LANGS[currentLang].label;
+      // Mark correct button active on load
+      document.addEventListener('DOMContentLoaded', function() { setLang(currentLang); });
+    }
+
+    // Hide Google's own toolbar banner (we have our own UI)
+    const style = document.createElement('style');
+    style.textContent = '.goog-te-banner-frame.skiptranslate, .goog-te-gadget { display:none!important; } body { top:0!important; }';
+    document.head.appendChild(style);
+  })();
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

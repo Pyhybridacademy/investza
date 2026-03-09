@@ -1,0 +1,81 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Deposit Funds{% endblock %}
+{% block page_title %}Deposit Funds{% endblock %}
+{% block page_subtitle %}Add money to your ZAR wallet{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+  <!-- Current Balance -->
+  <div class="card p-6 fade-up fade-up-1" style="background: linear-gradient(135deg, #03071e, #0a1f44); border-color: rgba(245,152,10,0.2);">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-navy-400 text-sm">Current Available Balance</p>
+        <p class="font-mono font-bold text-white text-3xl mt-1">R {{ request.user.wallet.available_balance|floatformat:2 }}</p>
+      </div>
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center" style="background: rgba(245,152,10,0.15);">
+        <svg class="w-7 h-7 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deposit Methods -->
+  <div class="fade-up fade-up-2">
+    <p class="text-navy-800 font-semibold mb-4">Select Deposit Method</p>
+    <div class="grid sm:grid-cols-2 gap-4">
+
+      <!-- Bank Deposit -->
+      <a href="{% url 'bank_deposit_create' %}" class="card p-6 group cursor-pointer">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform"
+             style="background: linear-gradient(135deg, #e8f0f9, #b8cfe8);">
+          <svg class="w-7 h-7 text-navy-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-navy-900 text-xl mb-2">Bank Transfer</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-4">Transfer directly from your South African bank account. Get a dedicated reference number instantly.</p>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-gray-400">Min: R 500</span>
+          <span class="px-2 py-1 rounded-full bg-blue-50 text-blue-700 font-medium border border-blue-100">EFT / SWIFT</span>
+        </div>
+      </a>
+
+      <!-- Crypto Deposit -->
+      <a href="{% url 'crypto_deposit_create' %}" class="card p-6 group cursor-pointer">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform"
+             style="background: linear-gradient(135deg, #fdeec0, #fac660);">
+          <span class="text-3xl">₿</span>
+        </div>
+        <h3 class="font-display font-bold text-navy-900 text-xl mb-2">Cryptocurrency</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-4">Deposit using Bitcoin, Ethereum or USDT. Funds converted to ZAR and credited to your wallet.</p>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-gray-400">BTC, ETH, USDT</span>
+          <span class="px-2 py-1 rounded-full bg-amber-50 text-amber-700 font-medium border border-amber-100">Crypto</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Deposits -->
+  {% if recent_deposits %}
+  <div class="card p-6 fade-up fade-up-3">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display font-bold text-navy-900 text-lg">Recent Deposits</h3>
+      <a href="{% url 'deposit_history' %}" class="text-xs text-navy-500 hover:text-gold-600">View all →</a>
+    </div>
+    <p class="text-gray-400 text-sm text-center py-4">
+      <a href="{% url 'deposit_history' %}" class="text-navy-600 hover:text-navy-800 font-medium">View deposit history</a>
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- Info note -->
+  <div class="p-5 rounded-xl fade-up fade-up-4" style="background: #f5f8fd; border: 1px solid #e2e9f3;">
+    <h4 class="font-semibold text-navy-800 text-sm mb-2">💡 How deposits work</h4>
+    <ul class="text-gray-500 text-xs space-y-1.5">
+      <li>• Bank deposits are verified manually by our team — usually within 1–4 business hours</li>
+      <li>• Crypto deposits require blockchain confirmation and admin review</li>
+      <li>• All deposits are credited in South African Rand (ZAR)</li>
+      <li>• Contact support if your deposit hasn't been credited after 24 hours</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

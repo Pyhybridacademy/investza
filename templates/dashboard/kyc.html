@@ -1,0 +1,52 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}KYC Verification{% endblock %}
+{% block page_title %}Identity Verification{% endblock %}
+{% block page_subtitle %}Verify your identity to unlock full platform features{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+  {% if request.user.is_verified %}
+  <div class="card p-6 fade-up fade-up-1" style="background: linear-gradient(135deg, #d1e7dd, #a3cfbb); border-color: #198754;">
+    <div class="flex items-center gap-4">
+      <span class="text-4xl">✅</span>
+      <div><h3 class="font-display font-bold text-green-900 text-xl">Identity Verified</h3><p class="text-green-800 text-sm">Your account is fully verified. You have access to all platform features.</p></div>
+    </div>
+  </div>
+  {% else %}
+  <div class="card p-5 fade-up fade-up-1" style="background: linear-gradient(135deg, #fff8e8, #fdeec0); border-color: #fac660;">
+    <div class="flex items-start gap-3"><span class="text-2xl">⚠</span>
+    <div><p class="font-bold text-amber-900">Verification Required</p><p class="text-amber-700 text-sm">Submit your identity documents to unlock full withdrawal capabilities and higher investment limits.</p></div></div>
+  </div>
+  {% endif %}
+
+  {% if documents %}
+  <div class="card overflow-hidden fade-up fade-up-2">
+    <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-lg">Submitted Documents</h3></div>
+    <table class="data-table"><thead><tr><th>Document</th><th>Status</th><th>Submitted</th></tr></thead><tbody>
+    {% for doc in documents %}<tr>
+    <td class="font-medium text-navy-800 text-sm">{{ doc.get_document_type_display }}</td>
+    <td><span class="px-2 py-1 rounded-full text-xs font-medium {% if doc.status == 'APPROVED' %}badge-approved{% elif doc.status == 'REJECTED' %}badge-rejected{% else %}badge-pending{% endif %}">{{ doc.get_status_display }}</span></td>
+    <td class="text-gray-400 text-xs">{{ doc.submitted_at|date:"d M Y" }}</td>
+    </tr>{% endfor %}
+    </tbody></table>
+  </div>
+  {% endif %}
+
+  <div class="card p-8 fade-up fade-up-3">
+    <h3 class="font-display font-bold text-navy-900 text-xl mb-5">Upload Document</h3>
+    <form method="post" enctype="multipart/form-data" class="space-y-5">
+      {% csrf_token %}
+      <div><label class="block text-sm font-semibold text-navy-800 mb-2">Document Type</label>{{ form.document_type }}</div>
+      <div>
+        <label class="block text-sm font-semibold text-navy-800 mb-2">Upload File</label>
+        <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-navy-300 transition-colors">
+          <div class="text-4xl mb-3">📄</div>
+          <p class="text-navy-700 font-semibold mb-1 text-sm">Click to upload or drag and drop</p>
+          <p class="text-gray-400 text-xs mb-3">JPG, PNG, PDF up to 10MB</p>
+          {{ form.document_file }}
+        </div>
+      </div>
+      <button type="submit" class="btn-navy w-full py-3.5 rounded-xl text-white font-bold">Submit Document</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

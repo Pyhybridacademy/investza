@@ -1,0 +1,132 @@
+{% extends "base/base.html" %}
+{% block title %}Contact Us{% endblock %}
+{% block body %}
+
+<nav class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#e08900,#fac660);">
+        <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+      </div>
+      <span class="font-display font-bold text-navy-900 text-xl">{{ PLATFORM_NAME }}</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <a href="{% url 'login' %}" class="text-navy-700 font-medium text-sm">Sign In</a>
+      <a href="{% url 'register' %}" class="btn-gold px-5 py-2.5 rounded-xl text-navy-900 font-bold text-sm">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<section class="py-16 px-6 relative overflow-hidden" style="background:linear-gradient(160deg,#03071e,#0a1f44);">
+  <div class="max-w-3xl mx-auto text-center fade-up fade-up-1">
+    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-gold-300 mb-5" style="background:rgba(245,152,10,0.15);border:1px solid rgba(245,152,10,0.3);">We're here to help</span>
+    <h1 class="font-display font-bold text-white text-5xl mb-4">Contact Us</h1>
+    <p class="text-navy-300 text-lg">Have a question, issue or feedback? Our team is ready to assist you.</p>
+  </div>
+</section>
+
+<section class="py-20 px-6 bg-white">
+  <div class="max-w-5xl mx-auto grid md:grid-cols-5 gap-12">
+
+    <!-- Contact info -->
+    <div class="md:col-span-2 space-y-6 fade-up fade-up-1">
+      <div>
+        <h2 class="font-display font-bold text-navy-900 text-2xl mb-2">Get in touch</h2>
+        <p class="text-gray-500 text-sm leading-relaxed">Our support team is available Monday to Friday, 8:00 AM – 6:00 PM SAST.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex items-start gap-4 p-4 rounded-xl" style="background:#f5f8fd;border:1px solid #e2e9f3;">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#e8f0f9,#b8cfe8);">
+            <svg class="w-5 h-5 text-navy-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <p class="text-navy-800 font-semibold text-sm">Email Support</p>
+            <a href="mailto:{{ SUPPORT_EMAIL }}" class="text-navy-600 text-sm hover:text-gold-600 transition-colors">{{ SUPPORT_EMAIL }}</a>
+            <p class="text-gray-400 text-xs mt-0.5">Response within 24 hours</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4 p-4 rounded-xl" style="background:#f5f8fd;border:1px solid #e2e9f3;">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+            <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          </div>
+          <div>
+            <p class="text-navy-800 font-semibold text-sm">Phone Support</p>
+            <a href="tel:{{ SUPPORT_PHONE }}" class="text-navy-600 text-sm hover:text-gold-600 transition-colors">{{ SUPPORT_PHONE }}</a>
+            <p class="text-gray-400 text-xs mt-0.5">Mon–Fri, 08:00–18:00 SAST</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4 p-4 rounded-xl" style="background:#f5f8fd;border:1px solid #e2e9f3;">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#d1e7dd,#a3cfbb);">
+            <svg class="w-5 h-5 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-navy-800 font-semibold text-sm">Location</p>
+            <p class="text-navy-600 text-sm">Johannesburg, Gauteng</p>
+            <p class="text-gray-400 text-xs mt-0.5">South Africa</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact form -->
+    <div class="md:col-span-3 fade-up fade-up-2">
+      <div class="card p-8">
+        <h3 class="font-display font-bold text-navy-900 text-xl mb-6">Send us a message</h3>
+        {% if messages %}
+          {% for message in messages %}
+          <div class="mb-5 p-4 rounded-xl {% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-800{% else %}bg-red-50 border border-red-200 text-red-800{% endif %} text-sm">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        <form method="post" class="space-y-4">
+          {% csrf_token %}
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-navy-800 mb-1.5">Full Name</label>
+              <input type="text" name="full_name" class="form-input" placeholder="Your full name" required>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-navy-800 mb-1.5">Email Address</label>
+              <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-1.5">Subject</label>
+            <select name="subject" class="form-select" required>
+              <option value="">Select a topic…</option>
+              <option value="account">Account &amp; Login</option>
+              <option value="deposit">Deposit Issue</option>
+              <option value="withdrawal">Withdrawal Issue</option>
+              <option value="investment">Investment Query</option>
+              <option value="kyc">KYC Verification</option>
+              <option value="technical">Technical Problem</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-1.5">Message</label>
+            <textarea name="message" rows="5" class="form-input resize-none" placeholder="Describe your query in detail…" required></textarea>
+          </div>
+          <button type="submit" class="btn-navy w-full py-3.5 rounded-xl text-white font-bold">
+            Send Message →
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="py-8 px-6 bg-white border-t border-gray-100">
+  <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="text-gray-400 text-sm">© {% now "Y" %} {{ PLATFORM_NAME }}</p>
+    <div class="flex flex-wrap gap-5 text-sm text-gray-500">
+      <a href="{% url 'about' %}" class="hover:text-navy-700">About</a>
+      <a href="{% url 'terms' %}" class="hover:text-navy-700">Terms</a>
+      <a href="{% url 'privacy' %}" class="hover:text-navy-700">Privacy</a>
+      <a href="{% url 'risk_disclosure' %}" class="hover:text-navy-700">Risk Disclosure</a>
+    </div>
+  </div>
+</footer>
+{% endblock %}

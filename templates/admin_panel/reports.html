@@ -1,0 +1,14 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Financial Reports{% endblock %}
+{% block page_title %}Financial Reports{% endblock %}
+{% block page_subtitle %}Platform performance and statistics{% endblock %}
+{% block content %}
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 fade-up fade-up-1">
+  <div class="card p-6" style="border-left:4px solid #198754"><p class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Total Bank Deposits</p><p class="font-display font-bold text-navy-900 text-3xl">R {{ stats.total_deposits_approved|floatformat:0 }}</p></div>
+  <div class="card p-6" style="border-left:4px solid #f5980a"><p class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Total Crypto Deposits</p><p class="font-display font-bold text-navy-900 text-3xl">R {{ stats.total_crypto_deposits|floatformat:0 }}</p></div>
+  <div class="card p-6" style="border-left:4px solid #dc3545"><p class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Total Withdrawals Paid</p><p class="font-display font-bold text-navy-900 text-3xl">R {{ stats.total_withdrawals_completed|floatformat:0 }}</p></div>
+  <div class="card p-6" style="border-left:4px solid #0a1f44"><p class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Active Investment Volume</p><p class="font-display font-bold text-navy-900 text-3xl">R {{ stats.total_invested|floatformat:0 }}</p></div>
+  <div class="card p-6" style="border-left:4px solid #6f42c1"><p class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Total Registered Users</p><p class="font-display font-bold text-navy-900 text-3xl">{{ stats.total_users }}</p></div>
+  <div class="card p-6" style="border-left:4px solid #0dcaf0"><p class="text-xs text-gray-400 mb-1 uppercase tracking-wide">KYC Verified Users</p><p class="font-display font-bold text-navy-900 text-3xl">{{ stats.verified_users }}</p></div>
+</div>
+{% endblock %}

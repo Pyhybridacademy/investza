@@ -1,0 +1,210 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Panel{% endblock %}
+{% block page_subtitle %}Platform management and oversight{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Admin stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+    <div class="card p-5 fade-up fade-up-1" style="border-left: 4px solid #0a1f44;">
+      <p class="text-gray-400 text-xs mb-1">Total Users</p>
+      <p class="font-display font-bold text-navy-900 text-3xl">{{ total_users }}</p>
+      <p class="text-green-600 text-xs mt-1">+{{ new_users_today }} today</p>
+    </div>
+
+    <div class="card p-5 fade-up fade-up-2" style="border-left: 4px solid #e08900;">
+      <p class="text-gray-400 text-xs mb-1">Active Investments</p>
+      <p class="font-display font-bold text-navy-900 text-3xl">R {{ total_invested|floatformat:0 }}</p>
+      <p class="text-blue-600 text-xs mt-1">{{ new_investments }} new this month</p>
+    </div>
+
+    <div class="card p-5 fade-up fade-up-3" style="border-left: 4px solid #198754;">
+      <p class="text-gray-400 text-xs mb-1">Platform Wallet Balance</p>
+      <p class="font-display font-bold text-navy-900 text-3xl">R {{ total_wallet_balance|floatformat:0 }}</p>
+      <p class="text-gray-400 text-xs mt-1">Total user funds</p>
+    </div>
+
+    <div class="card p-5 fade-up fade-up-4" style="border-left: 4px solid #dc3545;">
+      <p class="text-gray-400 text-xs mb-1">Pending Actions</p>
+      <p class="font-display font-bold text-red-600 text-3xl">{{ total_pending_actions }}</p>
+      <p class="text-xs text-gray-400 mt-1">Require your attention</p>
+    </div>
+  </div>
+
+  <!-- Action required summary -->
+  {% if total_pending_actions > 0 %}
+  <div class="p-5 rounded-xl fade-up fade-up-2 flex flex-wrap gap-4 items-center" style="background: linear-gradient(135deg, #fff8e8, #fdeec0); border: 1px solid #fac660;">
+    <span class="text-2xl">🔔</span>
+    <div class="flex-1">
+      <p class="font-bold text-amber-900 text-sm">Action Required</p>
+      <p class="text-amber-700 text-xs">
+        {{ pending_bank_deposits }} bank deposit{{ pending_bank_deposits|pluralize }} •
+        {{ pending_crypto_deposits }} crypto deposit{{ pending_crypto_deposits|pluralize }} •
+        {{ pending_withdrawals }} withdrawal{{ pending_withdrawals|pluralize }} pending
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <a href="{% url 'admin_deposits' %}?status=SUBMITTED" class="px-4 py-2 rounded-lg text-xs font-bold text-navy-900 btn-gold">Review Deposits</a>
+      <a href="{% url 'admin_withdrawals' %}?status=PENDING" class="px-4 py-2 rounded-lg text-xs font-bold text-white btn-navy">Review Withdrawals</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Quick nav cards -->
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 fade-up fade-up-3">
+    <a href="{% url 'admin_users' %}" class="card p-5 group">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style="background: linear-gradient(135deg, #e8f0f9, #b8cfe8);">
+        <svg class="w-5 h-5 text-navy-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </div>
+      <p class="font-bold text-navy-900">Manage Users</p>
+      <p class="text-gray-400 text-xs">{{ total_users }} total accounts</p>
+    </a>
+
+    <a href="{% url 'admin_deposits' %}" class="card p-5 group">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform relative" style="background: linear-gradient(135deg, #d1e7dd, #a3cfbb);">
+        <svg class="w-5 h-5 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m8-8H4"/></svg>
+        {% if pending_bank_deposits or pending_crypto_deposits %}
+        <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold">
+          {{ pending_bank_deposits|add:pending_crypto_deposits }}
+        </span>
+        {% endif %}
+      </div>
+      <p class="font-bold text-navy-900">Deposits</p>
+      <p class="text-gray-400 text-xs">{{ pending_bank_deposits|add:pending_crypto_deposits }} pending review</p>
+    </a>
+
+    <a href="{% url 'admin_withdrawals' %}" class="card p-5 group">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform relative" style="background: linear-gradient(135deg, #f8d7da, #f1aeb5);">
+        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 12H4"/></svg>
+        {% if pending_withdrawals %}
+        <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold">{{ pending_withdrawals }}</span>
+        {% endif %}
+      </div>
+      <p class="font-bold text-navy-900">Withdrawals</p>
+      <p class="text-gray-400 text-xs">{{ pending_withdrawals }} pending approval</p>
+    </a>
+
+    <a href="{% url 'admin_investments' %}" class="card p-5 group">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style="background: linear-gradient(135deg, #fdeec0, #fac660);">
+        <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+      </div>
+      <p class="font-bold text-navy-900">Investments</p>
+      <p class="text-gray-400 text-xs">R {{ total_invested|floatformat:0 }} active</p>
+    </a>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+
+    <!-- Pending deposits -->
+    <div class="card p-6 fade-up fade-up-4">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-display font-bold text-navy-900 text-lg">Pending Deposits</h3>
+        <a href="{% url 'admin_deposits' %}" class="text-xs text-navy-500 hover:text-gold-600">View all →</a>
+      </div>
+      {% if recent_deposits %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for deposit in recent_deposits %}
+            <tr>
+              <td>
+                <p class="font-medium text-navy-800 text-sm">{{ deposit.user.get_full_name }}</p>
+                <p class="text-gray-400 text-xs">{{ deposit.created_at|date:"d M, H:i" }}</p>
+              </td>
+              <td class="font-mono font-bold text-navy-800">R {{ deposit.amount|floatformat:2 }}</td>
+              <td><span class="px-2 py-1 rounded-full text-xs font-medium badge-pending">{{ deposit.get_status_display }}</span></td>
+              <td>
+                <a href="{% url 'admin_approve_bank_deposit' deposit.pk %}" class="text-xs text-navy-600 hover:text-gold-600 font-medium">Review →</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-gray-400 text-sm text-center py-8">No pending deposits</p>
+      {% endif %}
+    </div>
+
+    <!-- Pending withdrawals -->
+    <div class="card p-6 fade-up fade-up-5">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-display font-bold text-navy-900 text-lg">Pending Withdrawals</h3>
+        <a href="{% url 'admin_withdrawals' %}" class="text-xs text-navy-500 hover:text-gold-600">View all →</a>
+      </div>
+      {% if recent_withdrawals %}
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for wd in recent_withdrawals %}
+            <tr>
+              <td>
+                <p class="font-medium text-navy-800 text-sm">{{ wd.user.get_full_name }}</p>
+                <p class="text-gray-400 text-xs">{{ wd.created_at|date:"d M, H:i" }}</p>
+              </td>
+              <td class="font-mono font-bold text-navy-800">R {{ wd.amount|floatformat:2 }}</td>
+              <td>
+                <span class="px-2 py-1 rounded-full text-xs font-medium {% if wd.method == 'BANK' %}bg-blue-50 text-blue-700 border border-blue-100{% else %}bg-amber-50 text-amber-700 border border-amber-100{% endif %}">
+                  {{ wd.method }}
+                </span>
+              </td>
+              <td>
+                <a href="{% url 'admin_process_withdrawal' wd.pk %}" class="text-xs text-navy-600 hover:text-gold-600 font-medium">Review →</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-gray-400 text-sm text-center py-8">No pending withdrawals</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Admin quick links -->
+  <div class="grid sm:grid-cols-3 gap-4 fade-up fade-up-5">
+    <a href="{% url 'admin_investment_plans' %}" class="p-4 rounded-xl flex items-center gap-3 hover:bg-white transition-colors" style="background: #f5f8fd; border: 1px solid #e2e9f3;">
+      <span class="text-xl">📋</span>
+      <div>
+        <p class="font-semibold text-navy-800 text-sm">Investment Plans</p>
+        <p class="text-gray-400 text-xs">Add or edit plans</p>
+      </div>
+    </a>
+    <a href="{% url 'admin_platform_accounts' %}" class="p-4 rounded-xl flex items-center gap-3 hover:bg-white transition-colors" style="background: #f5f8fd; border: 1px solid #e2e9f3;">
+      <span class="text-xl">🏦</span>
+      <div>
+        <p class="font-semibold text-navy-800 text-sm">Bank Accounts</p>
+        <p class="text-gray-400 text-xs">Platform deposit accounts</p>
+      </div>
+    </a>
+    <a href="{% url 'admin_reports' %}" class="p-4 rounded-xl flex items-center gap-3 hover:bg-white transition-colors" style="background: #f5f8fd; border: 1px solid #e2e9f3;">
+      <span class="text-xl">📊</span>
+      <div>
+        <p class="font-semibold text-navy-800 text-sm">Financial Reports</p>
+        <p class="text-gray-400 text-xs">Platform statistics</p>
+      </div>
+    </a>
+  </div>
+
+</div>
+{% endblock %}

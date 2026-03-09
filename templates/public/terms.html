@@ -1,0 +1,85 @@
+{% extends "public/legal_base.html" %}
+{% block title %}Terms & Conditions{% endblock %}
+{% block doc_label %}Legal Document{% endblock %}
+{% block doc_title %}Terms &amp; Conditions{% endblock %}
+{% block doc_date %}1 January 2025{% endblock %}
+
+{% block doc_toc %}
+<a href="#agreement" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">1. Agreement</a>
+<a href="#eligibility" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">2. Eligibility</a>
+<a href="#account" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">3. Account</a>
+<a href="#investments" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">4. Investments</a>
+<a href="#deposits" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">5. Deposits</a>
+<a href="#withdrawals" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">6. Withdrawals</a>
+<a href="#fees" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">7. Fees</a>
+<a href="#prohibited" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">8. Prohibited Use</a>
+<a href="#liability" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">9. Liability</a>
+<a href="#termination" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">10. Termination</a>
+<a href="#governing" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">11. Governing Law</a>
+{% endblock %}
+
+{% block doc_content %}
+<div class="highlight-box"><p><strong>Please read these Terms carefully.</strong> By registering an account or using the {{ PLATFORM_NAME }} platform, you agree to be bound by these Terms and Conditions. If you do not agree, do not use the platform.</p></div>
+
+<h2 id="agreement">1. Agreement to Terms</h2>
+<p>These Terms and Conditions ("Terms") govern your use of {{ PLATFORM_NAME }} ("Platform", "we", "us", "our"), operated as a South African investment platform. These Terms constitute a legally binding agreement between you ("User", "you") and {{ PLATFORM_NAME }}.</p>
+<p>We reserve the right to amend these Terms at any time. Continued use of the Platform after changes constitutes acceptance of the revised Terms. We will notify registered users of material changes via email.</p>
+
+<h2 id="eligibility">2. Eligibility</h2>
+<p>To use {{ PLATFORM_NAME }}, you must:</p>
+<ul>
+  <li>Be at least 18 years of age</li>
+  <li>Be a South African citizen or legal resident with a valid SA ID or passport</li>
+  <li>Have legal capacity to enter into binding contracts</li>
+  <li>Not be prohibited from using investment services under any applicable law</li>
+  <li>Complete our KYC (Know Your Customer) verification process</li>
+</ul>
+
+<h2 id="account">3. Account Registration &amp; Security</h2>
+<p>You are responsible for maintaining the confidentiality of your login credentials. You agree to notify us immediately of any unauthorised access to your account. {{ PLATFORM_NAME }} is not liable for losses resulting from unauthorised account access where reasonable security measures were in place.</p>
+<p>Each user may only hold one account. Creating multiple accounts is strictly prohibited and may result in permanent suspension of all associated accounts.</p>
+
+<h2 id="investments">4. Investment Plans</h2>
+<p>{{ PLATFORM_NAME }} offers fixed-term and flexible investment plans across Gold, Real Estate, and Cryptocurrency asset classes. All plans are denominated in South African Rand (ZAR).</p>
+<div class="warning-box"><p><strong>⚠ Important:</strong> All investments carry risk. Advertised ROI rates are projected returns based on historical performance and are not guaranteed. Past performance does not guarantee future results. You may receive less than your invested capital.</p></div>
+<p>Once an investment plan is activated, it cannot be cancelled before the stated maturity date except in exceptional circumstances at {{ PLATFORM_NAME }}'s sole discretion.</p>
+
+<h2 id="deposits">5. Deposits</h2>
+<p>Funds may be deposited via Electronic Funds Transfer (EFT) to {{ PLATFORM_NAME }}'s designated bank accounts, or via approved cryptocurrency networks. All deposits must include the unique payment reference provided on the Platform.</p>
+<p>Deposits are credited to your wallet upon confirmation and manual verification by our operations team, typically within 1–24 business hours. {{ PLATFORM_NAME }} is not responsible for delays caused by third-party payment processors or banks.</p>
+<p>Minimum deposit: R{{ PLATFORM_NAME }} (as displayed on the Platform). Maximum deposit limits apply and are subject to KYC verification level.</p>
+
+<h2 id="withdrawals">6. Withdrawals</h2>
+<p>Withdrawal requests are processed Monday to Friday during business hours. Processing times are typically 1–3 business days. Withdrawal requests submitted outside business hours will be processed on the next business day.</p>
+<p>Withdrawals will only be sent to bank accounts or cryptocurrency wallets registered and verified on your account. {{ PLATFORM_NAME }} reserves the right to perform additional verification before processing large withdrawal requests.</p>
+
+<h2 id="fees">7. Fees &amp; Charges</h2>
+<p>{{ PLATFORM_NAME }} may charge the following fees:</p>
+<ul>
+  <li><strong>Deposit fee:</strong> No fee for EFT deposits. Network fees apply for crypto deposits.</li>
+  <li><strong>Withdrawal fee:</strong> As displayed on the withdrawal page at time of request.</li>
+  <li><strong>Early termination fee:</strong> May apply to fixed-term plans terminated before maturity.</li>
+</ul>
+<p>All fees are displayed transparently before confirmation and are deducted from the transaction amount.</p>
+
+<h2 id="prohibited">8. Prohibited Uses</h2>
+<p>You agree not to use the Platform for:</p>
+<ul>
+  <li>Money laundering, fraud, or any illegal activity</li>
+  <li>Circumventing KYC/AML requirements</li>
+  <li>Creating multiple accounts or using false identities</li>
+  <li>Attempting to manipulate platform prices or returns</li>
+  <li>Distributing malware or attempting to compromise platform security</li>
+</ul>
+
+<h2 id="liability">9. Limitation of Liability</h2>
+<p>To the maximum extent permitted by South African law, {{ PLATFORM_NAME }} shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the Platform, including investment losses, loss of profits, or data loss.</p>
+<p>Our total liability to you shall not exceed the amount of fees paid by you to {{ PLATFORM_NAME }} in the 12 months preceding the claim.</p>
+
+<h2 id="termination">10. Termination</h2>
+<p>{{ PLATFORM_NAME }} may suspend or terminate your account at any time for breach of these Terms, suspected fraudulent activity, or failure to complete KYC verification. Upon termination, any funds in your wallet will be returned to your verified bank account after applicable fees and deductions.</p>
+
+<h2 id="governing">11. Governing Law</h2>
+<p>These Terms are governed by the laws of the Republic of South Africa. Any disputes arising shall be subject to the exclusive jurisdiction of the South African courts. Both parties agree to attempt to resolve disputes through good-faith negotiation before initiating legal proceedings.</p>
+<p>For queries regarding these Terms, contact us at <a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a>.</p>
+{% endblock %}

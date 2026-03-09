@@ -1,0 +1,300 @@
+{% extends "base/base.html" %}
+{% block title %}{{ PLATFORM_NAME }} — Invest in Gold, Real Estate & Crypto{% endblock %}
+
+{% block body %}
+<!-- ── NAV ────────────────────────────────────────────────── -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar"
+     style="background: rgba(3,7,30,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06);">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #e08900, #fac660);">
+        <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+      </div>
+      <span class="font-display font-bold text-white text-xl">{{ PLATFORM_NAME }}</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+      <a href="{% url 'public_plans' %}" class="text-navy-200 hover:text-gold-400 transition-colors text-sm font-medium">Investment Plans</a>
+      <a href="{% url 'about' %}" class="text-navy-200 hover:text-gold-400 transition-colors text-sm font-medium">About</a>
+      <a href="{% url 'contact' %}" class="text-navy-200 hover:text-gold-400 transition-colors text-sm font-medium">Contact</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="{% url 'login' %}" class="text-navy-200 hover:text-white transition-colors text-sm font-medium px-4 py-2">Sign In</a>
+      <a href="{% url 'register' %}" class="btn-gold px-5 py-2.5 rounded-lg text-navy-900 font-bold text-sm">Open Account</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section class="relative min-h-screen flex items-center overflow-hidden"
+         style="background: linear-gradient(135deg, #03071e 0%, #0a1f44 45%, #05122b 100%);">
+
+  <!-- Background pattern -->
+  <div class="absolute inset-0 opacity-5" style="background-image: repeating-linear-gradient(45deg, #f5980a 0, #f5980a 1px, transparent 0, transparent 50%); background-size: 32px 32px;"></div>
+
+  <!-- Gold orb effects -->
+  <div class="absolute top-20 right-20 w-96 h-96 rounded-full opacity-10 blur-3xl" style="background: radial-gradient(circle, #f5980a, transparent);"></div>
+  <div class="absolute bottom-20 left-20 w-72 h-72 rounded-full opacity-8 blur-3xl" style="background: radial-gradient(circle, #153a78, transparent);"></div>
+
+  <div class="relative max-w-7xl mx-auto px-6 pt-24 pb-20 grid lg:grid-cols-2 gap-16 items-center">
+
+    <!-- Left content -->
+    <div>
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 fade-up fade-up-1"
+           style="background: rgba(245,152,10,0.15); border: 1px solid rgba(245,152,10,0.3);">
+        <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
+        <span class="text-gold-400 text-xs font-semibold tracking-wider uppercase">South Africa's Premier Platform</span>
+      </div>
+
+      <h1 class="font-display text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 fade-up fade-up-2">
+        Grow Your Wealth<br>
+        <span style="background: linear-gradient(90deg, #f5980a, #fac660); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          with Purpose
+        </span>
+      </h1>
+
+      <p class="text-navy-200 text-lg leading-relaxed mb-10 max-w-lg fade-up fade-up-3">
+        Invest in Gold, Real Estate, and Cryptocurrency — all in South African Rand. 
+        Transparent returns. Secure platform. Built for SA investors.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 mb-12 fade-up fade-up-4">
+        <a href="{% url 'register' %}" class="btn-gold px-8 py-4 rounded-xl text-navy-900 font-bold text-base text-center">
+          Start Investing Today
+        </a>
+        <a href="{% url 'public_plans' %}" class="px-8 py-4 rounded-xl text-white font-medium text-base text-center transition-all hover:bg-white/10"
+           style="border: 1.5px solid rgba(255,255,255,0.2);">
+          View Investment Plans →
+        </a>
+      </div>
+
+      <!-- Trust stats -->
+      <div class="flex gap-8 fade-up fade-up-5">
+        <div>
+          <p class="font-display text-3xl font-bold text-gold-400">R 50M+</p>
+          <p class="text-navy-400 text-xs mt-1">Assets Under Management</p>
+        </div>
+        <div class="w-px bg-navy-700"></div>
+        <div>
+          <p class="font-display text-3xl font-bold text-gold-400">3,400+</p>
+          <p class="text-navy-400 text-xs mt-1">Active Investors</p>
+        </div>
+        <div class="w-px bg-navy-700"></div>
+        <div>
+          <p class="font-display text-3xl font-bold text-gold-400">98%</p>
+          <p class="text-navy-400 text-xs mt-1">Satisfaction Rate</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Investment card preview -->
+    <div class="hidden lg:flex justify-center fade-up fade-up-3">
+      <div class="relative">
+        <!-- Main card -->
+        <div class="w-80 rounded-2xl p-6 shadow-2xl" style="background: linear-gradient(145deg, #0f2d5e, #1b4792); border: 1px solid rgba(245,152,10,0.2);">
+          <div class="flex justify-between items-start mb-6">
+            <div>
+              <p class="text-navy-300 text-xs uppercase tracking-wider">Gold Investment</p>
+              <p class="text-white font-display text-2xl font-bold mt-1">R 25,000</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: rgba(245,152,10,0.15);">
+              <span class="text-2xl">🪙</span>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-navy-300">ROI Rate</span>
+              <span class="text-gold-400 font-bold">+15%</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-navy-300">Duration</span>
+              <span class="text-white">30 Days</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-navy-300">Expected Return</span>
+              <span class="text-green-400 font-bold">R 28,750</span>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-navy-600">
+            <div class="progress-track h-2">
+              <div class="progress-fill h-2" style="width: 65%"></div>
+            </div>
+            <div class="flex justify-between mt-2">
+              <span class="text-navy-400 text-xs">Day 19 of 30</span>
+              <span class="text-gold-400 text-xs font-semibold">65% Complete</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating mini cards -->
+        <div class="absolute -top-4 -right-8 w-44 rounded-xl p-4 shadow-xl fade-up fade-up-4" style="background: #0a1f44; border: 1px solid rgba(255,255,255,0.08);">
+          <p class="text-navy-400 text-xs">This Month's Return</p>
+          <p class="text-green-400 font-bold font-mono text-lg">+R 3,750</p>
+        </div>
+        <div class="absolute -bottom-4 -left-8 w-44 rounded-xl p-4 shadow-xl fade-up fade-up-5" style="background: #0a1f44; border: 1px solid rgba(255,255,255,0.08);">
+          <p class="text-navy-400 text-xs">Portfolio Value</p>
+          <p class="text-gold-400 font-bold font-mono text-lg">R 112,400</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ASSET CATEGORIES ────────────────────────────────────── -->
+<section class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-gold-600 text-sm font-semibold uppercase tracking-widest mb-3">Asset Classes</p>
+      <h2 class="font-display text-4xl font-bold text-navy-900 gold-line inline-block">Three Ways to Build Wealth</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Gold -->
+      <div class="card p-8 group cursor-pointer">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
+             style="background: linear-gradient(135deg, #fdeec0, #fac660);">
+          <span class="text-3xl">🪙</span>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-navy-900 mb-3">Gold</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-6">The timeless store of value. Our gold-backed plans offer stable, predictable returns uncorrelated to market volatility.</p>
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div>
+            <p class="text-xs text-gray-400">Returns from</p>
+            <p class="font-bold text-navy-800">15% per plan</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400">Min. invest</p>
+            <p class="font-bold text-navy-800">R 500</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Estate -->
+      <div class="card p-8 group cursor-pointer relative overflow-hidden"
+           style="background: linear-gradient(145deg, #03071e, #0a1f44); border-color: rgba(245,152,10,0.3);">
+        <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold"
+             style="background: linear-gradient(135deg, #e08900, #fac660); color: #03071e;">
+          POPULAR
+        </div>
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
+             style="background: rgba(245,152,10,0.15);">
+          <span class="text-3xl">🏢</span>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-white mb-3">Real Estate</h3>
+        <p class="text-navy-300 text-sm leading-relaxed mb-6">Access SA's property market without the complexity. Diversified portfolios of residential and commercial assets.</p>
+        <div class="flex items-center justify-between pt-4 border-t border-navy-700">
+          <div>
+            <p class="text-xs text-navy-400">Returns from</p>
+            <p class="font-bold text-gold-400">20% per plan</p>
+          </div>
+          <div>
+            <p class="text-xs text-navy-400">Min. invest</p>
+            <p class="font-bold text-gold-400">R 1,000</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crypto -->
+      <div class="card p-8 group cursor-pointer">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
+             style="background: linear-gradient(135deg, #e8f0f9, #b8cfe8);">
+          <span class="text-3xl">₿</span>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-navy-900 mb-3">Cryptocurrency</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-6">Expert-managed crypto trading strategies. High-yield returns from BTC, ETH and digital asset portfolios.</p>
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div>
+            <p class="text-xs text-gray-400">Returns from</p>
+            <p class="font-bold text-navy-800">25% per plan</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400">Min. invest</p>
+            <p class="font-bold text-navy-800">R 500</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ────────────────────────────────────────── -->
+<section class="py-24" style="background: #f5f8fd;">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <p class="text-gold-600 text-sm font-semibold uppercase tracking-widest mb-3">Simple Process</p>
+      <h2 class="font-display text-4xl font-bold text-navy-900">Start in 4 Easy Steps</h2>
+    </div>
+    <div class="grid md:grid-cols-4 gap-8">
+      {% for step in "1234" %}
+      <div class="text-center">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 font-display font-bold text-xl"
+             style="background: linear-gradient(135deg, #0a1f44, #153a78); color: #fac660;">
+          {{ forloop.counter }}
+        </div>
+        <h4 class="font-display font-bold text-navy-900 text-lg mb-2">
+          {% if forloop.counter == 1 %}Create Account
+          {% elif forloop.counter == 2 %}Fund Your Wallet
+          {% elif forloop.counter == 3 %}Choose a Plan
+          {% else %}Earn Returns{% endif %}
+        </h4>
+        <p class="text-gray-500 text-sm">
+          {% if forloop.counter == 1 %}Register in minutes. SA ID or passport required for verification.
+          {% elif forloop.counter == 2 %}Deposit via bank transfer or cryptocurrency. Funds credited in ZAR.
+          {% elif forloop.counter == 3 %}Select your asset class, plan duration and investment amount.
+          {% else %}Watch your returns grow. Withdraw to your bank or crypto wallet anytime.{% endif %}
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ─────────────────────────────────────────── -->
+<section class="py-20 relative overflow-hidden" style="background: linear-gradient(135deg, #03071e 0%, #0a1f44 100%);">
+  <div class="absolute inset-0 opacity-5" style="background-image: repeating-linear-gradient(45deg, #f5980a 0, #f5980a 1px, transparent 0, transparent 50%); background-size: 24px 24px;"></div>
+  <div class="relative max-w-3xl mx-auto px-6 text-center">
+    <h2 class="font-display text-4xl font-bold text-white mb-4">Ready to Grow Your Wealth?</h2>
+    <p class="text-navy-300 text-lg mb-8">Join thousands of South Africans building financial freedom through smart investing.</p>
+    <a href="{% url 'register' %}" class="btn-gold inline-block px-10 py-4 rounded-xl text-navy-900 font-bold text-lg">
+      Open Free Account
+    </a>
+    <p class="text-navy-500 text-xs mt-4">No hidden fees • ZAR transactions • FSCA compliant</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────── -->
+<footer style="background: #03071e; border-top: 1px solid rgba(255,255,255,0.06);">
+  <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
+    <div class="md:col-span-2">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #e08900, #fac660);">
+          <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+        </div>
+        <span class="font-display font-bold text-white text-xl">{{ PLATFORM_NAME }}</span>
+      </div>
+      <p class="text-navy-400 text-sm leading-relaxed mb-4">South Africa's trusted multi-asset investment platform. Invest in Gold, Real Estate and Cryptocurrency — all in Rand.</p>
+      <p class="text-navy-600 text-xs">{{ SUPPORT_EMAIL }} • {{ SUPPORT_PHONE }}</p>
+    </div>
+    <div>
+      <p class="text-white font-semibold mb-4 text-sm">Platform</p>
+      <div class="space-y-2">
+        <a href="{% url 'public_plans' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Investment Plans</a>
+        <a href="{% url 'register' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Open Account</a>
+        <a href="{% url 'login' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Sign In</a>
+        <a href="{% url 'about' %}" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">About Us</a>
+      </div>
+    </div>
+    <div>
+      <p class="text-white font-semibold mb-4 text-sm">Legal</p>
+      <div class="space-y-2">
+        <a href="#" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Terms of Service</a>
+        <a href="#" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Privacy Policy</a>
+        <a href="#" class="block text-navy-400 hover:text-gold-400 text-sm transition-colors">Risk Disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-navy-900 px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-2">
+    <p class="text-navy-600 text-xs">© {% now "Y" %} {{ PLATFORM_NAME }}. All rights reserved.</p>
+    <p class="text-navy-700 text-xs">Investments are subject to market risk. Please invest responsibly.</p>
+  </div>
+</footer>
+{% endblock %}

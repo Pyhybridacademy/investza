@@ -1,0 +1,56 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Withdrawal History{% endblock %}
+{% block page_title %}Withdrawal History{% endblock %}
+{% block page_subtitle %}All your withdrawal requests{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-5">
+  {% if withdrawals %}
+  <div class="card overflow-hidden fade-up fade-up-1">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Reference</th><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Tax Cert</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for wd in withdrawals %}
+        <tr>
+          <td class="font-mono text-xs text-navy-700">{{ wd.reference }}</td>
+          <td class="text-xs text-gray-500">{{ wd.created_at|date:"d M Y" }}</td>
+          <td class="font-mono font-bold text-navy-800">R {{ wd.amount|floatformat:2 }}</td>
+          <td class="text-xs">{{ wd.get_method_display }}</td>
+          <td>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold
+              {% if wd.status == 'COMPLETED' %}badge-completed
+              {% elif wd.status == 'APPROVED' %}badge-approved
+              {% elif wd.status == 'PENDING' %}badge-pending
+              {% elif wd.status == 'PROCESSING' %}badge-active
+              {% else %}badge-rejected{% endif %}">
+              {{ wd.get_status_display }}
+            </span>
+          </td>
+          <td>
+            {% if wd.tax_pdf %}
+            <a href="{% url 'download_tax_cert' wd.pk %}" class="text-navy-700 hover:text-gold-600 text-xs font-semibold flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              PDF
+            </a>
+            {% else %}<span class="text-gray-300 text-xs">—</span>{% endif %}
+          </td>
+          <td><a href="{% url 'withdrawal_detail' wd.pk %}" class="text-xs text-navy-600 hover:underline">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card p-12 text-center fade-up fade-up-1">
+    <svg class="w-14 h-14 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <h3 class="font-display font-bold text-navy-900 text-xl mb-2">No withdrawals yet</h3>
+    <p class="text-gray-400 text-sm">Your withdrawal history will appear here.</p>
+    <a href="{% url 'withdrawal_home' %}" class="btn-navy inline-block mt-5 px-6 py-2.5 rounded-xl text-white font-bold text-sm">Make a Withdrawal</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

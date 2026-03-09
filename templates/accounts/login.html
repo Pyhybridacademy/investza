@@ -1,0 +1,110 @@
+{% extends "base/base.html" %}
+{% block title %}Sign In — {{ PLATFORM_NAME }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen grid lg:grid-cols-2">
+
+  <!-- Left: Branding panel -->
+  <div class="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden"
+       style="background: linear-gradient(160deg, #03071e 0%, #0a1f44 60%, #05122b 100%);">
+    <div class="absolute inset-0 opacity-5" style="background-image: repeating-linear-gradient(45deg, #f5980a 0, #f5980a 1px, transparent 0, transparent 50%); background-size: 28px 28px;"></div>
+    <div class="absolute top-0 right-0 w-72 h-72 rounded-full opacity-10 blur-3xl" style="background: radial-gradient(circle, #f5980a, transparent);"></div>
+
+    <div class="relative">
+      <a href="/" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #e08900, #fac660);">
+          <span class="font-display font-bold text-navy-900">IZ</span>
+        </div>
+        <span class="font-display font-bold text-white text-2xl">{{ PLATFORM_NAME }}</span>
+      </a>
+    </div>
+
+    <div class="relative">
+      <blockquote class="text-white">
+        <p class="font-display text-3xl font-bold leading-tight mb-6">"The best time to invest was yesterday.<br>The second best time is now."</p>
+        <div class="w-12 h-0.5 mb-4" style="background: linear-gradient(90deg, #f5980a, #fac660);"></div>
+        <p class="text-navy-300 text-sm">Trusted by 3,400+ South African investors</p>
+      </blockquote>
+
+      <!-- Mini stats -->
+      <div class="mt-10 grid grid-cols-3 gap-4">
+        <div class="p-4 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+          <p class="font-display text-2xl font-bold text-gold-400">15%</p>
+          <p class="text-navy-400 text-xs mt-1">Gold Plans ROI</p>
+        </div>
+        <div class="p-4 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+          <p class="font-display text-2xl font-bold text-gold-400">ZAR</p>
+          <p class="text-navy-400 text-xs mt-1">Base Currency</p>
+        </div>
+        <div class="p-4 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+          <p class="font-display text-2xl font-bold text-gold-400">24/7</p>
+          <p class="text-navy-400 text-xs mt-1">Platform Access</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Login form -->
+  <div class="flex items-center justify-center p-8 bg-white">
+    <div class="w-full max-w-md">
+
+      <!-- Mobile logo -->
+      <div class="flex items-center gap-3 mb-8 lg:hidden">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #e08900, #fac660);">
+          <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+        </div>
+        <span class="font-display font-bold text-navy-900 text-xl">{{ PLATFORM_NAME }}</span>
+      </div>
+
+      <div class="mb-8">
+        <h1 class="font-display text-3xl font-bold text-navy-900 mb-2">Welcome back</h1>
+        <p class="text-gray-400 text-sm">Sign in to your investment account</p>
+      </div>
+
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+
+        <div>
+          <label class="block text-sm font-semibold text-navy-800 mb-1.5">Email Address</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.username.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="text-sm font-semibold text-navy-800">Password</label>
+            <a href="{% url 'password_reset' %}" class="text-xs text-gold-600 hover:text-gold-700 font-medium">Forgot password?</a>
+          </div>
+          {{ form.password }}
+          {% if form.password.errors %}
+          <p class="text-red-500 text-xs mt-1">{{ form.password.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-600 text-sm">{{ form.non_field_errors.0 }}</p>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn-navy w-full py-3.5 rounded-xl text-white font-bold text-base">
+          Sign In to Account
+        </button>
+      </form>
+
+      <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+        <p class="text-gray-500 text-sm">
+          Don't have an account?
+          <a href="{% url 'register' %}" class="text-navy-700 font-semibold hover:text-gold-600 transition-colors">Open one free →</a>
+        </p>
+      </div>
+
+      <p class="text-center text-xs text-gray-400 mt-6">
+        Protected by 256-bit SSL encryption
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

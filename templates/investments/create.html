@@ -1,0 +1,210 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}New Investment{% endblock %}
+{% block page_title %}New Investment{% endblock %}
+{% block page_subtitle %}Select a plan and enter your capital amount{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="grid lg:grid-cols-5 gap-6">
+
+    <!-- Form -->
+    <div class="lg:col-span-3">
+      <div class="card p-8 fade-up fade-up-1">
+        <h2 class="font-display font-bold text-navy-900 text-xl mb-6">Investment Details</h2>
+
+        <form method="post" id="investment-form" class="space-y-6">
+          {% csrf_token %}
+
+          <!-- Plan Select -->
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-2">Investment Plan</label>
+            <select name="plan" id="id_plan" class="form-select" onchange="updateCalculator()">
+              <option value="">— Select a plan —</option>
+              {% for category in categories %}
+              <optgroup label="{{ category.name }}">
+                {% for plan in category.plans.all %}
+                {% if plan.is_active %}
+                <option value="{{ plan.id }}"
+                  {% if form.plan.value == plan.id|stringformat:'s' %}selected{% endif %}
+                  data-roi="{{ plan.roi_percentage }}"
+                  data-duration="{{ plan.duration_value }}"
+                  data-unit="{{ plan.get_duration_unit_display }}"
+                  data-min="{{ plan.minimum_amount }}"
+                  data-max="{{ plan.maximum_amount }}"
+                  data-principal="{{ plan.returns_principal|yesno:'1,0' }}">
+                  {{ plan.name }} — {{ plan.roi_percentage }}% / {{ plan.duration_value }} {{ plan.get_duration_unit_display }}
+                </option>
+                {% endif %}
+                {% endfor %}
+              </optgroup>
+              {% endfor %}
+            </select>
+            {% if form.plan.errors %}<p class="text-red-500 text-xs mt-1">{{ form.plan.errors.0 }}</p>{% endif %}
+          </div>
+
+          <!-- Amount -->
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-2">Investment Amount (ZAR)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-navy-500 font-bold font-mono">R</span>
+              <input type="number" name="amount_invested" id="id_amount" class="form-input pl-8"
+                     placeholder="e.g. 5000.00" step="0.01" min="500"
+                     oninput="updateCalculator()"
+                     value="{{ form.amount_invested.value|default:'' }}">
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Available balance: <strong class="text-navy-700 font-mono">R {{ wallet.available_balance|floatformat:2 }}</strong></p>
+            {% if form.amount_invested.errors %}<p class="text-red-500 text-xs mt-1">{{ form.amount_invested.errors.0 }}</p>{% endif %}
+          </div>
+
+          <!-- Quick amount buttons -->
+          <div class="flex flex-wrap gap-2">
+            <p class="text-xs text-gray-400 w-full">Quick amounts:</p>
+            <button type="button" onclick="setAmount(500)"   class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-navy-50 hover:border-navy-300 hover:text-navy-700 transition-all">R 500</button>
+            <button type="button" onclick="setAmount(1000)"  class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-navy-50 hover:border-navy-300 hover:text-navy-700 transition-all">R 1,000</button>
+            <button type="button" onclick="setAmount(5000)"  class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-navy-50 hover:border-navy-300 hover:text-navy-700 transition-all">R 5,000</button>
+            <button type="button" onclick="setAmount(10000)" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-navy-50 hover:border-navy-300 hover:text-navy-700 transition-all">R 10,000</button>
+            <button type="button" onclick="setAmount(25000)" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-navy-50 hover:border-navy-300 hover:text-navy-700 transition-all">R 25,000</button>
+            <button type="button" onclick="setAmount(50000)" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-navy-50 hover:border-navy-300 hover:text-navy-700 transition-all">R 50,000</button>
+          </div>
+
+          {% if form.non_field_errors %}
+          <div class="p-4 bg-red-50 border border-red-200 rounded-xl">
+            {% for error in form.non_field_errors %}
+            <p class="text-red-600 text-sm">{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <button type="submit" id="submit-btn"
+                  class="btn-gold w-full py-4 rounded-xl text-navy-900 font-bold text-base" disabled>
+            Confirm Investment
+          </button>
+
+          <p class="text-center text-xs text-gray-400">
+            Funds will be deducted from your available balance immediately.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Live Calculator -->
+    <div class="lg:col-span-2 fade-up fade-up-2">
+      <div class="card p-6 sticky top-24">
+        <h3 class="font-display font-bold text-navy-900 text-lg mb-1">ROI Calculator</h3>
+        <p class="text-gray-400 text-xs mb-5">Live preview of your expected returns</p>
+
+        <div id="calculator-empty" class="text-center py-8 text-gray-400 text-sm">
+          Select a plan and enter an amount
+        </div>
+
+        <div id="calculator-result" class="hidden">
+          <!-- Plan info -->
+          <div class="p-4 rounded-xl mb-4" style="background: linear-gradient(135deg, #03071e, #0a1f44);">
+            <p id="calc-plan-name" class="text-navy-300 text-xs uppercase tracking-wide mb-1">Plan</p>
+            <div class="flex justify-between items-end">
+              <div>
+                <p id="calc-roi" class="font-display text-3xl font-bold text-gold-400">0%</p>
+                <p class="text-navy-400 text-xs mt-0.5">Total ROI</p>
+              </div>
+              <div class="text-right">
+                <p id="calc-duration" class="text-white font-bold text-lg">—</p>
+                <p class="text-navy-400 text-xs">Duration</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Breakdown -->
+          <div class="space-y-3">
+            <div class="flex justify-between py-2.5 border-b border-gray-100">
+              <span class="text-gray-500 text-sm">Capital Invested</span>
+              <span id="calc-invested" class="font-mono font-bold text-navy-800 text-sm">R 0.00</span>
+            </div>
+            <div class="flex justify-between py-2.5 border-b border-gray-100">
+              <span class="text-gray-500 text-sm">Expected Profit</span>
+              <span id="calc-profit" class="font-mono font-bold text-green-600 text-sm">+R 0.00</span>
+            </div>
+            <div class="flex justify-between py-2.5 border-b border-gray-100">
+              <span class="text-gray-500 text-sm">Capital Returned</span>
+              <span id="calc-principal" class="font-mono font-bold text-sm">—</span>
+            </div>
+            <div class="flex justify-between py-3 rounded-xl px-3" style="background: #f5f8fd; border: 1px solid #e2e9f3;">
+              <span class="text-navy-800 font-bold text-sm">Total Return</span>
+              <span id="calc-total" class="font-mono font-bold text-navy-900 text-base">R 0.00</span>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-gray-100">
+            <p class="text-xs text-gray-400 text-center">
+              Projected maturity: <strong id="calc-maturity" class="text-navy-700">—</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+function setAmount(val) {
+  document.getElementById('id_amount').value = val;
+  updateCalculator();
+}
+
+function updateCalculator() {
+  const planSelect = document.getElementById('id_plan');
+  const amountInput = document.getElementById('id_amount');
+  const submitBtn = document.getElementById('submit-btn');
+  const resultDiv = document.getElementById('calculator-result');
+  const emptyDiv = document.getElementById('calculator-empty');
+
+  const option = planSelect.options[planSelect.selectedIndex];
+  const amount = parseFloat(amountInput.value) || 0;
+
+  if (!option.value || amount <= 0) {
+    resultDiv.classList.add('hidden');
+    emptyDiv.classList.remove('hidden');
+    submitBtn.disabled = true;
+    return;
+  }
+
+  const roi = parseFloat(option.dataset.roi);
+  const durationVal = option.dataset.duration;
+  const durationUnit = option.dataset.unit;
+  const minAmt = parseFloat(option.dataset.min);
+  const maxAmt = parseFloat(option.dataset.max);
+  const returnsPrincipal = option.dataset.principal === '1';
+
+  const profit = (amount * roi) / 100;
+  const total = returnsPrincipal ? amount + profit : profit;
+
+  // Calculate maturity date
+  const days = parseInt(durationVal) * (durationUnit.toLowerCase().includes('week') ? 7 : durationUnit.toLowerCase().includes('month') ? 30 : 1);
+  const maturityDate = new Date();
+  maturityDate.setDate(maturityDate.getDate() + days);
+
+  // Update UI
+  document.getElementById('calc-plan-name').textContent = option.text.split(' — ')[0];
+  document.getElementById('calc-roi').textContent = roi + '%';
+  document.getElementById('calc-duration').textContent = durationVal + ' ' + durationUnit;
+  document.getElementById('calc-invested').textContent = 'R ' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  document.getElementById('calc-profit').textContent = '+R ' + profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  document.getElementById('calc-principal').textContent = returnsPrincipal ? '✓ Included' : '✕ Not returned';
+  document.getElementById('calc-principal').className = 'font-mono font-bold text-sm ' + (returnsPrincipal ? 'text-green-600' : 'text-red-500');
+  document.getElementById('calc-total').textContent = 'R ' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  document.getElementById('calc-maturity').textContent = maturityDate.toLocaleDateString('en-ZA', {day:'numeric',month:'short',year:'numeric'});
+
+  resultDiv.classList.remove('hidden');
+  emptyDiv.classList.add('hidden');
+
+  // Enable submit if valid range
+  const availableBalance = {{ wallet.available_balance|default:0 }};
+  submitBtn.disabled = !(amount >= minAmt && amount <= maxAmt && amount <= availableBalance);
+}
+
+// Init if values pre-selected (e.g. from plan link)
+updateCalculator();
+</script>
+{% endblock %}
+{% endblock %}

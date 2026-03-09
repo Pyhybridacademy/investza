@@ -1,0 +1,107 @@
+{% extends "public/legal_base.html" %}
+{% block title %}Privacy Policy{% endblock %}
+{% block doc_label %}Legal Document{% endblock %}
+{% block doc_title %}Privacy Policy{% endblock %}
+{% block doc_date %}1 January 2025{% endblock %}
+
+{% block doc_toc %}
+<a href="#collection" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">1. Data We Collect</a>
+<a href="#use" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">2. How We Use It</a>
+<a href="#sharing" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">3. Sharing</a>
+<a href="#security" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">4. Security</a>
+<a href="#retention" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">5. Retention</a>
+<a href="#rights" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">6. Your Rights</a>
+<a href="#cookies" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">7. Cookies</a>
+<a href="#popia" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">8. POPIA</a>
+<a href="#contact-priv" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">9. Contact</a>
+{% endblock %}
+
+{% block doc_content %}
+<div class="highlight-box"><p>{{ PLATFORM_NAME }} is committed to protecting your personal information in accordance with the <strong>Protection of Personal Information Act (POPIA), Act 4 of 2013</strong> of South Africa. This policy explains how we collect, use, and protect your data.</p></div>
+
+<h2 id="collection">1. Information We Collect</h2>
+<h3>Personal Information</h3>
+<ul>
+  <li>Full name, date of birth, South African ID number or passport number</li>
+  <li>Email address and phone number</li>
+  <li>Residential address</li>
+  <li>Profile photograph (optional)</li>
+</ul>
+<h3>Financial Information</h3>
+<ul>
+  <li>Bank account details (for deposits and withdrawals)</li>
+  <li>Cryptocurrency wallet addresses</li>
+  <li>Transaction history and investment activity</li>
+  <li>Proof of payment documents</li>
+</ul>
+<h3>Technical Information</h3>
+<ul>
+  <li>IP address, browser type, and device information</li>
+  <li>Login timestamps and session activity</li>
+  <li>Platform usage and navigation data</li>
+</ul>
+
+<h2 id="use">2. How We Use Your Information</h2>
+<p>We use your personal information to:</p>
+<ul>
+  <li>Create and manage your investment account</li>
+  <li>Verify your identity (KYC/AML compliance)</li>
+  <li>Process deposits, investments, and withdrawals</li>
+  <li>Send transaction confirmations and account notifications</li>
+  <li>Comply with South African financial regulations</li>
+  <li>Detect and prevent fraud, money laundering, and suspicious activity</li>
+  <li>Improve our platform and user experience</li>
+  <li>Send marketing communications (only with your consent)</li>
+</ul>
+
+<h2 id="sharing">3. Information Sharing</h2>
+<p>We do not sell your personal information. We may share your information with:</p>
+<ul>
+  <li><strong>Regulatory authorities:</strong> As required by FICA, SARS, and other SA regulatory bodies</li>
+  <li><strong>Banking partners:</strong> To process transactions and verify bank accounts</li>
+  <li><strong>Identity verification services:</strong> To complete KYC checks</li>
+  <li><strong>Service providers:</strong> Email, hosting, and analytics providers bound by confidentiality agreements</li>
+  <li><strong>Law enforcement:</strong> Where required by law or court order</li>
+</ul>
+
+<h2 id="security">4. Data Security</h2>
+<p>We implement industry-standard security measures to protect your personal information, including:</p>
+<ul>
+  <li>SSL/TLS encryption for all data in transit</li>
+  <li>Encrypted storage of sensitive financial data</li>
+  <li>Two-factor authentication options</li>
+  <li>Regular security audits and penetration testing</li>
+  <li>Strict access controls — staff access is role-based and logged</li>
+</ul>
+<div class="warning-box"><p>Despite our best efforts, no system is completely secure. You are responsible for maintaining the confidentiality of your login credentials.</p></div>
+
+<h2 id="retention">5. Data Retention</h2>
+<p>We retain your personal information for as long as your account is active and for a minimum of 5 years after account closure, as required by South African financial regulations (FICA). Transaction records are retained for a minimum of 7 years.</p>
+<p>After the retention period, your data will be securely deleted or anonymised.</p>
+
+<h2 id="rights">6. Your Rights Under POPIA</h2>
+<p>As a South African data subject, you have the right to:</p>
+<ul>
+  <li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
+  <li><strong>Correction:</strong> Request correction of inaccurate or incomplete information</li>
+  <li><strong>Deletion:</strong> Request deletion of your information (subject to legal retention requirements)</li>
+  <li><strong>Objection:</strong> Object to the processing of your information for marketing purposes</li>
+  <li><strong>Complaint:</strong> Lodge a complaint with the Information Regulator of South Africa</li>
+</ul>
+<p>To exercise your rights, contact our Information Officer at <a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a>.</p>
+
+<h2 id="cookies">7. Cookies</h2>
+<p>We use essential cookies to maintain your session and keep you logged in. We may also use analytics cookies to understand how you use our platform. You can disable non-essential cookies through your browser settings, though this may affect platform functionality.</p>
+
+<h2 id="popia">8. POPIA Compliance</h2>
+<p>{{ PLATFORM_NAME }} is committed to full compliance with the Protection of Personal Information Act (POPIA). We have appointed a designated Information Officer responsible for ensuring our compliance. Our data processing activities are conducted lawfully, with a legitimate purpose, and we collect only the minimum data necessary.</p>
+<p>For POPIA-related queries or to report a concern, contact our Information Officer at <a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a>.</p>
+
+<h2 id="contact-priv">9. Contact Us</h2>
+<p>For any privacy-related queries or to exercise your rights, please contact:</p>
+<ul>
+  <li><strong>Email:</strong> <a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a></li>
+  <li><strong>Phone:</strong> {{ SUPPORT_PHONE }}</li>
+  <li><strong>Address:</strong> Johannesburg, Gauteng, South Africa</li>
+</ul>
+{% endblock %}

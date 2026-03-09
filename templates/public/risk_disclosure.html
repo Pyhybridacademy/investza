@@ -1,0 +1,90 @@
+{% extends "public/legal_base.html" %}
+{% block title %}Risk Disclosure{% endblock %}
+{% block doc_label %}Important Notice{% endblock %}
+{% block doc_title %}Risk Disclosure Statement{% endblock %}
+{% block doc_date %}1 January 2025{% endblock %}
+
+{% block doc_toc %}
+<a href="#overview" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">1. Overview</a>
+<a href="#general" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">2. General Risks</a>
+<a href="#gold" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">3. Gold Investments</a>
+<a href="#property" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">4. Real Estate</a>
+<a href="#crypto" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">5. Cryptocurrency</a>
+<a href="#liquidity" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">6. Liquidity Risk</a>
+<a href="#regulatory" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">7. Regulatory Risk</a>
+<a href="#currency" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">8. Currency Risk</a>
+<a href="#suitability" class="block text-navy-600 hover:text-navy-900 py-1 text-xs">9. Suitability</a>
+{% endblock %}
+
+{% block doc_content %}
+<div class="warning-box">
+  <p><strong>⚠ Read This Carefully.</strong> This Risk Disclosure Statement is an important legal document. By investing on {{ PLATFORM_NAME }}, you acknowledge that you have read, understood, and accepted all risks described below. <strong>All investments carry risk. You may lose some or all of your invested capital.</strong></p>
+</div>
+
+<h2 id="overview">1. Overview</h2>
+<p>{{ PLATFORM_NAME }} provides a platform for South African investors to access Gold, Real Estate, and Cryptocurrency investment plans. While we strive to generate consistent returns for our investors, investing involves inherent risk and is not suitable for everyone.</p>
+<p>This document outlines the key risks associated with investing on our platform. It is not exhaustive — additional risks may exist that are not described here. We strongly recommend that you seek independent financial advice before investing.</p>
+
+<h2 id="general">2. General Investment Risks</h2>
+<h3>Capital Risk</h3>
+<p>The value of your investment can go down as well as up. You may receive back less than the amount you invested. Past performance is not a reliable indicator of future results. Projected ROI figures are estimates based on historical data and market conditions — they are not guaranteed.</p>
+
+<h3>Market Risk</h3>
+<p>Investment values are affected by market forces including supply and demand, economic conditions, geopolitical events, and investor sentiment. These factors are outside our control and can cause rapid and significant value changes.</p>
+
+<h3>Concentration Risk</h3>
+<p>Investing a significant portion of your wealth in a single asset class or platform increases your exposure to losses. We recommend diversifying your investments across multiple asset types and providers.</p>
+
+<h2 id="gold">3. Gold Investment Risks</h2>
+<ul>
+  <li><strong>Price volatility:</strong> Gold prices fluctuate based on global supply/demand, US dollar strength, inflation expectations, and central bank activity.</li>
+  <li><strong>No income generation:</strong> Physical gold does not generate dividends or interest income.</li>
+  <li><strong>Storage &amp; custody risk:</strong> Exposure to theft, fraud, or operational failure in the custody chain.</li>
+  <li><strong>Geopolitical risk:</strong> Gold prices can be significantly impacted by global political events.</li>
+</ul>
+
+<h2 id="property">4. Real Estate Investment Risks</h2>
+<ul>
+  <li><strong>Illiquidity:</strong> Property is an illiquid asset — it cannot be quickly sold without potentially accepting a lower price.</li>
+  <li><strong>Market cycles:</strong> Property values are subject to economic cycles, interest rate changes, and local market conditions.</li>
+  <li><strong>South African property market:</strong> Specific risks include load shedding impacts, municipal service failures, and economic headwinds affecting property demand.</li>
+  <li><strong>Rental income risk:</strong> Vacancies, non-payment by tenants, and property maintenance costs can reduce returns.</li>
+  <li><strong>Regulatory risk:</strong> Changes to South African property law, land reform policies, or local by-laws may affect property values.</li>
+</ul>
+
+<h2 id="crypto">5. Cryptocurrency Investment Risks</h2>
+<div class="warning-box"><p><strong>High Risk Asset:</strong> Cryptocurrency investments carry substantially higher risk than traditional investments. Prices can fall by 50% or more within days. Only invest what you can afford to lose entirely.</p></div>
+<ul>
+  <li><strong>Extreme volatility:</strong> Cryptocurrency prices can experience rapid, extreme swings in both directions.</li>
+  <li><strong>Regulatory uncertainty:</strong> The regulatory status of cryptocurrencies in South Africa and globally continues to evolve. New regulations could significantly impact values.</li>
+  <li><strong>Technology risk:</strong> Blockchain networks are subject to bugs, hacking, hard forks, and protocol changes.</li>
+  <li><strong>Liquidity risk:</strong> Some cryptocurrencies may be difficult to sell quickly, especially during market stress.</li>
+  <li><strong>Custodial risk:</strong> Loss of private keys, exchange hacks, or platform failures could result in total loss.</li>
+  <li><strong>No consumer protection:</strong> Cryptocurrency holdings are not covered by the South African Deposit Insurance Scheme (SADI).</li>
+</ul>
+
+<h2 id="liquidity">6. Liquidity Risk</h2>
+<p>Fixed-term investment plans cannot be withdrawn before their maturity date. If you require access to your funds before a plan matures, you may not be able to access them. Always ensure you have sufficient emergency funds outside of {{ PLATFORM_NAME }} before investing.</p>
+<p>{{ PLATFORM_NAME }} may suspend or delay withdrawals in exceptional circumstances, including but not limited to: system maintenance, regulatory requirements, fraud investigations, or extreme market conditions.</p>
+
+<h2 id="regulatory">7. Regulatory &amp; Legal Risk</h2>
+<p>The financial services regulatory environment in South Africa is subject to change. Changes in legislation, taxation policy, SARB regulations, or FSCA requirements may adversely affect the Platform's operations or the returns on your investments. {{ PLATFORM_NAME }} will endeavour to comply with all applicable regulations, but regulatory changes are outside our control.</p>
+
+<h2 id="currency">8. Currency Risk</h2>
+<p>All investments on {{ PLATFORM_NAME }} are denominated in South African Rand (ZAR). However, the underlying assets (particularly gold and cryptocurrencies) are priced in US dollars or other currencies. ZAR exchange rate movements can therefore affect the ZAR value of your investments, even if the underlying asset price has not changed.</p>
+
+<h2 id="suitability">9. Suitability &amp; Investment Advice</h2>
+<p>{{ PLATFORM_NAME }} is a platform provider, not a registered financial advisor. The information and investment plans provided on this platform do not constitute financial advice tailored to your personal circumstances.</p>
+<p>Before investing, you should carefully consider:</p>
+<ul>
+  <li>Your financial situation and whether you can afford to lose the invested amount</li>
+  <li>Your investment goals and time horizon</li>
+  <li>Your risk tolerance and appetite for loss</li>
+  <li>Your existing investment portfolio and diversification needs</li>
+</ul>
+<p>We strongly recommend consulting with a registered Financial Service Provider (FSP) licenced by the FSCA before making significant investment decisions. A list of registered FSPs is available at <a href="https://www.fsca.co.za" target="_blank" rel="noopener">www.fsca.co.za</a>.</p>
+
+<div class="highlight-box">
+  <p><strong>Need help or have questions?</strong> Contact our team at <a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a> or {{ SUPPORT_PHONE }}. We do not provide personalised financial advice, but we can explain how our platform works.</p>
+</div>
+{% endblock %}

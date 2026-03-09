@@ -1,0 +1,41 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}{{ investment.reference }}{% endblock %}
+{% block page_title %}Investment Detail{% endblock %}
+{% block page_subtitle %}{{ investment.reference }}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+  <div class="card p-8 fade-up fade-up-1">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl
+          {% if investment.plan.category.slug == 'gold' %}bg-yellow-100{% elif investment.plan.category.slug == 'real-estate' %}bg-blue-100{% else %}bg-green-100{% endif %}">
+          {% if investment.plan.category.slug == 'gold' %}🪙{% elif investment.plan.category.slug == 'real-estate' %}🏢{% else %}₿{% endif %}
+        </div>
+        <div>
+          <h2 class="font-display font-bold text-navy-900 text-xl">{{ investment.plan.name }}</h2>
+          <p class="text-gray-400 text-sm">{{ investment.plan.category.name }}</p>
+        </div>
+      </div>
+      <span class="px-3 py-1.5 rounded-full text-sm font-medium {% if investment.status == 'ACTIVE' %}badge-active{% elif investment.status == 'MATURED' %}badge-matured{% else %}badge-pending{% endif %}">{{ investment.get_status_display }}</span>
+    </div>
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Capital Invested</p><p class="font-mono font-bold text-navy-800 text-xl">R {{ investment.amount_invested|floatformat:2 }}</p></div>
+      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">ROI Rate</p><p class="font-display font-bold text-gold-600 text-2xl">{{ investment.plan.roi_percentage }}%</p></div>
+      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Expected Profit</p><p class="font-mono font-bold text-green-600 text-xl">+R {{ investment.expected_roi|floatformat:2 }}</p></div>
+      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Total Return</p><p class="font-mono font-bold text-navy-800 text-xl">R {{ investment.expected_total|floatformat:2 }}</p></div>
+    </div>
+    {% if investment.start_date %}
+    <div>
+      <div class="flex justify-between text-xs text-gray-400 mb-2">
+        <span>Started: {{ investment.start_date|date:"d M Y" }}</span>
+        <span>{{ investment.progress_percentage }}% complete</span>
+        <span>Matures: {{ investment.maturity_date|date:"d M Y" }}</span>
+      </div>
+      <div class="progress-track h-3"><div class="progress-fill h-3" style="width:{{ investment.progress_percentage }}%"></div></div>
+      <p class="text-center text-sm text-navy-700 font-semibold mt-2">{{ investment.days_remaining }} days remaining</p>
+    </div>
+    {% endif %}
+  </div>
+  <a href="{% url 'my_investments' %}" class="text-sm text-navy-600 hover:text-gold-600">← Back to My Investments</a>
+</div>
+{% endblock %}

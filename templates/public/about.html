@@ -1,0 +1,117 @@
+{% extends "base/base.html" %}
+{% block title %}About Us{% endblock %}
+{% block body %}
+
+<!-- NAV -->
+<nav class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#e08900,#fac660);">
+        <span class="font-display font-bold text-navy-900 text-sm">IZ</span>
+      </div>
+      <span class="font-display font-bold text-navy-900 text-xl">{{ PLATFORM_NAME }}</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <a href="{% url 'login' %}" class="text-navy-700 font-medium text-sm hover:text-gold-600 transition-colors">Sign In</a>
+      <a href="{% url 'register' %}" class="btn-gold px-5 py-2.5 rounded-xl text-navy-900 font-bold text-sm">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="py-20 px-6 relative overflow-hidden" style="background:linear-gradient(160deg,#03071e 0%,#0a1f44 100%);">
+  <div class="absolute inset-0 opacity-5" style="background-image:repeating-linear-gradient(45deg,#f5980a 0,#f5980a 1px,transparent 0,transparent 50%);background-size:28px 28px;"></div>
+  <div class="max-w-4xl mx-auto text-center relative fade-up fade-up-1">
+    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold text-gold-300 mb-6" style="background:rgba(245,152,10,0.15);border:1px solid rgba(245,152,10,0.3);">🇿🇦 Proudly South African</span>
+    <h1 class="font-display font-bold text-white text-5xl mb-6 leading-tight">Built for South Africans,<br>by South Africans</h1>
+    <p class="text-navy-300 text-lg max-w-2xl mx-auto leading-relaxed">{{ PLATFORM_NAME }} is a multi-asset investment platform designed to give every South African access to Gold, Real Estate, and Cryptocurrency investments — starting from R500.</p>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="py-20 px-6 bg-white">
+  <div class="max-w-5xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="fade-up fade-up-1">
+        <span class="text-gold-600 font-bold text-xs uppercase tracking-widest">Our Mission</span>
+        <h2 class="font-display font-bold text-navy-900 text-4xl mt-2 mb-5">Democratising investment in South Africa</h2>
+        <p class="text-gray-500 leading-relaxed mb-4">For too long, high-yield investment opportunities have been reserved for the wealthy few. {{ PLATFORM_NAME }} changes that — by making diversified, professionally managed investment plans accessible to every South African, regardless of income level.</p>
+        <p class="text-gray-500 leading-relaxed">We believe that financial empowerment is a right, not a privilege. Our platform combines gold's stability, real estate's steady growth, and crypto's upside potential into simple, ZAR-denominated plans.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-4 fade-up fade-up-2">
+        <div class="p-6 rounded-2xl text-center" style="background:linear-gradient(135deg,#f5f8fd,#e8f0f9);">
+          <p class="font-display font-bold text-navy-900 text-3xl">R500</p>
+          <p class="text-gray-500 text-sm mt-1">Minimum Investment</p>
+        </div>
+        <div class="p-6 rounded-2xl text-center" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+          <p class="font-display font-bold text-navy-900 text-3xl">3</p>
+          <p class="text-gray-500 text-sm mt-1">Asset Classes</p>
+        </div>
+        <div class="p-6 rounded-2xl text-center" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+          <p class="font-display font-bold text-navy-900 text-3xl">ZAR</p>
+          <p class="text-gray-500 text-sm mt-1">All Transactions</p>
+        </div>
+        <div class="p-6 rounded-2xl text-center" style="background:linear-gradient(135deg,#f5f8fd,#e8f0f9);">
+          <p class="font-display font-bold text-navy-900 text-3xl">24/7</p>
+          <p class="text-gray-500 text-sm mt-1">Portfolio Access</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="py-20 px-6" style="background:#f5f8fd;">
+  <div class="max-w-5xl mx-auto text-center">
+    <span class="text-gold-600 font-bold text-xs uppercase tracking-widest">Our Values</span>
+    <h2 class="font-display font-bold text-navy-900 text-4xl mt-2 mb-12">What we stand for</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      {% for item in values %}{% endfor %}
+      <div class="card p-8 fade-up fade-up-1">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:linear-gradient(135deg,#e8f0f9,#b8cfe8);">
+          <svg class="w-7 h-7 text-navy-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-navy-900 text-xl mb-3">Trust & Transparency</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Every rand is tracked, every transaction is logged. We publish clear terms, real ROI numbers, and full fee disclosures — no hidden surprises.</p>
+      </div>
+      <div class="card p-8 fade-up fade-up-2">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+          <svg class="w-7 h-7 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-navy-900 text-xl mb-3">Financial Inclusion</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">We designed our platform to be simple, accessible and affordable. Whether you're investing R500 or R500 000, you get the same professional experience.</p>
+      </div>
+      <div class="card p-8 fade-up fade-up-3">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:linear-gradient(135deg,#d1e7dd,#a3cfbb);">
+          <svg class="w-7 h-7 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <h3 class="font-display font-bold text-navy-900 text-xl mb-3">Real Returns</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Our investment plans are underpinned by real assets — physical gold, South African property, and major cryptocurrencies — not speculation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 px-6 text-center" style="background:linear-gradient(135deg,#03071e,#0a1f44);">
+  <div class="max-w-2xl mx-auto fade-up fade-up-1">
+    <h2 class="font-display font-bold text-white text-4xl mb-4">Ready to start investing?</h2>
+    <p class="text-navy-300 mb-8">Join South Africans who are growing their wealth with {{ PLATFORM_NAME }}.</p>
+    <a href="{% url 'register' %}" class="btn-gold inline-block px-10 py-4 rounded-xl text-navy-900 font-bold text-base">Create Free Account →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-10 px-6 bg-white border-t border-gray-100">
+  <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <p class="text-gray-400 text-sm">© {% now "Y" %} {{ PLATFORM_NAME }} — All investments are subject to risk.</p>
+    <div class="flex flex-wrap gap-5 text-sm text-gray-500">
+      <a href="{% url 'about' %}" class="hover:text-navy-700">About</a>
+      <a href="{% url 'contact' %}" class="hover:text-navy-700">Contact</a>
+      <a href="{% url 'terms' %}" class="hover:text-navy-700">Terms</a>
+      <a href="{% url 'privacy' %}" class="hover:text-navy-700">Privacy</a>
+      <a href="{% url 'risk_disclosure' %}" class="hover:text-navy-700">Risk Disclosure</a>
+    </div>
+  </div>
+</footer>
+{% endblock %}

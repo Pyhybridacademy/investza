@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to {{ platform_name }}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0f4f8; color: #1e2d4a; }
+    .wrapper { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(10,31,68,0.10); }
+    .header { background: linear-gradient(135deg, #03071e 0%, #0a1f44 100%); padding: 48px; text-align: center; }
+    .logo-box { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; background: linear-gradient(135deg, #e08900, #fac660); border-radius: 12px; margin-bottom: 16px; }
+    .logo-text { font-size: 22px; font-weight: 900; color: #03071e; }
+    .platform-name { color: #fff; font-size: 24px; font-weight: 700; display: block; margin-bottom: 8px; }
+    .tagline { color: #7aa0d4; font-size: 13px; }
+    .body { padding: 48px; }
+    h1 { font-size: 28px; font-weight: 700; color: #0a1f44; margin-bottom: 8px; }
+    .gold-bar { width: 40px; height: 3px; background: linear-gradient(90deg, #e08900, #fac660); border-radius: 2px; margin-bottom: 24px; }
+    p { font-size: 15px; line-height: 1.7; color: #4a5568; margin-bottom: 16px; }
+    .steps { background: #f5f8fd; border: 1px solid #e2e9f3; border-radius: 12px; padding: 24px; margin: 24px 0; }
+    .step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+    .step:last-child { margin-bottom: 0; }
+    .step-num { min-width: 32px; height: 32px; background: linear-gradient(135deg, #0a1f44, #153a78); color: #fdeec0; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .step-content p { margin: 0; }
+    .step-content strong { color: #0a1f44; font-size: 14px; display: block; margin-bottom: 2px; }
+    .step-content span { font-size: 13px; color: #718096; }
+    .btn-wrap { text-align: center; margin: 32px 0; }
+    .btn { display: inline-block; padding: 16px 48px; background: linear-gradient(135deg, #e08900, #f5980a, #fac660); color: #03071e !important; font-weight: 700; font-size: 16px; text-decoration: none; border-radius: 10px; }
+    .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0; }
+    .plan-card { background: linear-gradient(135deg, #03071e, #0a1f44); border-radius: 10px; padding: 16px; text-align: center; }
+    .plan-card .icon { font-size: 24px; margin-bottom: 8px; }
+    .plan-card .name { color: #b8cfe8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .plan-card .roi { color: #fac660; font-size: 20px; font-weight: 700; }
+    .footer { background: #f5f8fd; border-top: 1px solid #e2e9f3; padding: 28px 48px; text-align: center; }
+    .footer p { font-size: 12px; color: #9aa5b4; margin-bottom: 6px; }
+    .footer a { color: #153a78; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div class="logo-box"><span class="logo-text">IZ</span></div><br>
+      <span class="platform-name">{{ platform_name }}</span>
+      <span class="tagline">South Africa's Premier Investment Platform</span>
+    </div>
+
+    <div class="body">
+      <h1>Welcome aboard, {{ user.first_name }}! 🎉</h1>
+      <div class="gold-bar"></div>
+
+      <p>Your <strong>{{ platform_name }}</strong> account is ready. You can now invest in Gold, Real Estate, and Cryptocurrency — all in South African Rand.</p>
+
+      <div class="plans-grid">
+        <div class="plan-card"><div class="icon">🪙</div><div class="name">Gold</div><div class="roi">15%+</div></div>
+        <div class="plan-card"><div class="icon">🏢</div><div class="name">Real Estate</div><div class="roi">20%+</div></div>
+        <div class="plan-card"><div class="icon">₿</div><div class="name">Crypto</div><div class="roi">25%+</div></div>
+      </div>
+
+      <div class="steps">
+        <p style="font-weight:700; color:#0a1f44; margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:0.5px;">Get started in 3 steps</p>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><strong>Deposit Funds</strong><span>Transfer via EFT or deposit crypto. Funds credited in ZAR.</span></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><strong>Choose a Plan</strong><span>Browse Gold, Real Estate or Crypto investment plans.</span></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><strong>Earn Returns</strong><span>Watch your investment grow and withdraw anytime.</span></div></div>
+      </div>
+
+      <div class="btn-wrap">
+        <a href="{{ dashboard_url }}" class="btn">Go to My Dashboard →</a>
+      </div>
+
+      <p style="font-size:13px; color:#718096;">Questions? We're here to help: <a href="mailto:{{ support_email }}" style="color:#153a78;">{{ support_email }}</a> | {{ support_phone }}</p>
+    </div>
+
+    <div class="footer">
+      <p>© {{ year }} {{ platform_name }} — All investments subject to risk. Past performance does not guarantee future results.</p>
+      <p><a href="mailto:{{ support_email }}">{{ support_email }}</a> &nbsp;|&nbsp; {{ support_phone }}</p>
+    </div>
+  </div>
+</body>
+</html>

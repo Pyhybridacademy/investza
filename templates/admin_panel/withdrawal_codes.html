@@ -1,0 +1,148 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Withdrawal Codes{% endblock %}
+{% block page_title %}Withdrawal Codes{% endblock %}
+{% block page_subtitle %}Generate and manage one-time withdrawal authorisation codes{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+  <!-- Stats row -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 fade-up fade-up-1">
+    <div class="card p-5 text-center">
+      <p class="font-mono font-bold text-navy-900 text-2xl">{{ stats.active }}</p>
+      <p class="text-gray-400 text-xs mt-1">Active Codes</p>
+    </div>
+    <div class="card p-5 text-center">
+      <p class="font-mono font-bold text-green-700 text-2xl">{{ stats.used }}</p>
+      <p class="text-gray-400 text-xs mt-1">Used</p>
+    </div>
+    <div class="card p-5 text-center">
+      <p class="font-mono font-bold text-amber-600 text-2xl">{{ stats.expired }}</p>
+      <p class="text-gray-400 text-xs mt-1">Expired / Revoked</p>
+    </div>
+    <div class="card p-5 text-center">
+      <p class="font-mono font-bold text-navy-900 text-2xl">{{ stats.total }}</p>
+      <p class="text-gray-400 text-xs mt-1">Total Generated</p>
+    </div>
+  </div>
+
+  <!-- Generate form -->
+  <div class="card p-7 fade-up fade-up-2">
+    <h3 class="font-display font-bold text-navy-900 text-xl mb-5">Generate New Withdrawal Code</h3>
+
+    {% if messages %}{% for message in messages %}
+    <div class="mb-4 p-4 rounded-xl {% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-800{% else %}bg-red-50 border border-red-200 text-red-800{% endif %} text-sm font-medium">
+      {{ message }}
+    </div>
+    {% endfor %}{% endif %}
+
+    {% if new_code %}
+    <!-- Newly generated code display -->
+    <div class="mb-6 p-6 rounded-2xl text-center" style="background:linear-gradient(135deg,#03071e,#0a1f44); border:2px solid rgba(245,152,10,0.4);">
+      <p class="text-gold-400 text-xs uppercase tracking-widest mb-2">New Code Generated</p>
+      <p class="font-mono font-bold text-white text-3xl tracking-widest mb-2">{{ new_code.code }}</p>
+      <p class="text-navy-300 text-xs">Issued to: <strong class="text-white">{{ new_code.issued_to.get_full_name }}</strong> ({{ new_code.issued_to.email }})</p>
+      {% if new_code.max_amount %}<p class="text-navy-300 text-xs mt-1">Max amount: <strong class="text-gold-400 font-mono">R {{ new_code.max_amount|floatformat:2 }}</strong></p>{% endif %}
+      {% if new_code.expires_at %}<p class="text-navy-300 text-xs mt-1">Expires: <strong class="text-white">{{ new_code.expires_at|date:"d M Y, H:i" }}</strong></p>{% endif %}
+      <div class="mt-4 p-3 rounded-xl text-left" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);">
+        <p class="text-gold-400 text-xs font-bold mb-1">⚠ Copy and share this code now</p>
+        <p class="text-navy-300 text-xs">This code will NOT be shown again in plaintext. Send it to the user via live chat or email.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'admin_generate_withdrawal_code' %}" class="grid sm:grid-cols-2 gap-4">
+      {% csrf_token %}
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Issue To (User)</label>
+        <select name="user_id" class="form-select" required>
+          <option value="">— Select a user —</option>
+          {% for u in users %}
+          <option value="{{ u.pk }}">{{ u.get_full_name }} — {{ u.email }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Max Amount (optional)</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-navy-500 font-bold font-mono text-sm">R</span>
+          <input type="number" name="max_amount" class="form-input pl-8" placeholder="No limit" min="1" step="0.01">
+        </div>
+        <p class="text-gray-400 text-xs mt-1">Leave blank for no amount limit</p>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Expiry (optional)</label>
+        <input type="datetime-local" name="expires_at" class="form-input">
+        <p class="text-gray-400 text-xs mt-1">Leave blank for no expiry</p>
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Internal Notes</label>
+        <textarea name="notes" class="form-input" rows="2" placeholder="e.g. User requested withdrawal of R25,000 — approved by manager (optional)"></textarea>
+      </div>
+      <div class="sm:col-span-2">
+        <button type="submit" class="btn-gold px-8 py-3 rounded-xl text-navy-900 font-bold">
+          Generate Withdrawal Code →
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- All codes table -->
+  <div class="card overflow-hidden fade-up fade-up-3">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <h3 class="font-display font-bold text-navy-900 text-lg">All Codes</h3>
+      <form method="get" class="flex gap-2">
+        <select name="status" class="form-select text-sm py-1.5" style="width:auto;" onchange="this.form.submit()">
+          <option value="">All statuses</option>
+          <option value="ACTIVE" {% if request.GET.status == 'ACTIVE' %}selected{% endif %}>Active</option>
+          <option value="USED" {% if request.GET.status == 'USED' %}selected{% endif %}>Used</option>
+          <option value="EXPIRED" {% if request.GET.status == 'EXPIRED' %}selected{% endif %}>Expired</option>
+          <option value="REVOKED" {% if request.GET.status == 'REVOKED' %}selected{% endif %}>Revoked</option>
+        </select>
+      </form>
+    </div>
+    {% if codes %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Code</th><th>Issued To</th><th>Max Amount</th><th>Status</th><th>Expires</th><th>Used At</th><th>Notes</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for code in codes %}
+        <tr>
+          <td class="font-mono text-sm font-bold text-navy-800">{{ code.code }}</td>
+          <td>
+            <p class="text-navy-800 text-sm font-semibold">{{ code.issued_to.get_full_name }}</p>
+            <p class="text-gray-400 text-xs">{{ code.issued_to.email }}</p>
+          </td>
+          <td class="font-mono text-sm">{% if code.max_amount %}R {{ code.max_amount|floatformat:2 }}{% else %}<span class="text-gray-300">No limit</span>{% endif %}</td>
+          <td>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold
+              {% if code.status == 'ACTIVE' %}badge-active
+              {% elif code.status == 'USED' %}badge-completed
+              {% else %}badge-rejected{% endif %}">
+              {{ code.get_status_display }}
+            </span>
+          </td>
+          <td class="text-xs text-gray-500">{% if code.expires_at %}{{ code.expires_at|date:"d M Y" }}{% else %}—{% endif %}</td>
+          <td class="text-xs text-gray-500">{% if code.used_at %}{{ code.used_at|date:"d M Y" }}{% else %}—{% endif %}</td>
+          <td class="text-xs text-gray-400 max-w-xs truncate">{{ code.notes|default:"—" }}</td>
+          <td>
+            {% if code.status == 'ACTIVE' %}
+            <form method="post" action="{% url 'admin_revoke_withdrawal_code' code.pk %}" onsubmit="return confirm('Revoke this code?')">
+              {% csrf_token %}
+              <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-semibold">Revoke</button>
+            </form>
+            {% else %}<span class="text-gray-300 text-xs">—</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="p-10 text-center text-gray-400 text-sm">No withdrawal codes found.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

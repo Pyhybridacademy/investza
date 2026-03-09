@@ -1,0 +1,157 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Review Crypto Deposit{% endblock %}
+{% block page_title %}Crypto Deposit Review{% endblock %}
+{% block page_subtitle %}Verify blockchain transaction and approve deposit{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-5">
+
+  <!-- Status bar -->
+  <div class="card p-5 flex items-center justify-between fade-up fade-up-1">
+    <div>
+      <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Deposit Status</p>
+      <span class="px-3 py-1.5 rounded-full text-sm font-bold
+        {% if deposit.status == 'APPROVED' %}badge-approved
+        {% elif deposit.status == 'SUBMITTED' or deposit.status == 'VERIFYING' %}badge-active
+        {% elif deposit.status == 'REJECTED' %}badge-rejected
+        {% else %}badge-pending{% endif %}">
+        {{ deposit.get_status_display }}
+      </span>
+    </div>
+    <div class="text-right">
+      <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Submitted</p>
+      <p class="text-navy-800 text-sm font-semibold">{{ deposit.created_at|date:"d M Y, H:i" }}</p>
+    </div>
+  </div>
+
+  <!-- Deposit details -->
+  <div class="card p-6 fade-up fade-up-2">
+    <h3 class="font-display font-bold text-navy-900 text-xl mb-5">Deposit Details</h3>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="p-4 rounded-xl bg-gray-50">
+        <p class="text-xs text-gray-400 mb-1">User</p>
+        <p class="font-semibold text-navy-800">{{ deposit.user.get_full_name }}</p>
+        <p class="text-gray-400 text-xs">{{ deposit.user.email }}</p>
+      </div>
+      <div class="p-4 rounded-xl bg-gray-50">
+        <p class="text-xs text-gray-400 mb-1">Cryptocurrency</p>
+        <p class="font-bold text-navy-800 text-lg">{{ deposit.cryptocurrency.symbol }}</p>
+        <p class="text-gray-400 text-xs">{{ deposit.cryptocurrency.name }}{% if deposit.cryptocurrency.network %} · {{ deposit.cryptocurrency.network }}{% endif %}</p>
+      </div>
+      <div class="p-4 rounded-xl" style="background:linear-gradient(135deg,#fff8e8,#fdeec0);">
+        <p class="text-xs text-amber-700 mb-1">Crypto Amount</p>
+        <p class="font-mono font-bold text-navy-900 text-xl">{{ deposit.crypto_amount }} {{ deposit.cryptocurrency.symbol }}</p>
+      </div>
+      <div class="p-4 rounded-xl" style="background:linear-gradient(135deg,#f5f8fd,#e8f0f9);">
+        <p class="text-xs text-navy-500 mb-1">ZAR Equivalent</p>
+        <p class="font-mono font-bold text-navy-900 text-xl">R {{ deposit.zar_amount|floatformat:2 }}</p>
+        {% if deposit.exchange_rate_used %}<p class="text-gray-400 text-xs mt-0.5">@ R {{ deposit.exchange_rate_used|floatformat:2 }}/coin</p>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction hash + blockchain verify -->
+  <div class="card p-6 fade-up fade-up-3">
+    <h3 class="font-display font-bold text-navy-900 text-lg mb-4">Blockchain Verification</h3>
+
+    {% if deposit.transaction_hash %}
+    <div class="space-y-4">
+      <div>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">Transaction Hash (TxID)</p>
+        <div class="flex items-center gap-2">
+          <code class="flex-1 font-mono text-xs text-navy-800 bg-gray-50 px-4 py-3 rounded-xl border break-all">{{ deposit.transaction_hash }}</code>
+          <button onclick="navigator.clipboard.writeText('{{ deposit.transaction_hash|escapejs }}').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='Copy',2000)})"
+                  class="btn-gold px-3 py-2 rounded-lg text-navy-900 font-bold text-xs flex-shrink-0">Copy</button>
+        </div>
+      </div>
+
+      {% if deposit.from_wallet_address %}
+      <div>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">Sender Wallet Address</p>
+        <code class="block font-mono text-xs text-navy-700 bg-gray-50 px-4 py-3 rounded-xl border break-all">{{ deposit.from_wallet_address }}</code>
+      </div>
+      {% endif %}
+
+      <!-- Explorer links -->
+      <div>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Verify on Blockchain Explorer</p>
+        <div class="flex flex-wrap gap-2">
+          {% if deposit.cryptocurrency.symbol == 'BTC' %}
+          <a href="https://blockchair.com/bitcoin/transaction/{{ deposit.transaction_hash }}" target="_blank" rel="noopener"
+             class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#f7931a;">🔗 Blockchair (BTC)</a>
+          <a href="https://www.blockchain.com/explorer/transactions/btc/{{ deposit.transaction_hash }}" target="_blank" rel="noopener"
+             class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#0a1f44;">🔗 Blockchain.com</a>
+          {% elif deposit.cryptocurrency.symbol == 'ETH' or deposit.cryptocurrency.symbol == 'USDT' or deposit.cryptocurrency.symbol == 'USDC' %}
+          <a href="https://etherscan.io/tx/{{ deposit.transaction_hash }}" target="_blank" rel="noopener"
+             class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#3c3c3d;">🔗 Etherscan</a>
+          {% elif deposit.cryptocurrency.symbol == 'BNB' %}
+          <a href="https://bscscan.com/tx/{{ deposit.transaction_hash }}" target="_blank" rel="noopener"
+             class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#f3ba2f;color:#000;">🔗 BscScan</a>
+          {% elif deposit.cryptocurrency.symbol == 'SOL' %}
+          <a href="https://solscan.io/tx/{{ deposit.transaction_hash }}" target="_blank" rel="noopener"
+             class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#9945ff;">🔗 Solscan</a>
+          {% elif deposit.cryptocurrency.symbol == 'XRP' %}
+          <a href="https://xrpscan.com/tx/{{ deposit.transaction_hash }}" target="_blank" rel="noopener"
+             class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#0077b5;">🔗 XRPScan</a>
+          {% else %}
+          <a href="https://blockchair.com/search?q={{ deposit.transaction_hash }}" target="_blank" rel="noopener"
+             class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style="background:#0a1f44;">🔗 Search on Blockchair</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200">
+      <p class="text-amber-700 text-sm font-semibold">⏳ Transaction hash not yet submitted</p>
+      <p class="text-amber-600 text-xs mt-1">The user has not yet submitted their TxID. The deposit status will update to "Submitted" once they do.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Admin action -->
+  {% if deposit.status not in 'APPROVED,REJECTED' %}
+  <div class="card p-6 fade-up fade-up-4">
+    <h3 class="font-display font-bold text-navy-900 text-lg mb-2">Admin Decision</h3>
+    <p class="text-gray-400 text-sm mb-5">Verify the transaction on the blockchain explorer above before approving. Approving will credit <strong class="text-navy-800">R {{ deposit.zar_amount|floatformat:2 }}</strong> to the user's wallet.</p>
+
+    <div>
+      <label class="block text-sm font-semibold text-navy-800 mb-1.5">Admin Notes (optional)</label>
+      <textarea id="admin-notes" class="form-input" rows="2" placeholder="Internal notes for this deposit…"></textarea>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-3 mt-4">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="approve">
+        <input type="hidden" name="admin_notes" id="approve-notes">
+        <button type="submit"
+                onclick="document.getElementById('approve-notes').value=document.getElementById('admin-notes').value; return confirm('Approve and credit R{{ deposit.zar_amount|floatformat:2 }} to {{ deposit.user.get_full_name }}?')"
+                class="w-full py-3.5 rounded-xl font-bold text-white" style="background:#198754;">
+          ✓ Approve &amp; Credit R {{ deposit.zar_amount|floatformat:2 }}
+        </button>
+      </form>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reject">
+        <input type="hidden" name="admin_notes" id="reject-notes">
+        <button type="submit"
+                onclick="document.getElementById('reject-notes').value=document.getElementById('admin-notes').value; return confirm('Reject this crypto deposit?')"
+                class="w-full py-3.5 rounded-xl font-bold text-white" style="background:#dc3545;">
+          ✕ Reject Deposit
+        </button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="card p-5 fade-up fade-up-4">
+    <p class="text-sm font-semibold {% if deposit.status == 'APPROVED' %}text-green-700{% else %}text-red-700{% endif %}">
+      {% if deposit.status == 'APPROVED' %}✓ Approved by {{ deposit.approved_by.get_full_name }} on {{ deposit.approved_at|date:"d M Y" }}
+      {% else %}✕ Rejected{% endif %}
+    </p>
+    {% if deposit.admin_notes %}<p class="text-gray-500 text-xs mt-1">Notes: {{ deposit.admin_notes }}</p>{% endif %}
+  </div>
+  {% endif %}
+
+  <a href="{% url 'admin_deposits' %}" class="block text-center text-sm text-gray-400 hover:text-navy-700 transition-colors">← Back to deposits</a>
+</div>
+{% endblock %}

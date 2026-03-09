@@ -1,0 +1,34 @@
+{% extends "base/base.html" %}
+{% block title %}Investment Plans — {{ PLATFORM_NAME }}{% endblock %}
+{% block body %}
+<nav style="background:#03071e; border-bottom:1px solid rgba(255,255,255,0.08);">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3"><div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#e08900,#fac660);"><span class="font-display font-bold text-navy-900 text-sm">IZ</span></div><span class="font-display font-bold text-white text-xl">{{ PLATFORM_NAME }}</span></a>
+    <div class="flex gap-3"><a href="{% url 'login' %}" class="text-white text-sm px-4 py-2">Sign In</a><a href="{% url 'register' %}" class="btn-gold px-5 py-2 rounded-lg text-navy-900 font-bold text-sm">Open Account</a></div>
+  </div>
+</nav>
+<div class="max-w-6xl mx-auto px-6 py-16">
+  <div class="text-center mb-12"><h1 class="font-display text-5xl font-bold text-navy-900 mb-4">Investment Plans</h1><p class="text-gray-500 text-lg">Choose from Gold, Real Estate and Crypto investment plans. All returns in ZAR.</p></div>
+  {% for category in categories %}
+  <div class="mb-12">
+    <h2 class="font-display text-3xl font-bold text-navy-900 mb-6">{{ category.name }}</h2>
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+    {% for plan in category.plans.all %}{% if plan.is_active %}
+    <div class="card p-6">
+      <h3 class="font-display text-xl font-bold text-navy-900 mb-2">{{ plan.name }}</h3>
+      <div class="p-4 rounded-xl mb-4" style="background:linear-gradient(135deg,#03071e,#0a1f44);">
+        <p class="text-gold-400 font-display text-3xl font-bold">{{ plan.roi_percentage }}%</p>
+        <p class="text-navy-400 text-xs mt-1">over {{ plan.duration_value }} {{ plan.get_duration_unit_display }}</p>
+      </div>
+      <div class="space-y-2 mb-5">
+        <div class="flex justify-between text-sm"><span class="text-gray-400">Min</span><span class="font-mono font-bold text-navy-800">R {{ plan.minimum_amount|floatformat:0 }}</span></div>
+        <div class="flex justify-between text-sm"><span class="text-gray-400">Max</span><span class="font-mono font-bold text-navy-800">R {{ plan.maximum_amount|floatformat:0 }}</span></div>
+      </div>
+      <a href="{% url 'register' %}" class="block text-center py-3 rounded-xl font-bold text-sm btn-navy text-white">Get Started →</a>
+    </div>
+    {% endif %}{% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

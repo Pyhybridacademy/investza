@@ -1,0 +1,509 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block page_subtitle %}Manage your personal information and account security{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+  <!-- ══ PROFILE HEADER ══ -->
+  <div class="card p-6 fade-up fade-up-1 relative overflow-hidden"
+       style="background: linear-gradient(135deg, #03071e 0%, #0a1f44 100%); border-color: rgba(245,152,10,0.25);">
+
+    <!-- SA Flag ghost — blurred, far right background -->
+    <div class="absolute inset-y-0 right-0 w-72 pointer-events-none select-none overflow-hidden"
+         style="opacity:0.12; filter:blur(4px) saturate(1.6);">
+      <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg"
+           class="absolute right-0 top-0 h-full w-auto" preserveAspectRatio="xMaxYMid slice">
+        <rect y="0"   width="900" height="200" fill="#007A4D"/>
+        <rect y="200" width="900" height="200" fill="#DE3831"/>
+        <rect y="400" width="900" height="200" fill="#002395"/>
+        <polygon points="0,0 330,300 0,600" fill="#000"/>
+        <polygon points="0,0 350,300 0,600 0,548 292,300 0,52" fill="#fff"/>
+        <polygon points="0,230 540,230 540,370 0,370" fill="#FFB612"/>
+        <polygon points="292,300 540,230 540,370" fill="#FFB612"/>
+        <polygon points="0,252 510,252 510,348 0,348" fill="#000"/>
+      </svg>
+    </div>
+
+    <!-- Subtle dot-grid texture -->
+    <div class="absolute inset-0 pointer-events-none" style="background-image:radial-gradient(circle,rgba(255,255,255,0.035) 1px,transparent 1px);background-size:22px 22px;border-radius:inherit;"></div>
+
+    <!-- Content -->
+    <div class="relative flex flex-col sm:flex-row items-center sm:items-start gap-6">
+
+      <!-- Avatar -->
+      <div class="relative flex-shrink-0">
+        {% if request.user.profile_photo %}
+          <img src="{{ request.user.profile_photo.url }}" alt="Photo"
+               class="w-24 h-24 rounded-2xl object-cover border-2 border-gold-400">
+        {% else %}
+          <div class="w-24 h-24 rounded-2xl flex items-center justify-center font-display font-bold text-navy-900 text-3xl"
+               style="background: linear-gradient(135deg, #e08900, #fac660);">
+            {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+          </div>
+        {% endif %}
+        {% if request.user.is_verified %}
+        <div class="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-green-500 border-2 flex items-center justify-center" style="border-color:#03071e;">
+          <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Name + badges -->
+      <div class="flex-1 text-center sm:text-left">
+        <h2 class="font-display font-bold text-white text-2xl leading-tight">{{ request.user.get_full_name }}</h2>
+        <p class="text-navy-300 text-sm mt-1">{{ request.user.email }}</p>
+        {% if request.user.phone_number %}<p class="text-navy-400 text-sm">{{ request.user.phone_number }}</p>{% endif %}
+        <div class="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
+          {% if request.user.is_verified %}
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">✓ KYC Verified</span>
+          {% else %}
+            <a href="{% url 'kyc_verification' %}" class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500 text-white hover:bg-amber-600 transition-colors">⚠ Verify Identity</a>
+          {% endif %}
+          <span class="px-3 py-1 rounded-full text-xs font-semibold text-navy-200" style="background:rgba(255,255,255,0.1);">Member since {{ request.user.date_joined|date:"M Y" }}</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold text-navy-200" style="background:rgba(255,255,255,0.07);">🇿🇦 South Africa</span>
+        </div>
+      </div>
+
+      <!-- Wallet balance -->
+      <div class="text-center flex-shrink-0 hidden sm:block">
+        <p class="text-navy-400 text-xs uppercase tracking-wider mb-1">Available Balance</p>
+        <p class="font-mono font-bold text-gold-400 text-2xl">R {{ wallet.available_balance|floatformat:2 }}</p>
+        <p class="text-navy-600 text-xs mt-1">A/C {{ wallet.account_number }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STATS ROW ══ -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 fade-up fade-up-2">
+    <div class="card p-4 text-center">
+      <p class="font-display font-bold text-navy-900 text-2xl">{{ total_investments }}</p>
+      <p class="text-gray-400 text-xs mt-1">Total Investments</p>
+    </div>
+    <div class="card p-4 text-center">
+      <p class="font-display font-bold text-navy-900 text-2xl">{{ active_investments }}</p>
+      <p class="text-gray-400 text-xs mt-1">Active Now</p>
+    </div>
+    <div class="card p-4 text-center">
+      <p class="font-mono font-bold text-green-600 text-lg">R {{ total_deposited|floatformat:0 }}</p>
+      <p class="text-gray-400 text-xs mt-1">Total Deposited</p>
+    </div>
+    <div class="card p-4 text-center">
+      <p class="font-mono font-bold text-navy-800 text-lg">R {{ wallet.total_earned|floatformat:0 }}</p>
+      <p class="text-gray-400 text-xs mt-1">Total Earned</p>
+    </div>
+  </div>
+
+  <!-- ══ TABS ══ -->
+  <div class="fade-up fade-up-3">
+    <!-- Tab nav -->
+    <div class="flex gap-1 p-1 rounded-xl w-fit mb-6" style="background:#f0f4f8;">
+      <button onclick="showTab('personal')" id="tab-personal" class="tab-btn active-tab px-5 py-2.5 rounded-lg text-sm font-semibold transition-all">
+        Personal Info
+      </button>
+      <button onclick="showTab('security')" id="tab-security" class="tab-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-navy-700">
+        Password & Security
+      </button>
+      <button onclick="showTab('referral')" id="tab-referral" class="tab-btn px-5 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-navy-700">
+        Referral
+      </button>
+    </div>
+
+    <!-- ══ TAB: Personal Info ══ -->
+    <div id="pane-personal">
+      <div class="card p-8">
+        <h3 class="font-display font-bold text-navy-900 text-xl mb-6 pb-4 border-b border-gray-100">Personal Information</h3>
+        <form method="post" enctype="multipart/form-data" class="space-y-5">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="update_profile">
+
+          <!-- Photo upload -->
+          <div class="flex items-center gap-5 pb-5 border-b border-gray-100">
+            <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0" id="photo-wrap">
+              {% if request.user.profile_photo %}
+                <img src="{{ request.user.profile_photo.url }}" class="w-full h-full object-cover" id="photo-preview">
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center font-display font-bold text-xl text-navy-900" style="background:linear-gradient(135deg,#e08900,#fac660);" id="photo-initials">
+                  {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+                </div>
+                <img src="" class="w-full h-full object-cover hidden" id="photo-preview">
+              {% endif %}
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-navy-800 mb-1">Profile Photo</p>
+              <label for="id_profile_photo" class="cursor-pointer inline-block px-4 py-2 rounded-lg text-sm font-medium text-navy-700 border border-gray-200 hover:bg-gray-50 transition-colors">
+                Choose Photo
+              </label>
+              <input type="file" name="profile_photo" id="id_profile_photo" accept="image/*" class="hidden" onchange="previewPhoto(this)">
+              <p class="text-gray-400 text-xs mt-1">JPG or PNG · max 5MB</p>
+            </div>
+          </div>
+
+          <!-- Name -->
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-navy-800 mb-1.5">First Name</label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<p class="text-red-500 text-xs mt-1">{{ form.first_name.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-navy-800 mb-1.5">Last Name</label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}<p class="text-red-500 text-xs mt-1">{{ form.last_name.errors.0 }}</p>{% endif %}
+            </div>
+          </div>
+
+          <!-- Email (readonly) -->
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-1.5">Email Address</label>
+            <div class="relative">
+              <input type="email" value="{{ request.user.email }}" class="form-input bg-gray-50 text-gray-500 pr-28" disabled>
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">Read only</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">Contact support to change your email address</p>
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-1.5">Phone Number</label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}<p class="text-red-500 text-xs mt-1">{{ form.phone_number.errors.0 }}</p>{% endif %}
+          </div>
+
+          <!-- DOB + ID -->
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-navy-800 mb-1.5">Date of Birth</label>
+              {{ form.date_of_birth }}
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-navy-800 mb-1.5">SA ID / Passport Number</label>
+              {{ form.id_number }}
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+            <p class="text-gray-400 text-xs">Account created {{ request.user.date_joined|date:"d M Y" }}</p>
+            <button type="submit" class="btn-navy px-8 py-3 rounded-xl text-white font-bold">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ══ TAB: Password & Security ══ -->
+    <div id="pane-security" class="hidden space-y-5">
+
+      <!-- Change Password card -->
+      <div class="card p-8">
+        <div class="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#e8f0f9,#b8cfe8);">
+            <svg class="w-5 h-5 text-navy-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-navy-900 text-xl">Change Password</h3>
+            <p class="text-gray-400 text-sm">Use a strong, unique password you don't use elsewhere</p>
+          </div>
+        </div>
+
+        {% if pwd_errors %}
+        <div class="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl space-y-1">
+          {% for err in pwd_errors %}
+          <p class="text-red-600 text-sm">✕ {{ err }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="space-y-5">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="change_password">
+
+          <!-- Current password -->
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-1.5">Current Password</label>
+            <div class="relative">
+              <input type="password" name="current_password" id="cur_pwd" class="form-input pr-11"
+                     placeholder="Enter your current password" required>
+              <button type="button" onclick="toggleVis('cur_pwd')" tabindex="-1"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- New password -->
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-1.5">New Password</label>
+            <div class="relative">
+              <input type="password" name="new_password1" id="new_pwd1" class="form-input pr-11"
+                     placeholder="Minimum 8 characters" required minlength="8"
+                     oninput="checkStrength(this.value)">
+              <button type="button" onclick="toggleVis('new_pwd1')" tabindex="-1"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              </button>
+            </div>
+            <!-- Strength meter -->
+            <div class="mt-2">
+              <div class="flex gap-1.5 mb-1">
+                <div class="h-1.5 flex-1 rounded-full bg-gray-200 transition-all duration-300" id="s1"></div>
+                <div class="h-1.5 flex-1 rounded-full bg-gray-200 transition-all duration-300" id="s2"></div>
+                <div class="h-1.5 flex-1 rounded-full bg-gray-200 transition-all duration-300" id="s3"></div>
+                <div class="h-1.5 flex-1 rounded-full bg-gray-200 transition-all duration-300" id="s4"></div>
+              </div>
+              <p id="strength-label" class="text-xs min-h-[16px] text-gray-400"></p>
+            </div>
+          </div>
+
+          <!-- Confirm password -->
+          <div>
+            <label class="block text-sm font-semibold text-navy-800 mb-1.5">Confirm New Password</label>
+            <div class="relative">
+              <input type="password" name="new_password2" id="new_pwd2" class="form-input pr-11"
+                     placeholder="Repeat your new password" required minlength="8"
+                     oninput="checkMatch()">
+              <button type="button" onclick="toggleVis('new_pwd2')" tabindex="-1"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              </button>
+            </div>
+            <p id="match-label" class="text-xs mt-1 min-h-[16px]"></p>
+          </div>
+
+          <div class="flex items-start justify-between gap-4 pt-4 border-t border-gray-100">
+            <ul class="text-xs text-gray-400 space-y-0.5">
+              <li>• Minimum 8 characters</li>
+              <li>• Mix uppercase, lowercase, numbers and symbols</li>
+              <li>• Don't reuse passwords from other sites</li>
+            </ul>
+            <button type="submit" class="flex-shrink-0 btn-navy px-8 py-3 rounded-xl text-white font-bold">
+              Update Password
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Security status -->
+      <div class="card p-6">
+        <h4 class="font-display font-bold text-navy-900 text-lg mb-5">Account Security Overview</h4>
+        <div class="space-y-4">
+
+          <div class="flex items-center justify-between py-3 border-b border-gray-50">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              </div>
+              <div>
+                <p class="text-navy-800 font-semibold text-sm">Email Address</p>
+                <p class="text-gray-400 text-xs">{{ request.user.email }}</p>
+              </div>
+            </div>
+            <span class="text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">Verified</span>
+          </div>
+
+          <div class="flex items-center justify-between py-3 border-b border-gray-50">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg {% if request.user.is_verified %}bg-green-50{% else %}bg-amber-50{% endif %} flex items-center justify-center">
+                <svg class="w-5 h-5 {% if request.user.is_verified %}text-green-600{% else %}text-amber-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+              </div>
+              <div>
+                <p class="text-navy-800 font-semibold text-sm">KYC Identity Verification</p>
+                <p class="text-gray-400 text-xs">{% if request.user.is_verified %}Your identity has been verified{% else %}Upload your ID to unlock full access{% endif %}</p>
+              </div>
+            </div>
+            {% if request.user.is_verified %}
+              <span class="text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">Verified</span>
+            {% else %}
+              <a href="{% url 'kyc_verification' %}" class="text-xs font-semibold text-amber-600 hover:text-amber-700">Verify now →</a>
+            {% endif %}
+          </div>
+
+          <div class="flex items-center justify-between py-3">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div>
+                <p class="text-navy-800 font-semibold text-sm">Account Created</p>
+                <p class="text-gray-400 text-xs">{{ request.user.date_joined|date:"d M Y, H:i" }}</p>
+              </div>
+            </div>
+            <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">Active</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: Referral ══ -->
+    <div id="pane-referral" class="hidden">
+      <div class="card p-8">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:linear-gradient(135deg,#fdeec0,#fac660);">
+            <svg class="w-8 h-8 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <h3 class="font-display font-bold text-navy-900 text-2xl mb-2">Your Referral Code</h3>
+          <p class="text-gray-500 text-sm max-w-sm mx-auto">Share your code. When friends register and invest, you both benefit.</p>
+        </div>
+
+        <!-- Code box -->
+        <div class="flex items-stretch gap-3 mb-6">
+          <code class="flex-1 text-center font-mono font-bold text-navy-900 text-3xl tracking-[0.25em] bg-gray-50 border-2 border-dashed border-gray-300 px-6 py-4 rounded-xl" id="ref-code">{{ request.user.referral_code }}</code>
+          <button onclick="copyCode()" id="copy-btn"
+                  class="btn-gold px-5 rounded-xl text-navy-900 font-bold text-sm flex-shrink-0 flex flex-col items-center justify-center gap-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="p-4 rounded-xl text-center" style="background:#f5f8fd; border:1px solid #e2e9f3;">
+            <p class="font-display font-bold text-navy-900 text-2xl">{{ request.user.referrals.count }}</p>
+            <p class="text-gray-400 text-xs mt-1">Referred</p>
+          </div>
+          <div class="p-4 rounded-xl text-center" style="background:#f5f8fd; border:1px solid #e2e9f3;">
+            <p class="font-display font-bold text-navy-900 text-2xl">—</p>
+            <p class="text-gray-400 text-xs mt-1">Bonus Earned</p>
+          </div>
+          <div class="p-4 rounded-xl text-center" style="background:#f5f8fd; border:1px solid #e2e9f3;">
+            <p class="font-display font-bold text-navy-900 text-2xl">—</p>
+            <p class="text-gray-400 text-xs mt-1">Active Referrals</p>
+          </div>
+        </div>
+
+        <!-- Referrals list -->
+        {% if request.user.referrals.count > 0 %}
+        <div class="mb-5">
+          <p class="text-sm font-semibold text-navy-800 mb-3">People you've referred</p>
+          <div class="space-y-2">
+            {% for ref in request.user.referrals.all %}
+            <div class="flex items-center justify-between p-3 rounded-lg" style="background:#f5f8fd;">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-navy-900" style="background:linear-gradient(135deg,#e08900,#fac660);">
+                  {{ ref.first_name|first|upper }}
+                </div>
+                <div>
+                  <p class="text-navy-800 text-sm font-medium">{{ ref.get_full_name }}</p>
+                  <p class="text-gray-400 text-xs">Joined {{ ref.date_joined|date:"d M Y" }}</p>
+                </div>
+              </div>
+              {% if ref.is_verified %}<span class="text-xs font-semibold text-green-600">Verified</span>{% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Referred by -->
+        {% if request.user.referred_by %}
+        <div class="pt-5 border-t border-gray-100 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-navy-900 flex-shrink-0" style="background:linear-gradient(135deg,#e08900,#fac660);">
+            {{ request.user.referred_by.first_name|first|upper }}
+          </div>
+          <p class="text-gray-500 text-sm">You were referred by <strong class="text-navy-800">{{ request.user.referred_by.get_full_name }}</strong></p>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div><!-- /tabs -->
+</div>
+
+{% block extra_js %}
+<script>
+// ── Tab switching ──────────────────────────────────────────
+function showTab(name) {
+  ['personal','security','referral'].forEach(t => {
+    document.getElementById('pane-'+t).classList.add('hidden');
+    const btn = document.getElementById('tab-'+t);
+    btn.classList.remove('active-tab','text-white');
+    btn.classList.add('text-gray-500');
+    btn.style.background = '';
+  });
+  document.getElementById('pane-'+name).classList.remove('hidden');
+  const active = document.getElementById('tab-'+name);
+  active.classList.add('active-tab','text-white');
+  active.classList.remove('text-gray-500');
+  active.style.background = '#0a1f44';
+}
+// Set up initial state properly
+document.getElementById('tab-personal').style.background = '#0a1f44';
+
+// Auto-open security tab if password errors came back
+{% if pwd_errors %}showTab('security');{% endif %}
+
+// ── Show/hide password ─────────────────────────────────────
+function toggleVis(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+// ── Password strength meter ────────────────────────────────
+function checkStrength(pwd) {
+  const bars   = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
+  const label  = document.getElementById('strength-label');
+  let score = 0;
+  if (pwd.length >= 8)  score++;
+  if (pwd.length >= 12) score++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd) || /[^A-Za-z0-9]/.test(pwd)) score++;
+  const colors = ['#dc3545','#fd7e14','#ffc107','#198754'];
+  const labels = ['Too short','Weak','Fair','Strong ✓'];
+  bars.forEach((b,i) => b.style.background = i < score ? colors[score-1] : '#e2e8f0');
+  label.textContent  = pwd.length > 0 ? (labels[score-1]||'') : '';
+  label.style.color  = score > 0 ? colors[score-1] : '#9aa5b4';
+}
+
+// ── Password match indicator ───────────────────────────────
+function checkMatch() {
+  const p1    = document.getElementById('new_pwd1').value;
+  const p2    = document.getElementById('new_pwd2').value;
+  const label = document.getElementById('match-label');
+  if (!p2) { label.textContent = ''; return; }
+  if (p1 === p2) {
+    label.textContent = '✓ Passwords match';
+    label.style.color = '#198754';
+  } else {
+    label.textContent = '✕ Passwords do not match';
+    label.style.color = '#dc3545';
+  }
+}
+
+// ── Photo preview ──────────────────────────────────────────
+function previewPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview     = document.getElementById('photo-preview');
+    const initials    = document.getElementById('photo-initials');
+    preview.src       = e.target.result;
+    preview.classList.remove('hidden');
+    if (initials) initials.classList.add('hidden');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ── Copy referral code ─────────────────────────────────────
+function copyCode() {
+  const code = document.getElementById('ref-code').textContent.trim();
+  const btn  = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(code).then(() => {
+    btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span>Copied!</span>';
+    btn.style.background = '#198754';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span>Copy</span>';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 2500);
+  });
+}
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Send Crypto — {{ deposit.cryptocurrency.symbol }}{% endblock %}
+{% block page_title %}Send Crypto{% endblock %}
+{% block page_subtitle %}Step 2 — Send funds and submit your transaction hash{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto space-y-5">
+
+  <!-- Steps -->
+  <div class="card p-5 fade-up fade-up-1">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style="background:rgba(198,214,232,0.4);color:#4d7dbf;">1</div>
+        <span class="text-gray-400 text-sm hidden sm:block">Selected & Calculated</span>
+      </div>
+      <div class="flex-1 h-0.5" style="background:linear-gradient(90deg,#e08900,#fac660);"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style="background:linear-gradient(135deg,#e08900,#fac660);color:#03071e;">2</div>
+        <span class="text-navy-800 text-sm font-semibold hidden sm:block">Send & Submit Hash</span>
+      </div>
+      <div class="flex-1 h-0.5 bg-gray-200"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">3</div>
+        <span class="text-gray-400 text-sm hidden sm:block">Verified & Credited</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount to send -->
+  <div class="card p-6 fade-up fade-up-1" style="background:linear-gradient(135deg,#03071e,#0a1f44);border-color:rgba(245,152,10,0.25);">
+    <p class="text-navy-400 text-sm mb-1">Send exactly this amount</p>
+    <p class="font-mono font-bold text-gold-400 text-4xl leading-none">
+      {{ deposit.crypto_amount }} {{ deposit.cryptocurrency.symbol }}
+    </p>
+    <div class="flex items-center justify-between mt-3">
+      <p class="text-navy-300 text-sm">≈ R {{ deposit.zar_amount|floatformat:2 }}</p>
+      {% if deposit.cryptocurrency.network %}
+      <span class="px-3 py-1 rounded-full text-xs font-bold text-white" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);">
+        {{ deposit.cryptocurrency.network }}
+      </span>
+      {% endif %}
+    </div>
+    {% if deposit.exchange_rate_used %}
+    <p class="text-navy-600 text-xs mt-2">Rate used: 1 {{ deposit.cryptocurrency.symbol }} = R {{ deposit.exchange_rate_used|floatformat:2 }}</p>
+    {% endif %}
+  </div>
+
+  <!-- Wallet address -->
+  <div class="card p-6 fade-up fade-up-2">
+    <p class="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Send to this wallet address</p>
+
+    <!-- QR code -->
+    <div class="flex justify-center mb-4">
+      <div class="p-3 bg-white rounded-xl border border-gray-200 inline-block" id="qr-wrapper">
+        <canvas id="qr-canvas" width="160" height="160"></canvas>
+      </div>
+    </div>
+
+    <!-- Address display + copy -->
+    <div class="flex items-stretch gap-2">
+      <code class="flex-1 font-mono text-xs text-navy-800 bg-gray-50 px-4 py-3 rounded-xl border border-gray-200 break-all leading-relaxed" id="wallet-addr">{{ deposit.cryptocurrency.wallet_address }}</code>
+      <button id="copy-btn" onclick="copyAddress()"
+              class="px-4 py-3 rounded-xl font-bold text-sm flex-shrink-0 transition-all"
+              style="background:linear-gradient(135deg,#e08900,#fac660);color:#03071e;">
+        Copy
+      </button>
+    </div>
+
+    <!-- Network warning -->
+    <div class="mt-3 p-3 rounded-xl" style="background:#fff0f0;border:1px solid #f8d7da;">
+      <p class="text-red-700 text-xs font-bold">
+        ⚠ Only send <strong>{{ deposit.cryptocurrency.symbol }}</strong>
+        {% if deposit.cryptocurrency.network %}on the <strong>{{ deposit.cryptocurrency.network }}</strong> network{% endif %}
+        to this address. Sending any other currency or using the wrong network will result in permanent loss of funds.
+      </p>
+    </div>
+  </div>
+
+  <!-- Hash submission -->
+  <div class="card p-6 fade-up fade-up-3">
+    <h3 class="font-display font-bold text-navy-900 text-lg mb-1">Submit Transaction Proof</h3>
+    <p class="text-gray-400 text-sm mb-5">After sending, paste your TxID / transaction hash below so we can verify the transfer on the blockchain.</p>
+
+    {% if error %}
+    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex gap-3">
+      <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <p class="text-red-700 text-sm font-medium">{{ error }}</p>
+    </div>
+    {% endif %}
+
+    {% if deposit.status == 'SUBMITTED' or deposit.status == 'VERIFYING' or deposit.status == 'APPROVED' %}
+    <div class="p-5 rounded-xl text-center" style="background:#d1e7dd;border:1px solid #a3cfbb;">
+      <p class="text-green-800 font-bold text-base">✓ Transaction submitted</p>
+      <p class="text-green-700 text-sm mt-1">Hash: <span class="font-mono text-xs">{{ deposit.transaction_hash|truncatechars:30 }}</span></p>
+      <p class="text-green-600 text-xs mt-1">Status: {{ deposit.get_status_display }}</p>
+    </div>
+    {% else %}
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Transaction Hash (TxID) <span class="text-red-500">*</span></label>
+        <input type="text" name="transaction_hash" id="tx-hash"
+               class="form-input font-mono text-xs"
+               placeholder="e.g. 0x3f4b2a... or abc123def456..."
+               maxlength="255" autocomplete="off" required
+               value="{{ deposit.transaction_hash }}">
+        <p class="text-gray-400 text-xs mt-1">Find this in your wallet app or exchange transaction history</p>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Your Sending Wallet Address <span class="text-gray-400 font-normal">(optional)</span></label>
+        <input type="text" name="from_wallet_address"
+               class="form-input font-mono text-xs"
+               placeholder="The wallet you sent from"
+               maxlength="255" autocomplete="off"
+               value="{{ deposit.from_wallet_address }}">
+      </div>
+      <button type="submit" class="btn-navy w-full py-4 rounded-xl text-white font-bold text-base">
+        Submit Transaction Hash →
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  <!-- What happens next -->
+  <div class="card p-5 fade-up fade-up-4">
+    <p class="text-navy-800 font-bold text-sm mb-3">⏳ What happens after you submit?</p>
+    <div class="space-y-3">
+      <div class="flex gap-3 text-xs">
+        <span class="font-bold text-navy-700 flex-shrink-0">1.</span>
+        <span class="text-gray-500">Our system monitors the blockchain for your transaction hash to appear.</span>
+      </div>
+      <div class="flex gap-3 text-xs">
+        <span class="font-bold text-navy-700 flex-shrink-0">2.</span>
+        <span class="text-gray-500">Once we see {{ deposit.crypto_amount }} {{ deposit.cryptocurrency.symbol }} confirmed, an admin reviews and approves the deposit.</span>
+      </div>
+      <div class="flex gap-3 text-xs">
+        <span class="font-bold text-navy-700 flex-shrink-0">3.</span>
+        <span class="text-gray-500">R {{ deposit.zar_amount|floatformat:2 }} is credited to your wallet. You'll receive an email confirmation.</span>
+      </div>
+      <p class="text-gray-400 text-xs pt-1">Typical processing: <strong class="text-navy-700">1–6 hours</strong>. If not credited after 24 hours, contact <a href="mailto:{{ SUPPORT_EMAIL }}" class="text-navy-700 underline font-semibold">{{ SUPPORT_EMAIL }}</a></p>
+    </div>
+  </div>
+
+  <a href="{% url 'deposit_history' %}" class="block text-center text-sm text-gray-400 hover:text-navy-700 transition-colors">← View all deposits</a>
+
+</div>
+
+<!-- QR code library from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  // Generate QR code
+  const addr = "{{ deposit.cryptocurrency.wallet_address|escapejs }}";
+  try {
+    new QRCode(document.getElementById('qr-canvas'), {
+      text: addr,
+      width: 160, height: 160,
+      colorDark: '#03071e', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    // Replace canvas container with the generated img
+  } catch(e) {
+    document.getElementById('qr-wrapper').style.display = 'none';
+  }
+
+  // Copy address
+  function copyAddress() {
+    const btn  = document.getElementById('copy-btn');
+    const orig = btn.textContent;
+    navigator.clipboard.writeText(addr)
+      .then(() => {
+        btn.textContent = '✓ Copied!';
+        btn.style.background = 'linear-gradient(135deg,#d1e7dd,#a3cfbb)';
+        btn.style.color = '#0f5132';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 2500);
+      })
+      .catch(() => {
+        // Fallback for older browsers
+        const el = document.createElement('textarea');
+        el.value = addr;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 2500);
+      });
+  }
+</script>
+{% endblock %}

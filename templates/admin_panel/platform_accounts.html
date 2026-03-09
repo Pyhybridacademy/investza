@@ -1,0 +1,24 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Platform Bank Accounts{% endblock %}
+{% block page_title %}Platform Bank Accounts{% endblock %}
+{% block page_subtitle %}Bank accounts shown to users for deposits{% endblock %}
+{% block content %}
+<div class="space-y-4 fade-up fade-up-1">
+  <div class="flex justify-end"><a href="/platform-admin/deposits/platformbankaccount/add/" class="btn-gold px-4 py-2 rounded-lg text-navy-900 font-bold text-sm">+ Add Bank Account</a></div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  {% for acc in accounts %}
+  <div class="card p-6">
+    <div class="flex justify-between items-start mb-4">
+      <h3 class="font-bold text-navy-800">{{ acc.get_bank_name_display }}</h3>
+      {% if acc.is_active %}<span class="badge-approved px-2 py-1 rounded-full text-xs font-medium">Active</span>{% else %}<span class="badge-rejected px-2 py-1 rounded-full text-xs font-medium">Inactive</span>{% endif %}
+    </div>
+    <p class="text-xs text-gray-400">Account Holder</p><p class="font-bold text-navy-800 mb-2">{{ acc.account_holder }}</p>
+    <p class="text-xs text-gray-400">Account Number</p><p class="font-mono font-bold text-navy-800 mb-2">{{ acc.account_number }}</p>
+    <p class="text-xs text-gray-400">Branch Code</p><p class="font-mono text-navy-700">{{ acc.branch_code }}</p>
+    <a href="/platform-admin/deposits/platformbankaccount/{{ acc.pk }}/change/" class="mt-4 block text-xs text-navy-600 hover:text-gold-600 font-medium">Edit →</a>
+  </div>
+  {% empty %}<div class="col-span-3 card p-12 text-center"><p class="text-gray-400">No bank accounts configured. <a href="/platform-admin/deposits/platformbankaccount/add/" class="text-navy-600 font-semibold">Add one →</a></p></div>
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}

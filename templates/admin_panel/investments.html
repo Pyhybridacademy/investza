@@ -1,0 +1,25 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}All Investments{% endblock %}
+{% block page_title %}Investments{% endblock %}
+{% block page_subtitle %}Monitor all active and completed investments{% endblock %}
+{% block content %}
+<div class="space-y-4">
+  <div class="grid grid-cols-2 gap-4 fade-up fade-up-1">
+    <div class="card p-5"><p class="text-xs text-gray-400 mb-1">Total Active Volume</p><p class="font-display font-bold text-navy-900 text-3xl">R {{ total_active|floatformat:0 }}</p></div>
+    <div class="card p-5"><p class="text-xs text-gray-400 mb-1">Total Records</p><p class="font-display font-bold text-navy-900 text-3xl">{{ investments.count }}</p></div>
+  </div>
+  <div class="card overflow-hidden fade-up fade-up-2">
+    <table class="data-table"><thead><tr><th>Reference</th><th>User</th><th>Plan</th><th>Amount</th><th>ROI</th><th>Status</th><th>Maturity</th></tr></thead><tbody>
+    {% for inv in investments %}<tr>
+    <td class="font-mono text-xs text-navy-700">{{ inv.reference }}</td>
+    <td><p class="font-medium text-navy-800 text-sm">{{ inv.user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ inv.user.email }}</p></td>
+    <td><p class="text-navy-800 text-sm">{{ inv.plan.name }}</p><p class="text-gray-400 text-xs">{{ inv.plan.category.name }}</p></td>
+    <td class="font-mono font-bold text-navy-800">R {{ inv.amount_invested|floatformat:2 }}</td>
+    <td class="font-bold text-gold-600">{{ inv.plan.roi_percentage }}%</td>
+    <td><span class="px-2 py-1 rounded-full text-xs font-medium {% if inv.status == 'ACTIVE' %}badge-active{% elif inv.status == 'MATURED' %}badge-matured{% else %}badge-pending{% endif %}">{{ inv.get_status_display }}</span></td>
+    <td class="text-gray-400 text-xs">{{ inv.maturity_date|date:"d M Y"|default:"—" }}</td>
+    </tr>{% empty %}<tr><td colspan="7" class="text-center text-gray-400 py-10">No investments found</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Crypto Deposit{% endblock %}
+{% block page_title %}Crypto Deposit{% endblock %}
+{% block page_subtitle %}Deposit cryptocurrency — converted to ZAR in your wallet{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-5">
+
+  <!-- Steps -->
+  <div class="card p-5 fade-up fade-up-1">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style="background:linear-gradient(135deg,#e08900,#fac660);color:#03071e;">1</div>
+        <span class="text-navy-800 text-sm font-semibold hidden sm:block">Select & Calculate</span>
+      </div>
+      <div class="flex-1 h-0.5 bg-gray-200"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">2</div>
+        <span class="text-gray-400 text-sm hidden sm:block">Send & Submit Hash</span>
+      </div>
+      <div class="flex-1 h-0.5 bg-gray-200"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">3</div>
+        <span class="text-gray-400 text-sm hidden sm:block">Verified & Credited</span>
+      </div>
+    </div>
+  </div>
+
+  {% if errors %}
+  <div class="p-4 bg-red-50 border border-red-200 rounded-xl fade-up fade-up-1">
+    <p class="text-red-700 font-semibold text-sm mb-1">Please fix the following:</p>
+    <ul class="text-red-600 text-xs space-y-0.5 list-disc list-inside">
+      {% for f, msg in errors.items %}<li>{{ msg }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <form method="post" id="crypto-form" class="card p-8 fade-up fade-up-2 space-y-6">
+    {% csrf_token %}
+    <input type="hidden" name="symbol"             id="f-symbol">
+    <input type="hidden" name="exchange_rate_used" id="f-rate">
+    <input type="hidden" name="zar_amount"         id="f-zar">
+    <input type="hidden" name="crypto_amount"      id="f-crypto-hidden">
+
+    <h3 class="font-display font-bold text-navy-900 text-xl">Select Cryptocurrency</h3>
+
+    <!-- Currency cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="currency-grid">
+      {% for c in currencies %}
+      <div class="currency-card flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-gray-200 cursor-pointer transition-all hover:border-navy-400 text-center"
+           data-symbol="{{ c.symbol }}" data-name="{{ c.name }}" data-network="{{ c.network }}" data-min="{{ c.minimum_deposit }}">
+        <div class="w-11 h-11 rounded-full flex items-center justify-center font-bold text-lg" style="background:linear-gradient(135deg,#fdeec0,#fac660);color:#0a1f44;">
+          {% if c.symbol == 'BTC' %}₿{% elif c.symbol == 'ETH' %}Ξ{% elif c.symbol == 'USDT' %}₮{% elif c.symbol == 'BNB' %}B{% elif c.symbol == 'SOL' %}◎{% else %}{{ c.symbol|slice:":1" }}{% endif %}
+        </div>
+        <div>
+          <p class="text-navy-800 font-bold text-sm">{{ c.symbol }}</p>
+          <p class="text-gray-400 text-xs leading-tight">{{ c.name }}</p>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-3 p-6 text-center text-gray-400 text-sm">No cryptocurrencies configured. Contact admin.</div>
+      {% endfor %}
+    </div>
+
+    <!-- Live rate bar -->
+    <div id="rate-banner" class="hidden p-4 rounded-xl flex items-center justify-between gap-4" style="background:#f5f8fd;border:1px solid #e2e9f3;">
+      <div>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Live Exchange Rate</p>
+        <p class="font-mono font-bold text-navy-900 text-base" id="rate-display">Fetching…</p>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <div id="rate-spinner" class="w-4 h-4 border-2 border-navy-200 border-t-navy-700 rounded-full animate-spin"></div>
+        <span id="badge-live"   class="hidden px-2.5 py-1 rounded-full text-xs font-bold" style="background:#d1e7dd;color:#0f5132;">● Live</span>
+        <span id="badge-manual" class="hidden px-2.5 py-1 rounded-full text-xs font-bold" style="background:#fff3cd;color:#856404;">⚠ Manual</span>
+      </div>
+    </div>
+
+    <!-- Calculator -->
+    <div id="calculator" class="hidden space-y-4">
+
+      <div>
+        <label class="block text-sm font-semibold text-navy-800 mb-1.5">
+          Amount to Send — <span id="symbol-label" class="text-gold-600">select currency</span>
+        </label>
+        <div class="relative">
+          <input type="number" id="crypto-input" class="form-input pr-16 font-mono"
+                 placeholder="0.00000000" step="0.00000001" min="0" autocomplete="off">
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-navy-500 font-mono font-bold text-sm" id="symbol-suffix">—</span>
+        </div>
+        <p class="text-gray-400 text-xs mt-1.5" id="min-label">Minimum: —</p>
+      </div>
+
+      <!-- ZAR result -->
+      <div class="p-6 rounded-2xl" style="background:linear-gradient(135deg,#03071e,#0a1f44);border:1px solid rgba(245,152,10,0.2);">
+        <p class="text-navy-400 text-xs uppercase tracking-wider mb-1">You Will Receive (ZAR)</p>
+        <p class="font-mono font-bold text-white text-4xl leading-none" id="zar-display">R 0.00</p>
+        <p class="text-navy-500 text-xs mt-2" id="rate-note">Enter an amount above to calculate</p>
+      </div>
+
+      <!-- Manual rate fallback -->
+      <div id="manual-section" class="hidden p-5 rounded-xl space-y-3" style="background:#fff8e8;border:1px solid rgba(224,137,0,0.3);">
+        <div>
+          <p class="text-amber-800 font-bold text-sm">⚠ Automatic price unavailable</p>
+          <p class="text-amber-700 text-xs mt-0.5">Enter the current <span class="manual-sym font-bold"></span>/ZAR rate manually. Check on <a href="https://www.luno.com" target="_blank" class="underline font-bold">Luno</a> or <a href="https://www.binance.com" target="_blank" class="underline font-bold">Binance</a>.</p>
+        </div>
+        <div class="flex gap-3 items-end">
+          <div class="flex-1">
+            <label class="block text-xs font-bold text-amber-900 mb-1">1 <span class="manual-sym"></span> = R</label>
+            <input type="number" id="manual-rate" class="form-input text-sm font-mono" placeholder="e.g. 1800000.00" step="0.01" min="1">
+          </div>
+          <button type="button" onclick="applyManualRate()" class="px-5 py-2.5 rounded-xl text-white font-bold text-sm flex-shrink-0" style="background:#0a1f44;">Apply</button>
+        </div>
+      </div>
+
+      <!-- Network warning -->
+      <div id="network-box" class="hidden p-4 rounded-xl" style="background:#fff0f0;border:1px solid #f8d7da;">
+        <p class="text-red-700 text-xs font-bold">⚠ Network: <span id="network-name"></span></p>
+        <p class="text-red-600 text-xs mt-0.5">Only send on this exact network. Wrong network = permanent loss of funds.</p>
+      </div>
+
+      <button type="submit" id="submit-btn"
+              class="btn-gold w-full py-4 rounded-xl text-navy-900 font-bold text-base"
+              style="opacity:0.4;cursor:not-allowed;" disabled>
+        Continue → Get Wallet Address
+      </button>
+      <p class="text-center text-xs text-gray-400">You'll receive our wallet address on the next screen</p>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="text-center py-10">
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:#f5f8fd;border:1px solid #e2e9f3;">
+        <span class="text-3xl">₿</span>
+      </div>
+      <p class="text-gray-400 text-sm">Select a cryptocurrency above to start</p>
+    </div>
+  </form>
+
+  <!-- How it works -->
+  <div class="p-5 rounded-xl fade-up fade-up-3" style="background:#f5f8fd;border:1px solid #e2e9f3;">
+    <p class="text-navy-800 font-bold text-sm mb-3">📋 How crypto deposits work</p>
+    <div class="space-y-2">
+      {% for step in "1234" %}{% endfor %}
+      <div class="flex gap-3 text-xs text-gray-500">
+        <span class="font-bold text-navy-700 flex-shrink-0">1.</span>
+        <span>Select your cryptocurrency and enter how much you want to send — we'll show you the live ZAR equivalent.</span>
+      </div>
+      <div class="flex gap-3 text-xs text-gray-500">
+        <span class="font-bold text-navy-700 flex-shrink-0">2.</span>
+        <span>You'll see our wallet address on the next screen — send exactly that amount to it on the correct network.</span>
+      </div>
+      <div class="flex gap-3 text-xs text-gray-500">
+        <span class="font-bold text-navy-700 flex-shrink-0">3.</span>
+        <span>Submit your transaction hash (TxID) from your wallet or exchange so we can verify it on the blockchain.</span>
+      </div>
+      <div class="flex gap-3 text-xs text-gray-500">
+        <span class="font-bold text-navy-700 flex-shrink-0">4.</span>
+        <span>Once blockchain confirmation is received and reviewed by our team, your ZAR wallet is credited — usually within 1–6 hours.</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const coins = {
+    {% for c in currencies %}
+    '{{ c.symbol }}': { symbol:'{{ c.symbol }}', name:'{{ c.name }}', network:'{{ c.network|default:"" }}', min:{{ c.minimum_deposit }} },
+    {% endfor %}
+  };
+
+  let sel = null, rate = null;
+
+  // ── Select currency ─────────────────────────────────────────────
+  document.querySelectorAll('.currency-card').forEach(card => {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.currency-card').forEach(c => {
+        c.style.borderColor = ''; c.style.background = '';
+      });
+      this.style.borderColor = '#e08900';
+      this.style.background  = 'linear-gradient(135deg,#fff8e8,#fdeec0)';
+      sel = this.dataset.symbol;
+      document.getElementById('f-symbol').value = sel;
+
+      document.getElementById('symbol-label').textContent  = sel;
+      document.getElementById('symbol-suffix').textContent = sel;
+      document.getElementById('min-label').textContent     = `Minimum: ${coins[sel].min} ${sel}`;
+      document.querySelectorAll('.manual-sym').forEach(s => s.textContent = sel);
+
+      const net = coins[sel].network;
+      if (net) {
+        document.getElementById('network-name').textContent = net;
+        document.getElementById('network-box').classList.remove('hidden');
+      } else {
+        document.getElementById('network-box').classList.add('hidden');
+      }
+
+      document.getElementById('empty-state').classList.add('hidden');
+      document.getElementById('calculator').classList.remove('hidden');
+      document.getElementById('rate-banner').classList.remove('hidden');
+
+      fetchRate(sel);
+    });
+  });
+
+  // ── Fetch live rate ─────────────────────────────────────────────
+  function fetchRate(symbol) {
+    rate = null;
+    setSpinner(true);
+    document.getElementById('badge-live').classList.add('hidden');
+    document.getElementById('badge-manual').classList.add('hidden');
+    document.getElementById('manual-section').classList.add('hidden');
+    document.getElementById('rate-display').textContent = 'Fetching live rate…';
+
+    fetch(`/deposits/api/crypto-price/?symbol=${encodeURIComponent(symbol)}`)
+      .then(r => r.json())
+      .then(d => {
+        setSpinner(false);
+        if (d.price_zar) {
+          rate = d.price_zar;
+          document.getElementById('f-rate').value = rate;
+          document.getElementById('rate-display').textContent =
+            `1 ${symbol} = R ${rate.toLocaleString('en-ZA', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+          document.getElementById('badge-live').classList.remove('hidden');
+          recalc();
+        } else { showManual(); }
+      })
+      .catch(() => { setSpinner(false); showManual(); });
+  }
+
+  function showManual() {
+    document.getElementById('rate-display').textContent = 'Price unavailable';
+    document.getElementById('badge-manual').classList.remove('hidden');
+    document.getElementById('manual-section').classList.remove('hidden');
+  }
+
+  window.applyManualRate = function() {
+    const v = parseFloat(document.getElementById('manual-rate').value);
+    if (!v || v <= 0) { alert('Please enter a valid rate.'); return; }
+    rate = v;
+    document.getElementById('f-rate').value = v;
+    document.getElementById('rate-display').textContent =
+      `1 ${sel} = R ${v.toLocaleString('en-ZA',{minimumFractionDigits:2})} (manual)`;
+    document.getElementById('badge-manual').classList.remove('hidden');
+    document.getElementById('manual-section').classList.add('hidden');
+    recalc();
+  };
+
+  function setSpinner(on) {
+    document.getElementById('rate-spinner').classList.toggle('hidden', !on);
+  }
+
+  // ── Calculate ───────────────────────────────────────────────────
+  document.getElementById('crypto-input').addEventListener('input', recalc);
+
+  function recalc() {
+    const amt = parseFloat(document.getElementById('crypto-input').value) || 0;
+    document.getElementById('f-crypto-hidden').value = amt || '';
+    const btn = document.getElementById('submit-btn');
+
+    if (!rate || amt <= 0) {
+      document.getElementById('zar-display').textContent = 'R 0.00';
+      document.getElementById('rate-note').textContent   = 'Enter an amount above to calculate';
+      btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed';
+      return;
+    }
+
+    const zar = amt * rate;
+    document.getElementById('zar-display').textContent =
+      'R ' + zar.toLocaleString('en-ZA', {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('f-zar').value = zar.toFixed(2);
+    document.getElementById('rate-note').textContent =
+      `${amt} ${sel} × R ${rate.toLocaleString('en-ZA',{minimumFractionDigits:2})} / coin`;
+
+    const min    = coins[sel]?.min || 0;
+    const minZAR = 500;
+    const ok     = amt >= min && zar >= minZAR;
+    btn.disabled = !ok;
+    btn.style.opacity = ok ? '1' : '0.4';
+    btn.style.cursor  = ok ? 'pointer' : 'not-allowed';
+
+    const minLbl = document.getElementById('min-label');
+    minLbl.style.color = (amt > 0 && amt < min) ? '#dc3545' : '';
+  }
+
+  // ── Form guard ──────────────────────────────────────────────────
+  document.getElementById('crypto-form').addEventListener('submit', function(e) {
+    const sym  = document.getElementById('f-symbol').value;
+    const amt  = parseFloat(document.getElementById('f-crypto-hidden').value) || 0;
+    const zar  = parseFloat(document.getElementById('f-zar').value) || 0;
+    const rt   = parseFloat(document.getElementById('f-rate').value) || 0;
+    if (!sym || amt <= 0 || zar <= 0 || rt <= 0) {
+      e.preventDefault();
+      alert('Please select a currency and enter a valid amount first.');
+    }
+  });
+})();
+</script>
+{% endblock %}

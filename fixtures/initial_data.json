@@ -1,0 +1,212 @@
+[
+  {
+    "model": "investments.investmentcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Gold Investment",
+      "slug": "gold",
+      "description": "Invest in gold-backed assets. Gold has been a reliable store of value for centuries and provides a stable hedge against inflation.",
+      "icon": "gold",
+      "is_active": true,
+      "display_order": 1,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentcategory",
+    "pk": 2,
+    "fields": {
+      "name": "Real Estate",
+      "slug": "real-estate",
+      "description": "Participate in South Africa's property market without purchasing physical property. Access returns from commercial and residential real estate portfolios.",
+      "icon": "real_estate",
+      "is_active": true,
+      "display_order": 2,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentcategory",
+    "pk": 3,
+    "fields": {
+      "name": "Cryptocurrency",
+      "slug": "crypto",
+      "description": "Gain exposure to the fast-growing digital asset market. Our crypto investment plans are managed by experienced traders.",
+      "icon": "crypto",
+      "is_active": true,
+      "display_order": 3,
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentplan",
+    "pk": "11111111-1111-1111-1111-111111111101",
+    "fields": {
+      "category": 1,
+      "name": "Gold Starter",
+      "description": "Entry-level gold investment with a fixed 15% ROI over 30 days.",
+      "minimum_amount": "500.00",
+      "maximum_amount": "50000.00",
+      "duration_value": 30,
+      "duration_unit": "DAYS",
+      "roi_type": "FIXED",
+      "roi_percentage": "15.00",
+      "daily_roi": "0.5000",
+      "returns_principal": true,
+      "is_active": true,
+      "is_featured": true,
+      "display_order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentplan",
+    "pk": "11111111-1111-1111-1111-111111111102",
+    "fields": {
+      "category": 1,
+      "name": "Gold Premium",
+      "description": "Higher-tier gold investment with 35% ROI over 60 days.",
+      "minimum_amount": "10000.00",
+      "maximum_amount": "500000.00",
+      "duration_value": 60,
+      "duration_unit": "DAYS",
+      "roi_type": "FIXED",
+      "roi_percentage": "35.00",
+      "daily_roi": "0.5833",
+      "returns_principal": true,
+      "is_active": true,
+      "is_featured": false,
+      "display_order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentplan",
+    "pk": "22222222-2222-2222-2222-222222222201",
+    "fields": {
+      "category": 2,
+      "name": "Property Starter",
+      "description": "Begin your real estate investment journey. 20% ROI over 45 days.",
+      "minimum_amount": "1000.00",
+      "maximum_amount": "100000.00",
+      "duration_value": 45,
+      "duration_unit": "DAYS",
+      "roi_type": "FIXED",
+      "roi_percentage": "20.00",
+      "daily_roi": "0.4444",
+      "returns_principal": true,
+      "is_active": true,
+      "is_featured": true,
+      "display_order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentplan",
+    "pk": "22222222-2222-2222-2222-222222222202",
+    "fields": {
+      "category": 2,
+      "name": "Property Elite",
+      "description": "Premium real estate investment with 50% ROI over 90 days.",
+      "minimum_amount": "25000.00",
+      "maximum_amount": "1000000.00",
+      "duration_value": 90,
+      "duration_unit": "DAYS",
+      "roi_type": "FIXED",
+      "roi_percentage": "50.00",
+      "daily_roi": "0.5556",
+      "returns_principal": true,
+      "is_active": true,
+      "is_featured": false,
+      "display_order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentplan",
+    "pk": "33333333-3333-3333-3333-333333333301",
+    "fields": {
+      "category": 3,
+      "name": "Crypto Basic",
+      "description": "Managed crypto trading plan with 25% ROI over 14 days.",
+      "minimum_amount": "500.00",
+      "maximum_amount": "50000.00",
+      "duration_value": 14,
+      "duration_unit": "DAYS",
+      "roi_type": "FIXED",
+      "roi_percentage": "25.00",
+      "daily_roi": "1.7857",
+      "returns_principal": true,
+      "is_active": true,
+      "is_featured": true,
+      "display_order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "investments.investmentplan",
+    "pk": "33333333-3333-3333-3333-333333333302",
+    "fields": {
+      "category": 3,
+      "name": "Crypto Pro",
+      "description": "Advanced crypto portfolio with 60% ROI over 30 days.",
+      "minimum_amount": "5000.00",
+      "maximum_amount": "500000.00",
+      "duration_value": 30,
+      "duration_unit": "DAYS",
+      "roi_type": "FIXED",
+      "roi_percentage": "60.00",
+      "daily_roi": "2.0000",
+      "returns_principal": true,
+      "is_active": true,
+      "is_featured": false,
+      "display_order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "deposits.cryptocurrency",
+    "pk": 1,
+    "fields": {
+      "name": "Bitcoin",
+      "symbol": "BTC",
+      "wallet_address": "YOUR_BTC_WALLET_ADDRESS",
+      "network": "Bitcoin Network",
+      "is_active": true,
+      "minimum_deposit": "0.00010000",
+      "display_order": 1
+    }
+  },
+  {
+    "model": "deposits.cryptocurrency",
+    "pk": 2,
+    "fields": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "wallet_address": "YOUR_ETH_WALLET_ADDRESS",
+      "network": "ERC-20",
+      "is_active": true,
+      "minimum_deposit": "0.00100000",
+      "display_order": 2
+    }
+  },
+  {
+    "model": "deposits.cryptocurrency",
+    "pk": 3,
+    "fields": {
+      "name": "Tether USD",
+      "symbol": "USDT",
+      "wallet_address": "YOUR_USDT_WALLET_ADDRESS",
+      "network": "TRC-20",
+      "is_active": true,
+      "minimum_deposit": "10.00000000",
+      "display_order": 3
+    }
+  }
+]

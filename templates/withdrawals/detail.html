@@ -1,0 +1,45 @@
+{% extends "base/dashboard_base.html" %}
+{% block title %}Withdrawal {{ withdrawal.reference }}{% endblock %}
+{% block page_title %}Withdrawal Detail{% endblock %}
+{% block page_subtitle %}{{ withdrawal.reference }}{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto space-y-5">
+  <div class="card p-7 fade-up fade-up-1">
+    <div class="flex justify-between items-start mb-6">
+      <div>
+        <p class="text-gray-400 text-xs">Reference</p>
+        <p class="font-mono font-bold text-navy-900 text-lg">{{ withdrawal.reference }}</p>
+      </div>
+      <span class="px-3 py-1.5 rounded-full text-xs font-bold
+        {% if withdrawal.status == 'COMPLETED' %}badge-completed
+        {% elif withdrawal.status == 'APPROVED' %}badge-approved
+        {% elif withdrawal.status == 'PENDING' %}badge-pending
+        {% elif withdrawal.status == 'PROCESSING' %}badge-active
+        {% else %}badge-rejected{% endif %}">
+        {{ withdrawal.get_status_display }}
+      </span>
+    </div>
+    <div class="space-y-3">
+      {% for label, value in forloop.parentloop.0 %}{% endfor %}
+      <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500 text-sm">Amount</span><span class="font-mono font-bold text-navy-800">R {{ withdrawal.amount|floatformat:2 }}</span></div>
+      <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500 text-sm">Fee</span><span class="font-mono text-navy-700">R {{ withdrawal.fee|floatformat:2 }}</span></div>
+      <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500 text-sm">Net Amount</span><span class="font-mono font-bold text-green-700">R {{ withdrawal.net_amount|floatformat:2 }}</span></div>
+      <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500 text-sm">Method</span><span class="text-navy-700 text-sm font-semibold">{{ withdrawal.get_method_display }}</span></div>
+      {% if withdrawal.bank_account %}<div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500 text-sm">Bank Account</span><span class="text-navy-700 text-sm">{{ withdrawal.bank_account.get_bank_name_display }} — {{ withdrawal.bank_account.account_number }}</span></div>{% endif %}
+      <div class="flex justify-between py-2 border-b border-gray-100"><span class="text-gray-500 text-sm">Tax Code</span><span class="font-mono text-navy-700 text-sm">{{ withdrawal.tax_code|default:"—" }}</span></div>
+      <div class="flex justify-between py-2"><span class="text-gray-500 text-sm">Submitted</span><span class="text-navy-700 text-sm">{{ withdrawal.created_at|date:"d M Y, H:i" }}</span></div>
+    </div>
+    {% if withdrawal.tax_pdf %}
+    <div class="mt-5 pt-5 border-t border-gray-100">
+      <a href="{% url 'download_tax_cert' withdrawal.pk %}"
+         class="btn-navy w-full py-3 rounded-xl text-white font-bold text-center text-sm flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Download Tax Certificate
+      </a>
+    </div>
+    {% endif %}
+  </div>
+  <a href="{% url 'withdrawal_history' %}" class="block text-center text-sm text-gray-400 hover:text-navy-700 transition-colors">← Back to history</a>
+</div>
+{% endblock %}
