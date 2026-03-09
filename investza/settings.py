@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ─── SECURITY ────────────────────────────────────────────────────────────────
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-0-pq1ki2dc@1=mxe*%!5(uj(fxpvi7ibyu2s-^(fvrr*cf(_ls')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,investza.onrender.com', cast=Csv())
 
 # ─── APPLICATIONS ─────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
