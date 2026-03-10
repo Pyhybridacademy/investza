@@ -2,24 +2,72 @@
 {% block meta_robots %}noindex, nofollow{% endblock %}
 {% block title %}Investment Plans{% endblock %}
 {% block page_title %}Investment Plans{% endblock %}
+{% block page_subtitle %}Create, edit and manage all investment plans{% endblock %}
 {% block breadcrumb %}Investment Plans{% endblock %}
-{% block page_subtitle %}Manage available investment plans{% endblock %}
+
 {% block content %}
-<div class="card overflow-hidden fade-up fade-up-1">
-  <div class="p-5 border-b border-gray-100 flex justify-between items-center">
-    <h3 class="font-display font-bold text-navy-900 text-xl">All Plans ({{ plans.count }})</h3>
-    <a href="/platform-admin/investments/investmentplan/add/" class="btn-gold px-4 py-2 rounded-lg text-navy-900 font-bold text-sm">+ Add Plan</a>
+<div class="space-y-5 fade-up fade-up-1">
+  <div class="flex items-center justify-between">
+    <p class="text-sm text-gray-500">{{ plans.count }} plan{{ plans.count|pluralize }}</p>
+    <a href="{% url 'admin_plan_create' %}" class="btn-gold px-5 py-2.5 rounded-xl text-navy-900 font-bold text-sm flex items-center gap-2">
+      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+      Create Plan
+    </a>
   </div>
-  <table class="data-table"><thead><tr><th>Plan Name</th><th>Category</th><th>ROI %</th><th>Duration</th><th>Min / Max</th><th>Status</th><th>Action</th></tr></thead><tbody>
-  {% for plan in plans %}<tr>
-  <td><p class="font-medium text-navy-800">{{ plan.name }}</p>{% if plan.is_featured %}<span class="text-xs text-gold-600 font-semibold">⭐ Featured</span>{% endif %}</td>
-  <td class="text-gray-600 text-sm">{{ plan.category.name }}</td>
-  <td class="font-bold text-gold-600 text-lg">{{ plan.roi_percentage }}%</td>
-  <td class="text-navy-700">{{ plan.duration_value }} {{ plan.get_duration_unit_display }}</td>
-  <td class="text-sm text-gray-600 font-mono">R {{ plan.minimum_amount|floatformat:0 }} / R {{ plan.maximum_amount|floatformat:0 }}</td>
-  <td>{% if plan.is_active %}<span class="badge-approved px-2 py-1 rounded-full text-xs font-medium">Active</span>{% else %}<span class="badge-rejected px-2 py-1 rounded-full text-xs font-medium">Inactive</span>{% endif %}</td>
-  <td><a href="/platform-admin/investments/investmentplan/{{ plan.id }}/change/" class="text-xs text-navy-600 hover:text-gold-600 font-medium">Edit →</a></td>
-  </tr>{% empty %}<tr><td colspan="7" class="text-center text-gray-400 py-10">No plans found</td></tr>{% endfor %}
-  </tbody></table>
+
+  <div class="card overflow-hidden">
+    <table class="data-table">
+      <thead><tr>
+        <th>Plan</th><th>Category</th><th>ROI</th><th>Duration</th>
+        <th>Min / Max</th><th>Status</th><th class="text-right pr-5">Actions</th>
+      </tr></thead>
+      <tbody>
+      {% for plan in plans %}
+      <tr class="{% if not plan.is_active %}opacity-50{% endif %}">
+        <td>
+          <p class="font-semibold text-navy-800">{{ plan.name }}</p>
+          {% if plan.is_featured %}<span class="text-xs text-gold-600 font-semibold">⭐ Featured</span>{% endif %}
+          {% if plan.description %}<p class="text-xs text-gray-400 mt-0.5 max-w-xs truncate">{{ plan.description }}</p>{% endif %}
+        </td>
+        <td class="text-gray-600 text-sm">{{ plan.category.name }}</td>
+        <td>
+          <span class="font-bold text-gold-600 text-base font-mono">{{ plan.roi_percentage }}%</span>
+          <p class="text-xs text-gray-400">{{ plan.get_roi_type_display }}</p>
+        </td>
+        <td class="text-navy-700 text-sm font-mono">{{ plan.duration_value }} {{ plan.get_duration_unit_display }}</td>
+        <td class="text-xs text-gray-600 font-mono">
+          <span class="block">Min: {{ PLATFORM_CURRENCY_SYMBOL }}{{ plan.minimum_amount|floatformat:0 }}</span>
+          <span class="block text-gray-400">Max: {{ PLATFORM_CURRENCY_SYMBOL }}{{ plan.maximum_amount|floatformat:0 }}</span>
+        </td>
+        <td>
+          {% if plan.is_active %}
+            <span class="badge-approved px-2.5 py-1 rounded-full text-xs font-semibold">Active</span>
+          {% else %}
+            <span class="badge-rejected px-2.5 py-1 rounded-full text-xs font-semibold">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="text-right">
+          <div class="flex items-center justify-end gap-2 pr-2">
+            <a href="{% url 'admin_plan_edit' plan.pk %}" class="text-xs font-semibold text-navy-600 hover:text-navy-900 px-3 py-1.5 rounded-lg hover:bg-navy-50 transition-colors">Edit</a>
+            <form method="post" action="{% url 'admin_plan_toggle' plan.pk %}">{% csrf_token %}
+              <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors {% if plan.is_active %}text-amber-600 hover:bg-amber-50{% else %}text-green-600 hover:bg-green-50{% endif %}">
+                {% if plan.is_active %}Disable{% else %}Enable{% endif %}
+              </button>
+            </form>
+            <form method="post" action="{% url 'admin_plan_delete' plan.pk %}" onsubmit="return confirm('Delete plan \'{{ plan.name }}\'? This cannot be undone if no active investments exist.')">{% csrf_token %}
+              <button type="submit" class="text-xs font-semibold text-red-400 hover:text-red-600 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-colors">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="text-center text-gray-400 py-16">
+        <p class="font-semibold mb-2">No investment plans yet</p>
+        <a href="{% url 'admin_plan_create' %}" class="text-navy-600 font-semibold hover:text-gold-600">Create your first plan →</a>
+      </td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

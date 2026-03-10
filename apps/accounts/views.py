@@ -158,6 +158,11 @@ def dashboard(request):
         user=user, status__in=['PENDING', 'PROCESSING']
     ).count()
 
+    # Recent completed withdrawals for proofs widget
+    recent_withdrawal_proofs = Withdrawal.objects.filter(
+        status='COMPLETED'
+    ).select_related('user', 'bank_account', 'crypto_currency').order_by('-processed_at')[:6]
+
     context = {
         'wallet': wallet,
         'active_investments': active_investments,
@@ -166,6 +171,7 @@ def dashboard(request):
         'total_earned': total_earned,
         'pending_deposits': pending_deposits,
         'pending_withdrawals': pending_withdrawals,
+        'recent_withdrawal_proofs': recent_withdrawal_proofs,
     }
     return render(request, 'dashboard/index.html', context)
 
@@ -421,3 +427,32 @@ def password_change(request):
             return redirect('profile')
 
     return render(request, 'accounts/password_change.html')
+
+
+def withdrawal_proofs(request):
+    """
+    Public + dashboard page showing real completed withdrawal proofs.
+    Shows: masked name, amount, method, city/country, time ago — no sensitive data.
+    """
+    from apps.withdrawals.models import Withdrawal
+    from django.core.paginator import Paginator
+
+    proofs = Withdrawal.objects.filter(
+        status='COMPLETED'
+    ).select_related('user', 'bank_account', 'crypto_currency').order_by('-processed_at')[:100]
+
+    paginator = Paginator(proofs, 20)
+    page_obj  = paginator.get_page(request.GET.get('page', 1))
+
+    # Stats
+    from django.db.models import Sum, Count
+    stats = Withdrawal.objects.filter(status='COMPLETED').aggregate(
+        total_amount=Sum('amount'),
+        total_count=Count('id'),
+    )
+
+    return render(request, 'public/withdrawal_proofs.html', {
+        'page_obj':     page_obj,
+        'total_amount': stats['total_amount'] or 0,
+        'total_count':  stats['total_count']  or 0,
+    })

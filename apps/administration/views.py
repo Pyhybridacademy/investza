@@ -740,3 +740,248 @@ def admin_investment_create(request):
         except (InvalidOperation, ValueError) as e:
             messages.error(request, f'Error: {e}')
     return redirect('admin_investments')
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  PLATFORM SETTINGS
+# ═══════════════════════════════════════════════════════════════════════════
+
+@login_required
+@staff_required
+def admin_platform_settings(request):
+    from apps.accounts.models import PlatformSettings
+    ps = PlatformSettings.get()
+
+    if request.method == 'POST':
+        ps.platform_name       = request.POST.get('platform_name', ps.platform_name).strip()
+        ps.tagline             = request.POST.get('tagline', ps.tagline).strip()
+        ps.support_email       = request.POST.get('support_email', ps.support_email).strip()
+        ps.support_phone       = request.POST.get('support_phone', ps.support_phone).strip()
+        ps.support_whatsapp    = request.POST.get('support_whatsapp', '').strip()
+        ps.website_url         = request.POST.get('website_url', '').strip()
+        ps.fsp_number          = request.POST.get('fsp_number', '').strip()
+        ps.registered_address  = request.POST.get('registered_address', '').strip()
+        ps.currency_code       = request.POST.get('currency_code', ps.currency_code).strip()
+        ps.currency_symbol     = request.POST.get('currency_symbol', ps.currency_symbol).strip()
+        ps.twitter_url         = request.POST.get('twitter_url', '').strip()
+        ps.linkedin_url        = request.POST.get('linkedin_url', '').strip()
+        ps.facebook_url        = request.POST.get('facebook_url', '').strip()
+        ps.instagram_url       = request.POST.get('instagram_url', '').strip()
+        ps.maintenance_mode    = request.POST.get('maintenance_mode') == 'on'
+        ps.maintenance_message = request.POST.get('maintenance_message', ps.maintenance_message).strip()
+
+        from decimal import Decimal, InvalidOperation
+        for field in ['min_deposit', 'max_deposit', 'min_withdrawal', 'max_withdrawal', 'withdrawal_fee_pct']:
+            val = request.POST.get(field, '')
+            if val:
+                try:
+                    setattr(ps, field, Decimal(val))
+                except InvalidOperation:
+                    pass
+
+        ps.updated_by = request.user
+        ps.save()
+        # Immediately bust the maintenance-mode cache so the change takes effect
+        from apps.accounts.middleware import invalidate_maintenance_cache
+        invalidate_maintenance_cache()
+        messages.success(request, 'Platform settings updated successfully.')
+        return redirect('admin_platform_settings')
+
+    return render(request, 'admin_panel/platform_settings.html', {'ps': ps})
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  PLATFORM BANK ACCOUNTS (full CRUD in custom admin)
+# ═══════════════════════════════════════════════════════════════════════════
+
+@login_required
+@staff_required
+def admin_platform_accounts(request):
+    from apps.deposits.models import PlatformBankAccount
+    accounts = PlatformBankAccount.objects.all().order_by('is_active', 'bank_name')
+    return render(request, 'admin_panel/platform_accounts.html', {'accounts': accounts})
+
+
+@login_required
+@staff_required
+def admin_bank_account_create(request):
+    from apps.deposits.models import PlatformBankAccount
+    if request.method == 'POST':
+        PlatformBankAccount.objects.create(
+            bank_name       = request.POST.get('bank_name', '').strip(),
+            account_holder  = request.POST.get('account_holder', '').strip(),
+            account_number  = request.POST.get('account_number', '').strip(),
+            account_type    = request.POST.get('account_type', 'Cheque').strip(),
+            branch_code     = request.POST.get('branch_code', '').strip(),
+            branch_name     = request.POST.get('branch_name', '').strip(),
+            swift_code      = request.POST.get('swift_code', '').strip(),
+            reference_prefix= request.POST.get('reference_prefix', 'INZ').strip(),
+            is_active       = request.POST.get('is_active') == 'on',
+        )
+        messages.success(request, 'Bank account added successfully.')
+        return redirect('admin_platform_accounts')
+    from apps.deposits.models import PlatformBankAccount
+    return render(request, 'admin_panel/bank_account_form.html', {
+        'bank_choices': PlatformBankAccount.BANK_CHOICES,
+        'action': 'Add',
+    })
+
+
+@login_required
+@staff_required
+def admin_bank_account_edit(request, pk):
+    from apps.deposits.models import PlatformBankAccount
+    acc = get_object_or_404(PlatformBankAccount, pk=pk)
+    if request.method == 'POST':
+        acc.bank_name        = request.POST.get('bank_name', acc.bank_name).strip()
+        acc.account_holder   = request.POST.get('account_holder', acc.account_holder).strip()
+        acc.account_number   = request.POST.get('account_number', acc.account_number).strip()
+        acc.account_type     = request.POST.get('account_type', acc.account_type).strip()
+        acc.branch_code      = request.POST.get('branch_code', acc.branch_code).strip()
+        acc.branch_name      = request.POST.get('branch_name', '').strip()
+        acc.swift_code       = request.POST.get('swift_code', '').strip()
+        acc.reference_prefix = request.POST.get('reference_prefix', acc.reference_prefix).strip()
+        acc.is_active        = request.POST.get('is_active') == 'on'
+        acc.save()
+        messages.success(request, 'Bank account updated.')
+        return redirect('admin_platform_accounts')
+    return render(request, 'admin_panel/bank_account_form.html', {
+        'acc': acc,
+        'bank_choices': PlatformBankAccount.BANK_CHOICES,
+        'action': 'Edit',
+    })
+
+
+@login_required
+@staff_required
+def admin_bank_account_toggle(request, pk):
+    from apps.deposits.models import PlatformBankAccount
+    acc = get_object_or_404(PlatformBankAccount, pk=pk)
+    acc.is_active = not acc.is_active
+    acc.save()
+    state = 'activated' if acc.is_active else 'deactivated'
+    messages.success(request, f'{acc} has been {state}.')
+    return redirect('admin_platform_accounts')
+
+
+@login_required
+@staff_required
+def admin_bank_account_delete(request, pk):
+    from apps.deposits.models import PlatformBankAccount
+    acc = get_object_or_404(PlatformBankAccount, pk=pk)
+    if request.method == 'POST':
+        acc.delete()
+        messages.success(request, 'Bank account deleted.')
+    return redirect('admin_platform_accounts')
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  INVESTMENT PLANS (full CRUD in custom admin)
+# ═══════════════════════════════════════════════════════════════════════════
+
+@login_required
+@staff_required
+def admin_investment_plans(request):
+    from apps.investments.models import InvestmentPlan, InvestmentCategory
+    plans      = InvestmentPlan.objects.select_related('category').order_by('category', 'display_order')
+    categories = InvestmentCategory.objects.all()
+    return render(request, 'admin_panel/plans.html', {'plans': plans, 'categories': categories})
+
+
+@login_required
+@staff_required
+def admin_plan_create(request):
+    from apps.investments.models import InvestmentPlan, InvestmentCategory
+    from decimal import Decimal, InvalidOperation
+    categories = InvestmentCategory.objects.filter(is_active=True)
+    if request.method == 'POST':
+        try:
+            cat = get_object_or_404(InvestmentCategory, pk=request.POST.get('category'))
+            plan = InvestmentPlan(
+                category         = cat,
+                name             = request.POST.get('name', '').strip(),
+                description      = request.POST.get('description', '').strip(),
+                minimum_amount   = Decimal(request.POST.get('minimum_amount', '500')),
+                maximum_amount   = Decimal(request.POST.get('maximum_amount', '1000000')),
+                duration_value   = int(request.POST.get('duration_value', 30)),
+                duration_unit    = request.POST.get('duration_unit', 'DAYS'),
+                roi_type         = request.POST.get('roi_type', 'FIXED'),
+                roi_percentage   = Decimal(request.POST.get('roi_percentage', '10')),
+                returns_principal= request.POST.get('returns_principal') == 'on',
+                is_active        = request.POST.get('is_active') == 'on',
+                is_featured      = request.POST.get('is_featured') == 'on',
+                display_order    = int(request.POST.get('display_order', 0)),
+            )
+            plan.save()
+            messages.success(request, f'Plan "{plan.name}" created.')
+            return redirect('admin_investment_plans')
+        except (InvalidOperation, ValueError) as e:
+            messages.error(request, f'Error: {e}')
+    return render(request, 'admin_panel/plan_form.html', {
+        'categories': categories,
+        'duration_units': InvestmentPlan.DURATION_UNITS,
+        'roi_types': InvestmentPlan.ROI_TYPES,
+        'action': 'Create',
+    })
+
+
+@login_required
+@staff_required
+def admin_plan_edit(request, pk):
+    from apps.investments.models import InvestmentPlan, InvestmentCategory
+    from decimal import Decimal, InvalidOperation
+    plan       = get_object_or_404(InvestmentPlan, pk=pk)
+    categories = InvestmentCategory.objects.filter(is_active=True)
+    if request.method == 'POST':
+        try:
+            plan.category         = get_object_or_404(InvestmentCategory, pk=request.POST.get('category'))
+            plan.name             = request.POST.get('name', plan.name).strip()
+            plan.description      = request.POST.get('description', plan.description).strip()
+            plan.minimum_amount   = Decimal(request.POST.get('minimum_amount', plan.minimum_amount))
+            plan.maximum_amount   = Decimal(request.POST.get('maximum_amount', plan.maximum_amount))
+            plan.duration_value   = int(request.POST.get('duration_value', plan.duration_value))
+            plan.duration_unit    = request.POST.get('duration_unit', plan.duration_unit)
+            plan.roi_type         = request.POST.get('roi_type', plan.roi_type)
+            plan.roi_percentage   = Decimal(request.POST.get('roi_percentage', plan.roi_percentage))
+            plan.returns_principal= request.POST.get('returns_principal') == 'on'
+            plan.is_active        = request.POST.get('is_active') == 'on'
+            plan.is_featured      = request.POST.get('is_featured') == 'on'
+            plan.display_order    = int(request.POST.get('display_order', plan.display_order))
+            plan.save()
+            messages.success(request, f'Plan "{plan.name}" updated.')
+            return redirect('admin_investment_plans')
+        except (InvalidOperation, ValueError) as e:
+            messages.error(request, f'Error: {e}')
+    return render(request, 'admin_panel/plan_form.html', {
+        'plan': plan,
+        'categories': categories,
+        'duration_units': InvestmentPlan.DURATION_UNITS,
+        'roi_types': InvestmentPlan.ROI_TYPES,
+        'action': 'Edit',
+    })
+
+
+@login_required
+@staff_required
+def admin_plan_toggle(request, pk):
+    from apps.investments.models import InvestmentPlan
+    plan = get_object_or_404(InvestmentPlan, pk=pk)
+    plan.is_active = not plan.is_active
+    plan.save()
+    messages.success(request, f'"{plan.name}" {"activated" if plan.is_active else "deactivated"}.')
+    return redirect('admin_investment_plans')
+
+
+@login_required
+@staff_required
+def admin_plan_delete(request, pk):
+    from apps.investments.models import InvestmentPlan
+    plan = get_object_or_404(InvestmentPlan, pk=pk)
+    if request.method == 'POST':
+        if plan.investments.filter(status__in=['ACTIVE','PENDING']).exists():
+            messages.error(request, 'Cannot delete a plan with active investments.')
+        else:
+            name = plan.name
+            plan.delete()
+            messages.success(request, f'Plan "{name}" deleted.')
+    return redirect('admin_investment_plans')

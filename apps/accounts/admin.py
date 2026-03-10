@@ -55,3 +55,22 @@ class KYCDocumentAdmin(admin.ModelAdmin):
             doc.user.is_verified = True
             doc.user.save(update_fields=['is_verified'])
     approve_documents.short_description = "Approve selected KYC documents"
+
+# PlatformSettings
+try:
+    from apps.accounts.models import PlatformSettings
+    @admin.register(PlatformSettings)
+    class PlatformSettingsAdmin(admin.ModelAdmin):
+        list_display = ['platform_name', 'support_email', 'currency_code', 'maintenance_mode', 'updated_at']
+        fieldsets = (
+            ('Identity',  {'fields': ('platform_name', 'tagline', 'website_url', 'fsp_number', 'registered_address')}),
+            ('Contact',   {'fields': ('support_email', 'support_phone', 'support_whatsapp')}),
+            ('Currency',  {'fields': ('currency_code', 'currency_symbol')}),
+            ('Limits',    {'fields': ('min_deposit', 'max_deposit', 'min_withdrawal', 'max_withdrawal', 'withdrawal_fee_pct')}),
+            ('Social',    {'fields': ('twitter_url', 'linkedin_url', 'facebook_url', 'instagram_url')}),
+            ('System',    {'fields': ('maintenance_mode', 'maintenance_message', 'updated_by')}),
+        )
+        def has_add_permission(self, request): return not PlatformSettings.objects.exists()
+        def has_delete_permission(self, request, obj=None): return False
+except Exception:
+    pass

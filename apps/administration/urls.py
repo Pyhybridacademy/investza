@@ -42,3 +42,24 @@ urlpatterns += [
     path('investments/<uuid:pk>/complete/',admin_views.admin_investment_complete, name='admin_investment_complete'),
     path('investments/<uuid:pk>/adjust/',  admin_views.admin_investment_adjust,   name='admin_investment_adjust'),
 ]
+
+# Platform settings
+urlpatterns += [
+    path('settings/', admin_views.admin_platform_settings, name='admin_platform_settings'),
+]
+
+# Platform bank accounts (full CRUD)
+urlpatterns += [
+    path('platform-accounts/add/',           admin_views.admin_bank_account_create, name='admin_bank_account_create'),
+    path('platform-accounts/<int:pk>/edit/', admin_views.admin_bank_account_edit,   name='admin_bank_account_edit'),
+    path('platform-accounts/<int:pk>/toggle/',admin_views.admin_bank_account_toggle,name='admin_bank_account_toggle'),
+    path('platform-accounts/<int:pk>/delete/',admin_views.admin_bank_account_delete,name='admin_bank_account_delete'),
+]
+
+# Investment plan CRUD
+urlpatterns += [
+    path('plans/create/',           admin_views.admin_plan_create, name='admin_plan_create'),
+    path('plans/<uuid:pk>/edit/',   admin_views.admin_plan_edit,   name='admin_plan_edit'),
+    path('plans/<uuid:pk>/toggle/', admin_views.admin_plan_toggle, name='admin_plan_toggle'),
+    path('plans/<uuid:pk>/delete/', admin_views.admin_plan_delete, name='admin_plan_delete'),
+]

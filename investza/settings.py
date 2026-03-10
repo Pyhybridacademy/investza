@@ -51,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.accounts.middleware.LastSeenMiddleware',
+    # Maintenance mode — runs after auth so we know if user is staff
+    'apps.accounts.middleware.MaintenanceModeMiddleware',
 ]
 
 ROOT_URLCONF = 'investza.urls'

@@ -12,3 +12,8 @@ urlpatterns = [
     path('privacy/', views.privacy, name='privacy'),
     path('risk-disclosure/', views.risk_disclosure, name='risk_disclosure'),
 ]
+
+from apps.accounts.views import withdrawal_proofs
+urlpatterns += [
+    path('withdrawal-proofs/', withdrawal_proofs, name='withdrawal_proofs'),
+]

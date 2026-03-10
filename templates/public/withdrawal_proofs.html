@@ -1,0 +1,169 @@
+{% extends "base/base.html" %}
+{% block title %}Withdrawal Proofs — {{ PLATFORM_NAME }}{% endblock %}
+{% block meta_description %}See real verified withdrawal proofs from {{ PLATFORM_NAME }} investors. Transparent, live records of completed payouts.{% endblock %}
+{% block og_title %}Real Withdrawal Proofs — {{ PLATFORM_NAME }}{% endblock %}
+{% block og_description %}Verified withdrawal records from our investors. 100% transparent payouts.{% endblock %}
+
+{% block body %}
+
+<!-- ── NAV ── -->
+<nav class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-5 py-3.5 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#e08900,#fac660);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#0a1f44" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2L4 7v5c0 5.25 3.4 10.15 8 11.35C16.6 22.15 20 17.25 20 12V7L12 2z" stroke="#0a1f44" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <span class="font-display font-bold text-navy-900 text-base">{{ PLATFORM_NAME }}</span>
+    </a>
+    <div class="flex items-center gap-3">
+      <a href="/" class="text-sm text-gray-500 hover:text-navy-800 font-medium">Home</a>
+      {% if request.user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="btn-gold px-4 py-2 rounded-lg text-navy-900 font-bold text-sm">Dashboard</a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn-navy px-4 py-2 rounded-lg text-white font-bold text-sm">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div style="background:linear-gradient(135deg,#03071e 0%,#0a1f44 100%);" class="py-14 px-5">
+  <div class="max-w-4xl mx-auto text-center">
+    <!-- Live pulse indicator -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6" style="background:rgba(245,152,10,0.12);border:1px solid rgba(245,152,10,0.25);">
+      <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+      <span class="text-xs font-semibold text-green-400 uppercase tracking-wider">Live Withdrawal Feed</span>
+    </div>
+    <h1 class="font-display text-3xl sm:text-4xl font-bold text-white mb-4">
+      Real Withdrawals.<br><span style="color:#fac660;">Real People. Real Money.</span>
+    </h1>
+    <p class="text-gray-300 text-sm max-w-xl mx-auto mb-8 leading-relaxed">
+      Every entry below is a verified, completed payout to one of our investors. No fabricated screenshots — these are pulled directly from our platform database.
+    </p>
+    <!-- Stats bar -->
+    <div class="inline-flex items-center gap-8 px-8 py-4 rounded-2xl" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);">
+      <div class="text-center">
+        <p class="font-display font-bold text-2xl text-white">{{ total_count }}</p>
+        <p class="text-xs text-gray-400 mt-0.5">Completed Payouts</p>
+      </div>
+      <div style="width:1px;height:36px;background:rgba(255,255,255,0.1);"></div>
+      <div class="text-center">
+        <p class="font-display font-bold text-2xl" style="color:#fac660;">{{ PLATFORM_CURRENCY_SYMBOL }}{{ total_amount|floatformat:0 }}</p>
+        <p class="text-xs text-gray-400 mt-0.5">Total Paid Out</p>
+      </div>
+      <div style="width:1px;height:36px;background:rgba(255,255,255,0.1);"></div>
+      <div class="text-center">
+        <p class="font-display font-bold text-2xl text-green-400">100%</p>
+        <p class="text-xs text-gray-400 mt-0.5">Verified Records</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROOFS FEED ── -->
+<div class="max-w-4xl mx-auto px-5 py-12">
+
+  {% if not page_obj %}
+  <!-- Empty state -->
+  <div class="text-center py-20">
+    <div class="w-16 h-16 bg-gold-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <svg width="28" height="28" viewBox="0 0 80 92" fill="none"><path d="M40 4L74 16L74 46C74 64 58 78 40 88C22 78 6 64 6 46L6 16Z" stroke="#f5980a" stroke-width="3" fill="rgba(245,152,10,0.08)"/><path d="M27 46L36 55L54 36" stroke="#f5980a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 class="font-display text-xl font-bold text-navy-900 mb-2">Payouts Coming Soon</h2>
+    <p class="text-gray-400 text-sm max-w-xs mx-auto">As soon as the first withdrawals are completed, they'll appear here in real time.</p>
+  </div>
+
+  {% else %}
+  <!-- Proof cards -->
+  <div class="space-y-3" id="proofs-list">
+    {% for w in page_obj %}
+    {% with first=w.user.first_name|slice:":1"|upper last=w.user.last_name|slice:":1"|upper %}
+    <div class="proof-card card p-5 flex items-center gap-5 hover:shadow-lg transition-all duration-200"
+         style="animation:iz-up 0.35s ease forwards; opacity:0; animation-delay:{{ forloop.counter0|add:'1' }}00ms">
+
+      <!-- Avatar -->
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0"
+           style="background:linear-gradient(135deg,#0f2d5e,#1b4792);color:#fac660;font-family:'DM Mono',monospace;">
+        {{ first }}{{ last }}
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <p class="font-semibold text-navy-800 text-sm">
+            {{ first }}{{ w.user.last_name|slice:"1:"|lower|truncatechars:8 }}***
+          </p>
+          <span class="text-xs text-gray-400">withdrew</span>
+          <span class="font-display font-bold text-lg text-navy-900">
+            {{ PLATFORM_CURRENCY_SYMBOL }}{{ w.amount|floatformat:2 }}
+          </span>
+        </div>
+        <div class="flex items-center gap-3 mt-1 flex-wrap">
+          <span class="text-xs text-gray-400">
+            via {% if w.method == 'BANK' %}
+              <span class="font-medium text-navy-600">Bank Transfer</span>
+            {% else %}
+              <span class="font-medium text-purple-600">{{ w.crypto_currency.symbol|default:'Crypto' }}</span>
+            {% endif %}
+          </span>
+          <span class="text-gray-200">·</span>
+          <span class="text-xs text-gray-400">{{ w.processed_at|timesince }} ago</span>
+          {% if w.bank_account %}
+          <span class="text-gray-200">·</span>
+          <span class="text-xs text-gray-400">{{ w.bank_account.get_bank_name_display }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Badge -->
+      <div class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+           style="background:#dcfce7;border:1px solid #86efac;">
+        <svg width="10" height="10" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="text-xs font-bold text-green-700">Paid</span>
+      </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <div class="flex items-center justify-center gap-2 mt-10">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}"
+       class="px-4 py-2 rounded-lg text-sm font-semibold text-navy-600 bg-white border border-gray-200 hover:border-navy-300 hover:text-navy-900 transition-colors">
+      ← Previous
+    </a>
+    {% endif %}
+    <span class="text-sm text-gray-500 px-3">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}"
+       class="px-4 py-2 rounded-lg text-sm font-semibold text-navy-600 bg-white border border-gray-200 hover:border-navy-300 hover:text-navy-900 transition-colors">
+      Next →
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endif %}
+
+  <!-- Trust footer -->
+  <div class="mt-16 p-6 rounded-2xl text-center" style="background:linear-gradient(135deg,#eff3fa,#e8f0f9);border:1px solid rgba(10,31,68,0.07);">
+    <div class="flex items-center justify-center gap-2 mb-2">
+      <svg width="16" height="16" viewBox="0 0 80 92" fill="none"><path d="M40 4L74 16L74 46C74 64 58 78 40 88C22 78 6 64 6 46L6 16Z" stroke="#0a1f44" stroke-width="4" fill="none"/><path d="M27 46L36 55L54 36" stroke="#0a1f44" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="font-display font-bold text-navy-900 text-sm">{{ PLATFORM_NAME }} — 100% Transparent</span>
+    </div>
+    <p class="text-xs text-gray-500 max-w-md mx-auto">
+      Names are partially masked to protect investor privacy. All amounts, dates and transaction methods are displayed exactly as recorded. FSP Regulated{% if PLATFORM_FSP %} · FSP {{ PLATFORM_FSP }}{% endif %}.
+    </p>
+    {% if not request.user.is_authenticated %}
+    <a href="{% url 'register' %}" class="btn-gold inline-block mt-4 px-7 py-2.5 rounded-xl text-navy-900 font-bold text-sm">
+      Start Investing Today
+    </a>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

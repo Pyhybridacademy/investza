@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow">
+<title>Maintenance — {{ PLATFORM_NAME }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--n950:#03071e;--n900:#05122b;--n800:#0a1f44;--g600:#e08900;--g400:#f8af35;--g300:#fac660;}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--n950);color:#fff;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;}
+
+/* Background layers */
+.err-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;text-align:center;}
+.err-bg-mesh{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(234,179,8,0.07) 0%,rgba(21,58,120,0.2) 50%,transparent 70%);pointer-events:none;}
+.err-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;}
+.err-flag{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#007A4D 0%,#007A4D 14.3%,#FFB612 14.3%,#FFB612 28.6%,#DE3831 28.6%,#DE3831 42.9%,#002395 42.9%,#002395 57.1%,#000 57.1%,#000 71.4%,#fff 71.4%,#fff 85.7%,#e08900 85.7%,#e08900 100%);}
+
+/* Logo */
+.err-logo{position:absolute;top:24px;left:24px;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.err-logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--g600),var(--g300));display:flex;align-items:center;justify-content:center;}
+.err-logo-text{font-family:"Playfair Display",serif;font-weight:700;color:#fff;font-size:0.95rem;}
+
+/* Content */
+.err-content{position:relative;max-width:580px;animation:up 0.5s ease forwards;}
+@keyframes up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* Animated shield */
+.maint-shield{margin:0 auto 24px;display:block;filter:drop-shadow(0 8px 32px rgba(245,152,10,0.25));}
+.maint-shield .outline{stroke-dasharray:260;stroke-dashoffset:260;animation:draw 0.8s cubic-bezier(0.4,0,0.2,1) 0.2s forwards;}
+.maint-shield .fill-rect{animation:fill-up 1s cubic-bezier(0.4,0,0.2,1) 0.8s forwards;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+@keyframes fill-up{from{transform:translateY(0);}to{transform:translateY(-60px);}}
+
+/* Gear spin */
+.maint-gear{animation:spin 8s linear infinite;transform-origin:center;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.maint-gear-2{animation:spin 6s linear infinite reverse;transform-origin:center;}
+
+.err-status{display:inline-block;font-family:"DM Mono",monospace;font-size:0.65rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--g400);background:rgba(240,163,10,0.1);border:1px solid rgba(240,163,10,0.2);padding:5px 14px;border-radius:99px;margin-bottom:20px;}
+.err-title{font-family:"Playfair Display",Georgia,serif;font-size:clamp(1.8rem,5vw,2.6rem);font-weight:700;color:#fff;letter-spacing:-0.03em;line-height:1.15;margin-bottom:14px;}
+.err-title span{color:var(--g300);}
+.err-message{font-size:0.92rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-bottom:32px;max-width:440px;margin-left:auto;margin-right:auto;}
+
+/* Live counter */
+.maint-timer{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);margin-bottom:32px;}
+.maint-timer-dot{width:8px;height:8px;border-radius:50%;background:#f59e0b;animation:blink 1.4s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
+.maint-timer-text{font-family:"DM Mono",monospace;font-size:0.75rem;color:rgba(255,255,255,0.5);}
+.maint-timer-text strong{color:rgba(255,255,255,0.8);}
+
+/* Contact strip */
+.maint-contact{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:8px;}
+.maint-contact a{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:99px;font-size:0.82rem;font-weight:600;text-decoration:none;transition:all 0.15s;}
+.maint-btn-primary{background:linear-gradient(135deg,var(--g600),var(--g400));color:var(--n900);box-shadow:0 6px 18px rgba(224,137,0,0.28);}
+.maint-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(224,137,0,0.42);}
+.maint-btn-secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.65);}
+.maint-btn-secondary:hover{background:rgba(255,255,255,0.1);color:#fff;}
+
+/* Progress bar */
+.maint-progress{width:260px;height:2px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;margin:0 auto 28px;}
+.maint-progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--g600),var(--g300));border-radius:99px;animation:progress-loop 3s ease-in-out infinite;}
+@keyframes progress-loop{0%{width:0;margin-left:0;}50%{width:70%;margin-left:0;}70%{width:70%;margin-left:30%;}100%{width:0;margin-left:100%;}}
+
+/* Admin badge */
+.maint-admin-note{margin-top:40px;padding:12px 20px;border-radius:10px;background:rgba(245,152,10,0.07);border:1px solid rgba(245,152,10,0.15);font-size:0.72rem;color:rgba(245,152,10,0.55);display:inline-block;}
+</style>
+</head>
+<body>
+
+<div class="err-wrap">
+  <div class="err-bg-mesh"></div>
+  <div class="err-bg-grid"></div>
+
+  <!-- Logo -->
+  <a href="/" class="err-logo">
+    <div class="err-logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M9 12l2 2 4-4" stroke="#0a1f44" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 2L4 7v5c0 5.25 3.4 10.15 8 11.35C16.6 22.15 20 17.25 20 12V7L12 2z" stroke="#0a1f44" stroke-width="1.5" fill="none"/>
+      </svg>
+    </div>
+    <span class="err-logo-text">{{ PLATFORM_NAME }}</span>
+  </a>
+
+  <div class="err-content">
+
+    <!-- Animated gears -->
+    <svg class="maint-shield" width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#e08900"/>
+          <stop offset="100%" stop-color="#fac660"/>
+        </linearGradient>
+      </defs>
+      <!-- Outer ring -->
+      <circle cx="45" cy="45" r="38" stroke="rgba(245,152,10,0.12)" stroke-width="1.5"/>
+      <!-- Main gear -->
+      <g class="maint-gear">
+        <path d="M45 20 L48.5 26.5 L55.5 25 L57 32 L63.5 35.5 L61 42 L65 47.5 L61 53 L63.5 59.5 L57 63 L55.5 70 L48.5 68.5 L45 75 L41.5 68.5 L34.5 70 L33 63 L26.5 59.5 L29 53 L25 47.5 L29 42 L26.5 35.5 L33 32 L34.5 25 L41.5 26.5 Z"
+              stroke="url(#gg)" stroke-width="1.5" fill="rgba(245,152,10,0.06)"/>
+        <circle cx="45" cy="47.5" r="10" stroke="url(#gg)" stroke-width="1.5" fill="rgba(245,152,10,0.04)"/>
+      </g>
+      <!-- Inner small gear (counter-rotate) -->
+      <g class="maint-gear-2" style="transform-origin:45px 47.5px">
+        <circle cx="45" cy="47.5" r="5.5" stroke="rgba(250,198,96,0.5)" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/>
+      </g>
+      <!-- Wrench / tools icon in center -->
+      <path d="M40 43 L50 52" stroke="rgba(250,198,96,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="38.5" cy="41.5" r="4" stroke="rgba(250,198,96,0.7)" stroke-width="2" fill="none"/>
+    </svg>
+
+    <div class="err-status">Scheduled Maintenance</div>
+
+    <h1 class="err-title">
+      We'll be back<br><span>very soon.</span>
+    </h1>
+
+    <p class="err-message">
+      {{ maintenance_message|default:"We're performing scheduled maintenance to improve your experience. Your funds and investments are completely safe." }}
+    </p>
+
+    <!-- Animated indeterminate progress -->
+    <div class="maint-progress">
+      <div class="maint-progress-fill"></div>
+    </div>
+
+    <!-- Live elapsed timer -->
+    <div class="maint-timer">
+      <span class="maint-timer-dot"></span>
+      <span class="maint-timer-text">Maintenance in progress &nbsp;·&nbsp; <strong id="maint-elapsed">0:00</strong> elapsed</span>
+    </div>
+
+    <!-- Contact links -->
+    <div class="maint-contact">
+      {% if SUPPORT_EMAIL %}
+      <a href="mailto:{{ SUPPORT_EMAIL }}" class="maint-btn-primary">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        Email Support
+      </a>
+      {% endif %}
+      {% if SUPPORT_WHATSAPP %}
+      <a href="https://wa.me/{{ SUPPORT_WHATSAPP|cut:' '|cut:'+'|cut:'-' }}" target="_blank" rel="noopener" class="maint-btn-primary" style="background:linear-gradient(135deg,#16a34a,#22c55e);">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Us
+      </a>
+      {% endif %}
+      {% if not SUPPORT_EMAIL and not SUPPORT_WHATSAPP %}
+      <a href="/" class="maint-btn-primary">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        Contact Support
+      </a>
+      {% endif %}
+      <a href="/" class="maint-btn-secondary" onclick="location.reload();return false;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Try Again
+      </a>
+    </div>
+
+    <p class="maint-admin-note">
+      🔒 Staff &amp; admins can still access the <a href="/admin-panel/" style="color:rgba(245,152,10,0.75);text-decoration:underline;">admin panel</a>.
+    </p>
+
+  </div>
+
+  <div class="err-flag"></div>
+</div>
+
+<script>
+// Elapsed time counter since page loaded
+(function(){
+  var start = Date.now();
+  setInterval(function(){
+    var secs = Math.floor((Date.now() - start) / 1000);
+    var m = Math.floor(secs / 60);
+    var s = secs % 60;
+    var el = document.getElementById('maint-elapsed');
+    if(el) el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  }, 1000);
+
+  // Auto-refresh every 60s in case maintenance ends
+  setTimeout(function(){ location.reload(); }, 60000);
+})();
+</script>
+
+</body>
+</html>

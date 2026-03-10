@@ -126,6 +126,11 @@
         Withdrawal Codes
       </a>
 
+      <a href="{% url 'admin_platform_settings' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>
+        Platform Settings
+      </a>
+
       <p class="px-3 mb-2 mt-5 text-xs font-bold uppercase tracking-widest" style="color:rgba(245,152,10,0.5);">Account</p>
 
       <a href="{% url 'admin_profile' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
@@ -208,6 +213,23 @@
       <span style="color:#334155;">›</span>
       <span style="color:#94a3b8;">{% block breadcrumb %}Dashboard{% endblock %}</span>
     </div>
+
+    <!-- Maintenance mode warning banner -->
+    {% if MAINTENANCE_MODE %}
+    <div style="background:linear-gradient(90deg,#dc2626,#b91c1c);border-bottom:1px solid rgba(255,255,255,0.1);padding:10px 24px;display:flex;align-items:center;justify-between;gap:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.1rem;">🔴</span>
+        <div>
+          <p style="font-size:0.8rem;font-weight:700;color:#fff;letter-spacing:0.02em;">MAINTENANCE MODE IS ACTIVE</p>
+          <p style="font-size:0.7rem;color:rgba(255,255,255,0.75);margin-top:1px;">All users are seeing the maintenance page. Staff and admins are not affected.</p>
+        </div>
+      </div>
+      <a href="{% url 'admin_platform_settings' %}" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);font-size:0.75rem;font-weight:700;color:#fff;text-decoration:none;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+        <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/></svg>
+        Turn Off
+      </a>
+    </div>
+    {% endif %}
 
     <!-- Page content -->
     <main class="flex-1 p-6">

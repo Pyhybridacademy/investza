@@ -237,3 +237,70 @@ class KYCDocument(models.Model):
 
     def __str__(self):
         return f"{self.get_document_type_display()} - {self.user.full_name}"
+
+class PlatformSettings(models.Model):
+    """
+    Singleton model — DB-managed platform configuration.
+    Replaces .env values so admin can update without redeployment.
+    """
+
+    # ── Identity ─────────────────────────────────────────────────
+    platform_name       = models.CharField(max_length=100, default='InvestZA')
+    tagline             = models.CharField(max_length=200, default='Invest with Confidence', blank=True)
+    support_email       = models.EmailField(default='support@investza.co.za')
+    support_phone       = models.CharField(max_length=30, default='+27 (0) 10 000 0000')
+    support_whatsapp    = models.CharField(max_length=30, blank=True, help_text='WhatsApp number (international format)')
+    website_url         = models.URLField(blank=True, default='https://investza.co.za')
+    fsp_number          = models.CharField(max_length=30, blank=True, help_text='FSP licence number')
+    registered_address  = models.TextField(blank=True)
+
+    # ── Currency ─────────────────────────────────────────────────
+    currency_code       = models.CharField(max_length=5,  default='ZAR')
+    currency_symbol     = models.CharField(max_length=5,  default='R')
+
+    # ── Deposit limits ────────────────────────────────────────────
+    min_deposit         = models.DecimalField(max_digits=12, decimal_places=2, default=500.00)
+    max_deposit         = models.DecimalField(max_digits=12, decimal_places=2, default=5000000.00)
+
+    # ── Withdrawal limits ─────────────────────────────────────────
+    min_withdrawal      = models.DecimalField(max_digits=12, decimal_places=2, default=200.00)
+    max_withdrawal      = models.DecimalField(max_digits=12, decimal_places=2, default=1000000.00)
+    withdrawal_fee_pct  = models.DecimalField(max_digits=5, decimal_places=2, default=0.00,
+                            help_text='Withdrawal fee as a percentage (e.g. 1.5 = 1.5%)')
+
+    # ── Maintenance ───────────────────────────────────────────────
+    maintenance_mode    = models.BooleanField(default=False,
+                            help_text='Put platform in maintenance mode — blocks all user logins')
+    maintenance_message = models.TextField(blank=True,
+                            default='We are performing scheduled maintenance. We will be back shortly.')
+
+    # ── Social / Legal ────────────────────────────────────────────
+    twitter_url         = models.URLField(blank=True)
+    linkedin_url        = models.URLField(blank=True)
+    facebook_url        = models.URLField(blank=True)
+    instagram_url       = models.URLField(blank=True)
+
+    # ── Meta ──────────────────────────────────────────────────────
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        'accounts.User', null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='+'
+    )
+
+    class Meta:
+        verbose_name = 'Platform Settings'
+        verbose_name_plural = 'Platform Settings'
+
+    def __str__(self):
+        return f'{self.platform_name} Settings'
+
+    def save(self, *args, **kwargs):
+        # Enforce singleton — only one row ever
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get(cls):
+        """Return the singleton settings object, creating defaults if needed."""
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
