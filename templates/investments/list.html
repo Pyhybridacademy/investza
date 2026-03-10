@@ -3,6 +3,37 @@
 {% block page_title %}Investment Plans{% endblock %}
 {% block page_subtitle %}Choose your asset class and grow your wealth{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── Shared responsive fixes for all user templates ── */
+/* Typography scale consistency with dashboard index */
+.card h3, .card .section-title { font-family:'Playfair Display',Georgia,serif; }
+.card p, .card span, .card td, .card label { font-family:'DM Sans',system-ui,sans-serif; }
+.font-mono, .font-display { letter-spacing:-0.01em; }
+
+/* Tables always scroll horizontally on small screens */
+.data-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.data-table { min-width:420px; }
+
+/* Cards — no horizontal overflow */
+.card { min-width:0; word-break:break-word; }
+
+/* Form inputs — full width on mobile */
+.form-input, .form-select { width:100%; box-sizing:border-box; }
+
+/* Stat/info row: stack on mobile */
+@media(max-width:480px) {
+  .grid.grid-cols-2 { grid-template-columns:1fr !important; }
+  .font-mono.text-3xl, .font-mono.text-2xl { font-size:1.4rem !important; }
+  .font-display.text-2xl { font-size:1.2rem !important; }
+  .font-display.text-xl  { font-size:1.1rem !important; }
+}
+/* Step wizard connector line — hide on very small screens */
+@media(max-width:360px) {
+  .flex-1.h-0\.5 { display:none; }
+}
+</style>
+{% endblock %}
 {% block content %}
 <div class="space-y-8">
 
@@ -10,20 +41,20 @@
   <div class="fade-up fade-up-{{ forloop.counter }}">
     <!-- Category Header -->
     <div class="flex items-center gap-4 mb-5">
-      <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl
+      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-xl sm:text-2xl
         {% if category.slug == 'gold' %}bg-gradient-to-br from-yellow-100 to-yellow-300
         {% elif category.slug == 'real-estate' %}bg-gradient-to-br from-blue-100 to-blue-200
         {% else %}bg-gradient-to-br from-green-100 to-green-200{% endif %}">
         {% if category.slug == 'gold' %}🪙{% elif category.slug == 'real-estate' %}🏢{% else %}₿{% endif %}
       </div>
       <div>
-        <h2 class="font-display font-bold text-navy-900 text-2xl">{{ category.name }}</h2>
-        <p class="text-gray-500 text-sm">{{ category.description }}</p>
+        <h2 class="font-display font-bold text-navy-900 text-xl">{{ category.name }}</h2>
+        <p class="text-sm" style="color:#64748b;">{{ category.description }}</p>
       </div>
     </div>
 
     <!-- Plans Grid -->
-    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
       {% for plan in category.plans.all %}
       {% if plan.is_active %}
       <div class="card p-6 relative group

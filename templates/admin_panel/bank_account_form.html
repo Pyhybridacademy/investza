@@ -13,7 +13,7 @@
   <div class="grid sm:grid-cols-2 gap-5">
 
     <div class="sm:col-span-2">
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Bank</label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">Bank</label>
       <select name="bank_name" required class="form-select">
         {% for val, label in bank_choices %}
           <option value="{{ val }}" {% if acc and acc.bank_name == val %}selected{% endif %}>{{ label }}</option>
@@ -22,37 +22,37 @@
     </div>
 
     <div class="sm:col-span-2">
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Account Holder Name</label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">Account Holder Name</label>
       <input type="text" name="account_holder" value="{{ acc.account_holder|default:'' }}" required class="form-input" placeholder="InvestZA (Pty) Ltd">
     </div>
 
     <div>
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Account Number</label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">Account Number</label>
       <input type="text" name="account_number" value="{{ acc.account_number|default:'' }}" required class="form-input font-mono" placeholder="1234567890">
     </div>
 
     <div>
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Account Type</label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">Account Type</label>
       <input type="text" name="account_type" value="{{ acc.account_type|default:'Cheque' }}" class="form-input" placeholder="Cheque / Current">
     </div>
 
     <div>
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Branch Code</label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">Branch Code</label>
       <input type="text" name="branch_code" value="{{ acc.branch_code|default:'' }}" required class="form-input font-mono" placeholder="250655">
     </div>
 
     <div>
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Branch Name <span class="text-gray-400 font-normal">(optional)</span></label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">Branch Name <span class="text-gray-400 font-normal">(optional)</span></label>
       <input type="text" name="branch_name" value="{{ acc.branch_name|default:'' }}" class="form-input" placeholder="Universal Branch">
     </div>
 
     <div>
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">SWIFT Code <span class="text-gray-400 font-normal">(optional)</span></label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">SWIFT Code <span class="text-gray-400 font-normal">(optional)</span></label>
       <input type="text" name="swift_code" value="{{ acc.swift_code|default:'' }}" class="form-input font-mono" placeholder="ABSAZAJJ">
     </div>
 
     <div>
-      <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Reference Prefix</label>
+      <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8;">Reference Prefix</label>
       <input type="text" name="reference_prefix" value="{{ acc.reference_prefix|default:'INZ' }}" maxlength="10" class="form-input font-mono" placeholder="INZ">
       <p class="text-xs text-gray-400 mt-1">Used in payment references, e.g. INZ-0001234-ABC123</p>
     </div>

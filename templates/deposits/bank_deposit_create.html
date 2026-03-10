@@ -3,10 +3,41 @@
 {% block title %}Bank Deposit{% endblock %}
 {% block page_title %}Bank Deposit{% endblock %}
 {% block page_subtitle %}Fund your wallet via bank transfer{% endblock %}
+{% block extra_css %}
+<style>
+/* ── Shared responsive fixes for all user templates ── */
+/* Typography scale consistency with dashboard index */
+.card h3, .card .section-title { font-family:'Playfair Display',Georgia,serif; }
+.card p, .card span, .card td, .card label { font-family:'DM Sans',system-ui,sans-serif; }
+.font-mono, .font-display { letter-spacing:-0.01em; }
+
+/* Tables always scroll horizontally on small screens */
+.data-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.data-table { min-width:420px; }
+
+/* Cards — no horizontal overflow */
+.card { min-width:0; word-break:break-word; }
+
+/* Form inputs — full width on mobile */
+.form-input, .form-select { width:100%; box-sizing:border-box; }
+
+/* Stat/info row: stack on mobile */
+@media(max-width:480px) {
+  .grid.grid-cols-2 { grid-template-columns:1fr !important; }
+  .font-mono.text-3xl, .font-mono.text-2xl { font-size:1.4rem !important; }
+  .font-display.text-2xl { font-size:1.2rem !important; }
+  .font-display.text-xl  { font-size:1.1rem !important; }
+}
+/* Step wizard connector line — hide on very small screens */
+@media(max-width:360px) {
+  .flex-1.h-0\.5 { display:none; }
+}
+</style>
+{% endblock %}
 {% block content %}
 <div class="max-w-lg mx-auto">
   <div class="card p-8 fade-up fade-up-1">
-    <h2 class="font-display font-bold text-navy-900 text-2xl mb-2">How much would you like to deposit?</h2>
+    <h2 class="font-display font-bold text-navy-900 text-xl mb-2">How much would you like to deposit?</h2>
     <p class="text-gray-400 text-sm mb-6">You'll receive banking details and a unique reference number after submitting.</p>
     <form method="post" class="space-y-5">
       {% csrf_token %}
@@ -19,12 +50,12 @@
       </div>
       <div class="flex flex-wrap gap-2"><p class="text-xs text-gray-400 w-full">Quick amounts:</p>
         {% for a in "1000,2500,5000,10000,25000,50000" %}{% endfor %}
-        <button type="button" onclick="document.querySelector('[name=amount]').value='1000'" class="px-3 py-1.5 rounded-lg text-xs font-semibold border text-gray-600 hover:bg-navy-50 hover:border-navy-300 transition-all">R 1,000</button>
-        <button type="button" onclick="document.querySelector('[name=amount]').value='2500'" class="px-3 py-1.5 rounded-lg text-xs font-semibold border text-gray-600 hover:bg-navy-50 hover:border-navy-300 transition-all">R 2,500</button>
-        <button type="button" onclick="document.querySelector('[name=amount]').value='5000'" class="px-3 py-1.5 rounded-lg text-xs font-semibold border text-gray-600 hover:bg-navy-50 hover:border-navy-300 transition-all">R 5,000</button>
-        <button type="button" onclick="document.querySelector('[name=amount]').value='10000'" class="px-3 py-1.5 rounded-lg text-xs font-semibold border text-gray-600 hover:bg-navy-50 hover:border-navy-300 transition-all">R 10,000</button>
-        <button type="button" onclick="document.querySelector('[name=amount]').value='25000'" class="px-3 py-1.5 rounded-lg text-xs font-semibold border text-gray-600 hover:bg-navy-50 hover:border-navy-300 transition-all">R 25,000</button>
-        <button type="button" onclick="document.querySelector('[name=amount]').value='50000'" class="px-3 py-1.5 rounded-lg text-xs font-semibold border text-gray-600 hover:bg-navy-50 hover:border-navy-300 transition-all">R 50,000</button>
+        <button type="button" onclick="document.querySelector('[name=amount]').value='1000'" class="px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-navy-700 hover:bg-navy-50 hover:border-navy-300 transition-all">R 1,000</button>
+        <button type="button" onclick="document.querySelector('[name=amount]').value='2500'" class="px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-navy-700 hover:bg-navy-50 hover:border-navy-300 transition-all">R 2,500</button>
+        <button type="button" onclick="document.querySelector('[name=amount]').value='5000'" class="px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-navy-700 hover:bg-navy-50 hover:border-navy-300 transition-all">R 5,000</button>
+        <button type="button" onclick="document.querySelector('[name=amount]').value='10000'" class="px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-navy-700 hover:bg-navy-50 hover:border-navy-300 transition-all">R 10,000</button>
+        <button type="button" onclick="document.querySelector('[name=amount]').value='25000'" class="px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-navy-700 hover:bg-navy-50 hover:border-navy-300 transition-all">R 25,000</button>
+        <button type="button" onclick="document.querySelector('[name=amount]').value='50000'" class="px-4 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-navy-700 hover:bg-navy-50 hover:border-navy-300 transition-all">R 50,000</button>
       </div>
       <button type="submit" class="btn-navy w-full py-4 rounded-xl text-white font-bold text-base">Continue to Bank Details →</button>
     </form>

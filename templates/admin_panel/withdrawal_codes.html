@@ -11,7 +11,7 @@
   <!-- Stats row -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 fade-up fade-up-1">
     <div class="card p-5 text-center">
-      <p class="font-mono font-bold text-navy-900 text-2xl">{{ stats.active }}</p>
+      <p class="font-mono font-bold text-2xl" style="color:#e2e8f0;">{{ stats.active }}</p>
       <p class="text-gray-400 text-xs mt-1">Active Codes</p>
     </div>
     <div class="card p-5 text-center">
@@ -23,14 +23,14 @@
       <p class="text-gray-400 text-xs mt-1">Expired / Revoked</p>
     </div>
     <div class="card p-5 text-center">
-      <p class="font-mono font-bold text-navy-900 text-2xl">{{ stats.total }}</p>
+      <p class="font-mono font-bold text-2xl" style="color:#e2e8f0;">{{ stats.total }}</p>
       <p class="text-gray-400 text-xs mt-1">Total Generated</p>
     </div>
   </div>
 
   <!-- Generate form -->
   <div class="card p-7 fade-up fade-up-2">
-    <h3 class="font-display font-bold text-navy-900 text-xl mb-5">Generate New Withdrawal Code</h3>
+    <h3 class="font-display font-bold text-xl mb-5" style="color:#e2e8f0;">Generate New Withdrawal Code</h3>
 
     {% if messages %}{% for message in messages %}
     <div class="mb-4 p-4 rounded-xl {% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-800{% else %}bg-red-50 border border-red-200 text-red-800{% endif %} text-sm font-medium">
@@ -56,7 +56,7 @@
     <form method="post" action="{% url 'admin_generate_withdrawal_code' %}" class="grid sm:grid-cols-2 gap-4">
       {% csrf_token %}
       <div class="sm:col-span-2">
-        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Issue To (User)</label>
+        <label class="block text-sm font-semibold mb-1.5" style="color:#94a3b8;">Issue To (User)</label>
         <select name="user_id" class="form-select" required>
           <option value="">— Select a user —</option>
           {% for u in users %}
@@ -65,7 +65,7 @@
         </select>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Max Amount (optional)</label>
+        <label class="block text-sm font-semibold mb-1.5" style="color:#94a3b8;">Max Amount (optional)</label>
         <div class="relative">
           <span class="absolute left-4 top-1/2 -translate-y-1/2 text-navy-500 font-bold font-mono text-sm">R</span>
           <input type="number" name="max_amount" class="form-input pl-8" placeholder="No limit" min="1" step="0.01">
@@ -73,12 +73,12 @@
         <p class="text-gray-400 text-xs mt-1">Leave blank for no amount limit</p>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Expiry (optional)</label>
+        <label class="block text-sm font-semibold mb-1.5" style="color:#94a3b8;">Expiry (optional)</label>
         <input type="datetime-local" name="expires_at" class="form-input">
         <p class="text-gray-400 text-xs mt-1">Leave blank for no expiry</p>
       </div>
       <div class="sm:col-span-2">
-        <label class="block text-sm font-semibold text-navy-800 mb-1.5">Internal Notes</label>
+        <label class="block text-sm font-semibold mb-1.5" style="color:#94a3b8;">Internal Notes</label>
         <textarea name="notes" class="form-input" rows="2" placeholder="e.g. User requested withdrawal of R25,000 — approved by manager (optional)"></textarea>
       </div>
       <div class="sm:col-span-2">
@@ -104,7 +104,7 @@
       </form>
     </div>
     {% if codes %}
-    <table class="data-table">
+    <table class="data-table table-responsive-stack">
       <thead>
         <tr>
           <th>Code</th><th>Issued To</th><th>Max Amount</th><th>Status</th><th>Expires</th><th>Used At</th><th>Notes</th><th>Action</th>

@@ -7,7 +7,7 @@
 {% block content %}
 <div class="space-y-6">
   <!-- Filter -->
-  <div class="flex gap-2 flex-wrap">
+  <div class="flex gap-2 flex-wrap fade-up fade-up-1">
     <a href="?status=" ...>All</a>
     <a href="?status=SUBMITTED" ...>Submitted</a>
     <a href="?status=APPROVED" ...>Approved</a>
@@ -16,14 +16,14 @@
   <div class="card overflow-hidden fade-up fade-up-1">
     <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-xl">Bank Deposits</h3></div>
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="data-table table-responsive-stack">
         <thead><tr><th>User</th><th>Amount</th><th>Reference</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
         <tbody>
         {% for d in bank_deposits %}
         <tr>
-          <td><p class="font-medium text-navy-800 text-sm">{{ d.user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ d.user.email }}</p></td>
-          <td class="font-mono font-bold text-navy-800">R {{ d.amount|floatformat:2 }}</td>
-          <td class="font-mono text-xs text-navy-700">{{ d.payment_reference }}</td>
+          <td data-label="User"><p class="font-medium text-navy-800 text-sm">{{ d.user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ d.user.email }}</p></td>
+          <td data-label="Amount" class="font-mono font-bold text-navy-800">R {{ d.amount|floatformat:2 }}</td>
+          <td data-label="Reference" class="font-mono text-xs text-navy-700">{{ d.payment_reference }}</td>
           <td><span class="px-2 py-1 rounded-full text-xs font-medium {% if d.status == 'APPROVED' %}badge-approved{% elif d.status == 'REJECTED' %}badge-rejected{% else %}badge-pending{% endif %}">{{ d.get_status_display }}</span></td>
           <td class="text-gray-400 text-xs">{{ d.created_at|date:"d M Y, H:i" }}</td>
           <td><a href="{% url 'admin_approve_bank_deposit' d.pk %}" class="text-xs text-navy-600 hover:text-gold-600 font-medium">{% if d.status == 'SUBMITTED' %}Review{% else %}View{% endif %} →</a></td>
@@ -37,7 +37,7 @@
   <div class="card overflow-hidden fade-up fade-up-2">
     <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-xl">Crypto Deposits</h3></div>
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="data-table table-responsive-stack">
         <thead><tr><th>User</th><th>Crypto</th><th>ZAR Value</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
         <tbody>
         {% for d in crypto_deposits %}

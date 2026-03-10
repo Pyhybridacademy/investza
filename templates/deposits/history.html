@@ -2,22 +2,53 @@
 {% block meta_robots %}noindex, nofollow{% endblock %}
 {% block title %}Deposit History{% endblock %}
 {% block page_title %}Deposit History{% endblock %}
+{% block extra_css %}
+<style>
+/* ── Shared responsive fixes for all user templates ── */
+/* Typography scale consistency with dashboard index */
+.card h3, .card .section-title { font-family:'Playfair Display',Georgia,serif; }
+.card p, .card span, .card td, .card label { font-family:'DM Sans',system-ui,sans-serif; }
+.font-mono, .font-display { letter-spacing:-0.01em; }
+
+/* Tables always scroll horizontally on small screens */
+.data-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.data-table { min-width:420px; }
+
+/* Cards — no horizontal overflow */
+.card { min-width:0; word-break:break-word; }
+
+/* Form inputs — full width on mobile */
+.form-input, .form-select { width:100%; box-sizing:border-box; }
+
+/* Stat/info row: stack on mobile */
+@media(max-width:480px) {
+  .grid.grid-cols-2 { grid-template-columns:1fr !important; }
+  .font-mono.text-3xl, .font-mono.text-2xl { font-size:1.4rem !important; }
+  .font-display.text-2xl { font-size:1.2rem !important; }
+  .font-display.text-xl  { font-size:1.1rem !important; }
+}
+/* Step wizard connector line — hide on very small screens */
+@media(max-width:360px) {
+  .flex-1.h-0\.5 { display:none; }
+}
+</style>
+{% endblock %}
 {% block content %}
 <div class="space-y-6">
   <div class="card overflow-hidden fade-up fade-up-1">
-    <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-xl">Bank Deposits</h3></div>
-    <table class="data-table"><thead><tr><th>Reference</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>
+    <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-lg">Bank Deposits</h3></div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="data-table" style="min-width:480px;"><thead><tr><th>Reference</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>
     {% for d in bank_deposits %}<tr>
     <td class="font-mono text-xs text-navy-700">{{ d.payment_reference }}</td>
     <td class="font-mono font-bold text-navy-800">R {{ d.amount|floatformat:2 }}</td>
     <td><span class="px-2 py-1 rounded-full text-xs font-medium {% if d.status == 'APPROVED' %}badge-approved{% elif d.status == 'REJECTED' %}badge-rejected{% else %}badge-pending{% endif %}">{{ d.get_status_display }}</span></td>
     <td class="text-gray-400 text-xs">{{ d.created_at|date:"d M Y, H:i" }}</td>
     </tr>{% empty %}<tr><td colspan="4" class="text-center text-gray-400 py-8">No bank deposits yet</td></tr>{% endfor %}
-    </tbody></table>
+    </tbody></table></div>
   </div>
   <div class="card overflow-hidden fade-up fade-up-2">
-    <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-xl">Crypto Deposits</h3></div>
-    <table class="data-table"><thead><tr><th>Crypto</th><th>Amount</th><th>ZAR Value</th><th>Status</th><th>Date</th></tr></thead><tbody>
+    <div class="p-5 border-b border-gray-100"><h3 class="font-display font-bold text-navy-900 text-lg">Crypto Deposits</h3></div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="data-table" style="min-width:520px;"><thead><tr><th>Crypto</th><th>Amount</th><th>ZAR Value</th><th>Status</th><th>Date</th></tr></thead><tbody>
     {% for d in crypto_deposits %}<tr>
     <td class="font-bold text-navy-800">{{ d.cryptocurrency.symbol }}</td>
     <td class="font-mono text-sm">{{ d.crypto_amount }}</td>
@@ -25,7 +56,7 @@
     <td><span class="px-2 py-1 rounded-full text-xs font-medium {% if d.status == 'APPROVED' %}badge-approved{% elif d.status == 'REJECTED' %}badge-rejected{% else %}badge-pending{% endif %}">{{ d.get_status_display }}</span></td>
     <td class="text-gray-400 text-xs">{{ d.created_at|date:"d M Y" }}</td>
     </tr>{% empty %}<tr><td colspan="5" class="text-center text-gray-400 py-8">No crypto deposits yet</td></tr>{% endfor %}
-    </tbody></table>
+    </tbody></table></div>
   </div>
 </div>
 {% endblock %}

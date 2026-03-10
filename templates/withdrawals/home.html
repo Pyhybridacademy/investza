@@ -4,6 +4,37 @@
 {% block page_title %}Withdraw Funds{% endblock %}
 {% block page_subtitle %}Step 1 of 3 — Enter amount and payout method{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── Shared responsive fixes for all user templates ── */
+/* Typography scale consistency with dashboard index */
+.card h3, .card .section-title { font-family:'Playfair Display',Georgia,serif; }
+.card p, .card span, .card td, .card label { font-family:'DM Sans',system-ui,sans-serif; }
+.font-mono, .font-display { letter-spacing:-0.01em; }
+
+/* Tables always scroll horizontally on small screens */
+.data-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.data-table { min-width:420px; }
+
+/* Cards — no horizontal overflow */
+.card { min-width:0; word-break:break-word; }
+
+/* Form inputs — full width on mobile */
+.form-input, .form-select { width:100%; box-sizing:border-box; }
+
+/* Stat/info row: stack on mobile */
+@media(max-width:480px) {
+  .grid.grid-cols-2 { grid-template-columns:1fr !important; }
+  .font-mono.text-3xl, .font-mono.text-2xl { font-size:1.4rem !important; }
+  .font-display.text-2xl { font-size:1.2rem !important; }
+  .font-display.text-xl  { font-size:1.1rem !important; }
+}
+/* Step wizard connector line — hide on very small screens */
+@media(max-width:360px) {
+  .flex-1.h-0\.5 { display:none; }
+}
+</style>
+{% endblock %}
 {% block content %}
 <div class="max-w-3xl mx-auto space-y-5">
 
@@ -11,17 +42,17 @@
   <div class="card p-5 fade-up fade-up-1">
     <div class="flex items-center gap-3">
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background:linear-gradient(135deg,#e08900,#fac660);color:#03071e;">1</div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style="background:linear-gradient(135deg,#e08900,#fac660);color:#03071e;flex-shrink:0;">1</div>
         <span class="text-navy-800 text-sm font-semibold hidden sm:block">Amount & Method</span>
       </div>
       <div class="flex-1 h-0.5 bg-gray-200"></div>
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">2</div>
+        <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-400" style="flex-shrink:0;">2</div>
         <span class="text-gray-400 text-sm hidden sm:block">Auth Code</span>
       </div>
       <div class="flex-1 h-0.5 bg-gray-200"></div>
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">3</div>
+        <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-400" style="flex-shrink:0;">3</div>
         <span class="text-gray-400 text-sm hidden sm:block">Tax Code</span>
       </div>
     </div>
@@ -33,7 +64,7 @@
     <div class="flex justify-between items-center">
       <div>
         <p class="text-navy-400 text-sm">Available for Withdrawal</p>
-        <p class="font-mono font-bold text-white text-3xl mt-1">R {{ wallet.available_balance|floatformat:2 }}</p>
+        <p class="font-mono font-bold text-white text-2xl sm:text-3xl mt-1">R {{ wallet.available_balance|floatformat:2 }}</p>
       </div>
       <div class="text-right">
         <p class="text-navy-400 text-sm">Minimum</p>

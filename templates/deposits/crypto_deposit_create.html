@@ -4,6 +4,37 @@
 {% block page_title %}Crypto Deposit{% endblock %}
 {% block page_subtitle %}Deposit cryptocurrency — converted to ZAR in your wallet{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── Shared responsive fixes for all user templates ── */
+/* Typography scale consistency with dashboard index */
+.card h3, .card .section-title { font-family:'Playfair Display',Georgia,serif; }
+.card p, .card span, .card td, .card label { font-family:'DM Sans',system-ui,sans-serif; }
+.font-mono, .font-display { letter-spacing:-0.01em; }
+
+/* Tables always scroll horizontally on small screens */
+.data-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.data-table { min-width:420px; }
+
+/* Cards — no horizontal overflow */
+.card { min-width:0; word-break:break-word; }
+
+/* Form inputs — full width on mobile */
+.form-input, .form-select { width:100%; box-sizing:border-box; }
+
+/* Stat/info row: stack on mobile */
+@media(max-width:480px) {
+  .grid.grid-cols-2 { grid-template-columns:1fr !important; }
+  .font-mono.text-3xl, .font-mono.text-2xl { font-size:1.4rem !important; }
+  .font-display.text-2xl { font-size:1.2rem !important; }
+  .font-display.text-xl  { font-size:1.1rem !important; }
+}
+/* Step wizard connector line — hide on very small screens */
+@media(max-width:360px) {
+  .flex-1.h-0\.5 { display:none; }
+}
+</style>
+{% endblock %}
 {% block content %}
 <div class="max-w-2xl mx-auto space-y-5">
 

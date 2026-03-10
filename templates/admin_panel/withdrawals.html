@@ -33,7 +33,7 @@
       </h3>
     </div>
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="data-table table-responsive-stack">
         <thead>
           <tr>
             <th>Reference</th>
@@ -48,12 +48,12 @@
         <tbody>
         {% for wd in withdrawals %}
         <tr>
-          <td class="font-mono text-xs" style="color:#94a3b8;">{{ wd.reference }}</td>
-          <td>
+          <td data-label="Reference" class="font-mono text-xs" style="color:#94a3b8;">{{ wd.reference }}</td>
+          <td data-label="User">
             <p class="font-medium text-sm" style="color:#e2e8f0;">{{ wd.user.get_full_name }}</p>
             <p class="text-xs" style="color:#64748b;">{{ wd.user.email }}</p>
           </td>
-          <td class="font-mono font-bold text-sm" style="color:#fac660;">R {{ wd.amount|floatformat:2 }}</td>
+          <td data-label="Amount" class="font-mono font-bold text-sm" style="color:#fac660;">R {{ wd.amount|floatformat:2 }}</td>
           <td>
             <span class="px-2 py-1 rounded-full text-xs font-medium {% if wd.method == 'BANK' %}badge-active{% else %}badge-pending{% endif %}">
               {{ wd.method }}
@@ -68,7 +68,7 @@
               {{ wd.status }}
             </span>
           </td>
-          <td class="text-xs" style="color:#64748b;">{{ wd.created_at|date:"d M Y H:i" }}</td>
+          <td data-label="Date" class="text-xs" style="color:#64748b;">{{ wd.created_at|date:"d M Y H:i" }}</td>
           <td>
             {% if wd.status == 'PENDING' or wd.status == 'APPROVED' %}
             <a href="{% url 'admin_process_withdrawal' wd.pk %}" class="text-xs font-semibold px-3 py-1.5 rounded-lg" style="background:rgba(245,152,10,0.15);color:#f5980a;border:1px solid rgba(245,152,10,0.25);">

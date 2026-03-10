@@ -6,25 +6,25 @@
 {% block page_subtitle %}Manage all registered accounts{% endblock %}
 {% block content %}
 <div class="card overflow-hidden fade-up fade-up-1">
-  <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
+  <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
     <h3 class="font-display font-bold text-navy-900 text-xl">All Users ({{ users.count }})</h3>
-    <form method="get" class="flex gap-2">
-      <input type="text" name="search" value="{{ search }}" placeholder="Search by name or email..." class="form-input w-64 text-sm">
+    <form method="get" class="flex gap-2 flex-wrap w-full sm:w-auto">
+      <input type="text" name="search" value="{{ search }}" placeholder="Search by name or email..." class="form-input w-full sm:w-64 text-sm">
       <button type="submit" class="btn-navy px-4 py-2 rounded-lg text-white text-sm font-semibold">Search</button>
     </form>
   </div>
   <div class="overflow-x-auto">
-    <table class="data-table">
+    <table class="data-table table-responsive-stack">
       <thead><tr><th>User</th><th>Account #</th><th>Balance</th><th>KYC</th><th>Joined</th><th>Action</th></tr></thead>
       <tbody>
       {% for user in users %}
       <tr>
-        <td><p class="font-medium text-navy-800">{{ user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ user.email }}</p></td>
-        <td class="font-mono text-xs text-navy-700">{% if user.wallet %}#{{ user.wallet.account_number }}{% else %}—{% endif %}</td>
-        <td class="font-mono font-bold text-navy-800 text-sm">R {% if user.wallet %}{{ user.wallet.available_balance|floatformat:2 }}{% else %}0.00{% endif %}</td>
-        <td>{% if user.is_verified %}<span class="badge-approved px-2 py-1 rounded-full text-xs font-medium">Verified</span>{% else %}<span class="badge-pending px-2 py-1 rounded-full text-xs font-medium">Pending</span>{% endif %}</td>
-        <td class="text-gray-400 text-xs">{{ user.date_joined|date:"d M Y" }}</td>
-        <td><a href="{% url 'admin_user_detail' user.pk %}" class="text-navy-600 hover:text-gold-600 text-xs font-medium">View →</a></td>
+        <td data-label="User"><p class="font-medium text-navy-800">{{ user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ user.email }}</p></td>
+        <td data-label="Account" class="font-mono text-xs text-navy-700">{% if user.wallet %}#{{ user.wallet.account_number }}{% else %}—{% endif %}</td>
+        <td data-label="Balance" class="font-mono font-bold text-navy-800 text-sm">R {% if user.wallet %}{{ user.wallet.available_balance|floatformat:2 }}{% else %}0.00{% endif %}</td>
+        <td data-label="KYC">{% if user.is_verified %}<span class="badge-approved px-2 py-1 rounded-full text-xs font-medium">Verified</span>{% else %}<span class="badge-pending px-2 py-1 rounded-full text-xs font-medium">Pending</span>{% endif %}</td>
+        <td data-label="Joined" class="text-gray-400 text-xs">{{ user.date_joined|date:"d M Y" }}</td>
+        <td data-label=""><a href="{% url 'admin_user_detail' user.pk %}" class="text-navy-600 hover:text-gold-600 text-xs font-medium">View →</a></td>
       </tr>
       {% empty %}
       <tr><td colspan="6" class="text-center text-gray-400 py-10">No users found</td></tr>

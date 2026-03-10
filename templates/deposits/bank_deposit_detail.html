@@ -4,14 +4,42 @@
 {% block page_title %}Bank Deposit{% endblock %}
 {% block page_subtitle %}Transfer funds to complete your deposit{% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── Shared responsive fixes for all user templates ── */
+/* Typography scale consistency with dashboard index */
+.card h3, .card .section-title { font-family:'Playfair Display',Georgia,serif; }
+.card p, .card span, .card td, .card label { font-family:'DM Sans',system-ui,sans-serif; }
+.font-mono, .font-display { letter-spacing:-0.01em; }
+
+/* Tables always scroll horizontally on small screens */
+.data-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.data-table { min-width:420px; }
+
+/* Cards — no horizontal overflow */
+.card { min-width:0; word-break:break-word; }
+
+/* Form inputs — full width on mobile */
+.form-input, .form-select { width:100%; box-sizing:border-box; }
+
+/* Stat/info row: stack on mobile */
+@media(max-width:480px) {
+  .grid.grid-cols-2 { grid-template-columns:1fr !important; }
+  .font-mono.text-3xl, .font-mono.text-2xl { font-size:1.4rem !important; }
+  .font-display.text-2xl { font-size:1.2rem !important; }
+  .font-display.text-xl  { font-size:1.1rem !important; }
+}
+/* Step wizard connector line — hide on very small screens */
+@media(max-width:360px) {
+  .flex-1.h-0\.5 { display:none; }
+}
+</style>
+{% endblock %}
 {% block content %}
 <div class="max-w-2xl mx-auto space-y-6">
 
   <!-- Status banner -->
-  <div class="p-4 rounded-xl flex items-center gap-3 fade-up fade-up-1
-    {% if deposit.status == 'APPROVED' %}bg-green-50 border border-green-200
-    {% elif deposit.status == 'REJECTED' %}bg-red-50 border border-red-200
-    {% else %}bg-amber-50 border border-amber-200{% endif %}">
+  <div class="p-4 rounded-xl flex items-center gap-3 fade-up fade-up-1" style="{% if deposit.status == 'APPROVED' %}background:#d1e7dd;border:1px solid #198754;{% elif deposit.status == 'REJECTED' %}background:#f8d7da;border:1px solid #dc3545;{% else %}background:#fff8e8;border:1px solid #fac660;{% endif %}">
     <span class="text-2xl">
       {% if deposit.status == 'APPROVED' %}✅{% elif deposit.status == 'REJECTED' %}❌{% else %}⏳{% endif %}
     </span>

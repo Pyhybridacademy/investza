@@ -191,7 +191,7 @@
             <tr>
               <td class="text-xs font-mono text-gray-400">{{ p.payment_date|date:"d M Y H:i" }}</td>
               <td class="font-mono font-bold text-green-400">R {{ p.amount|floatformat:2 }}</td>
-              <td class="text-gray-400 text-xs">{{ p.notes|default:"—" }}</td>
+              <td class="text-xs" style="color:#64748b;">{{ p.notes|default:"—" }}</td>
             </tr>
             {% endfor %}
           </tbody>

@@ -8,7 +8,7 @@
 {% block content %}
 <div class="space-y-5 fade-up fade-up-1">
   <div class="flex items-center justify-between">
-    <p class="text-sm text-gray-500">{{ accounts|length }} account{{ accounts|length|pluralize }} configured</p>
+    <p class="text-sm" style="color:#94a3b8;">{{ accounts|length }} account{{ accounts|length|pluralize }} configured</p>
     <a href="{% url 'admin_bank_account_create' %}" class="btn-gold px-5 py-2.5 rounded-xl text-navy-900 font-bold text-sm flex items-center gap-2">
       <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
       Add Bank Account
@@ -19,8 +19,8 @@
     <div class="w-14 h-14 bg-navy-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
       <svg width="24" height="24" fill="none" stroke="#153a78" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
     </div>
-    <p class="text-navy-800 font-semibold">No bank accounts yet</p>
-    <p class="text-gray-400 text-sm mt-1 mb-5">Add your first platform bank account for users to deposit into.</p>
+    <p class="font-semibold" style="color:#e2e8f0;">No bank accounts yet</p>
+    <p class="text-sm mt-1 mb-5" style="color:#64748b;">Add your first platform bank account for users to deposit into.</p>
     <a href="{% url 'admin_bank_account_create' %}" class="btn-gold px-6 py-2.5 rounded-xl text-navy-900 font-bold text-sm inline-block">Add Bank Account</a>
   </div>
   {% else %}
@@ -29,23 +29,23 @@
   <div class="card p-5 {% if not acc.is_active %}opacity-60{% endif %}">
     <div class="flex items-start justify-between mb-4">
       <div>
-        <h3 class="font-bold text-navy-800 text-sm">{{ acc.get_bank_name_display }}</h3>
-        <p class="text-xs text-gray-400 mt-0.5">{{ acc.account_type }}</p>
+        <h3 class="font-bold text-sm" style="color:#e2e8f0;">{{ acc.get_bank_name_display }}</h3>
+        <p class="text-xs mt-0.5" style="color:#64748b;">{{ acc.account_type }}</p>
       </div>
       {% if acc.is_active %}<span class="badge-approved px-2.5 py-1 rounded-full text-xs font-semibold">Active</span>
       {% else %}<span class="badge-rejected px-2.5 py-1 rounded-full text-xs font-semibold">Inactive</span>{% endif %}
     </div>
     <div class="space-y-2 text-sm mb-4">
-      <div><p class="text-xs text-gray-400">Account Holder</p><p class="font-semibold text-navy-800">{{ acc.account_holder }}</p></div>
+      <div><p class="text-xs" style="color:#64748b;">Account Holder</p><p class="font-semibold" style="color:#e2e8f0;">{{ acc.account_holder }}</p></div>
       <div class="grid grid-cols-2 gap-3">
-        <div><p class="text-xs text-gray-400">Account No.</p><p class="font-mono font-bold text-navy-800 text-xs">{{ acc.account_number }}</p></div>
-        <div><p class="text-xs text-gray-400">Branch Code</p><p class="font-mono text-navy-700 text-xs">{{ acc.branch_code }}</p></div>
+        <div><p class="text-xs" style="color:#64748b;">Account No.</p><p class="font-mono font-bold text-xs" style="color:#e2e8f0;">{{ acc.account_number }}</p></div>
+        <div><p class="text-xs" style="color:#64748b;">Branch Code</p><p class="font-mono text-xs" style="color:#94a3b8;">{{ acc.branch_code }}</p></div>
       </div>
-      {% if acc.swift_code %}<div><p class="text-xs text-gray-400">SWIFT</p><p class="font-mono text-xs text-navy-600">{{ acc.swift_code }}</p></div>{% endif %}
-      <div><p class="text-xs text-gray-400">Reference Prefix</p><p class="font-mono text-xs font-bold text-gold-600">{{ acc.reference_prefix }}-...</p></div>
+      {% if acc.swift_code %}<div><p class="text-xs" style="color:#64748b;">SWIFT</p><p class="font-mono text-xs" style="color:#94a3b8;">{{ acc.swift_code }}</p></div>{% endif %}
+      <div><p class="text-xs" style="color:#64748b;">Reference Prefix</p><p class="font-mono text-xs font-bold" style="color:#fac660;">{{ acc.reference_prefix }}-...</p></div>
     </div>
     <div class="flex items-center gap-2 pt-3 border-t border-gray-100">
-      <a href="{% url 'admin_bank_account_edit' acc.pk %}" class="flex-1 text-center text-xs font-semibold text-navy-600 hover:text-navy-900 py-2 rounded-lg hover:bg-navy-50 transition-colors">Edit</a>
+      <a href="{% url 'admin_bank_account_edit' acc.pk %}" class="flex-1 text-center text-xs font-semibold py-2 rounded-lg transition-colors" style="color:#93c5fd;background:rgba(99,130,246,0.08);">Edit</a>
       <form method="post" action="{% url 'admin_bank_account_toggle' acc.pk %}" class="flex-1">{% csrf_token %}
         <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg transition-colors {% if acc.is_active %}text-amber-600 hover:bg-amber-50{% else %}text-green-600 hover:bg-green-50{% endif %}">{% if acc.is_active %}Deactivate{% else %}Activate{% endif %}</button>
       </form>

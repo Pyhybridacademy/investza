@@ -7,26 +7,26 @@
 {% block content %}
 <div class="max-w-2xl mx-auto space-y-6">
   <div class="card p-6 fade-up fade-up-1">
-    <h3 class="font-display font-bold text-navy-900 text-xl mb-5">Withdrawal Details</h3>
+    <h3 class="font-display font-bold text-xl mb-5" style="color:#e2e8f0;">Withdrawal Details</h3>
     <div class="grid grid-cols-2 gap-4">
-      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Reference</p><p class="font-mono font-bold text-navy-800">{{ withdrawal.reference }}</p></div>
-      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Amount</p><p class="font-mono font-bold text-navy-800 text-xl">R {{ withdrawal.amount|floatformat:2 }}</p></div>
-      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">User</p><p class="font-medium text-navy-800">{{ withdrawal.user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ withdrawal.user.email }}</p></div>
-      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Method</p><p class="font-bold text-navy-800">{{ withdrawal.get_method_display }}</p></div>
+      <div class="p-4 rounded-xl info-box"><p class="text-xs mb-1" style="color:#64748b;">Reference</p><p class="font-mono font-bold text-navy-800">{{ withdrawal.reference }}</p></div>
+      <div class="p-4 rounded-xl info-box"><p class="text-xs mb-1" style="color:#64748b;">Amount</p><p class="font-mono font-bold text-navy-800 text-xl">R {{ withdrawal.amount|floatformat:2 }}</p></div>
+      <div class="p-4 rounded-xl info-box"><p class="text-xs mb-1" style="color:#64748b;">User</p><p class="font-medium text-navy-800">{{ withdrawal.user.get_full_name }}</p><p class="text-gray-400 text-xs">{{ withdrawal.user.email }}</p></div>
+      <div class="p-4 rounded-xl info-box"><p class="text-xs mb-1" style="color:#64748b;">Method</p><p class="font-bold text-navy-800">{{ withdrawal.get_method_display }}</p></div>
       {% if withdrawal.bank_account %}
-      <div class="p-4 rounded-xl bg-gray-50 col-span-2"><p class="text-xs text-gray-400 mb-1">Bank Details</p><p class="font-medium text-navy-800">{{ withdrawal.bank_account.get_bank_name_display }} — {{ withdrawal.bank_account.account_number }}</p></div>
+      <div class="p-4 rounded-xl bg-gray-50 col-span-2"><p class="text-xs mb-1" style="color:#64748b;">Bank Details</p><p class="font-medium text-navy-800">{{ withdrawal.bank_account.get_bank_name_display }} — {{ withdrawal.bank_account.account_number }}</p></div>
       {% endif %}
       {% if withdrawal.crypto_wallet_address %}
-      <div class="p-4 rounded-xl bg-gray-50 col-span-2"><p class="text-xs text-gray-400 mb-1">Crypto Wallet</p><p class="font-mono text-sm text-navy-800 break-all">{{ withdrawal.crypto_wallet_address }}</p></div>
+      <div class="p-4 rounded-xl bg-gray-50 col-span-2"><p class="text-xs mb-1" style="color:#64748b;">Crypto Wallet</p><p class="font-mono text-sm text-navy-800 break-all">{{ withdrawal.crypto_wallet_address }}</p></div>
       {% endif %}
-      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Status</p><span class="px-2 py-1 rounded-full text-xs font-medium {% if withdrawal.status == 'COMPLETED' %}badge-approved{% elif withdrawal.status == 'REJECTED' %}badge-rejected{% else %}badge-pending{% endif %}">{{ withdrawal.get_status_display }}</span></div>
-      <div class="p-4 rounded-xl bg-gray-50"><p class="text-xs text-gray-400 mb-1">Requested</p><p class="text-navy-800 text-sm">{{ withdrawal.created_at|date:"d M Y, H:i" }}</p></div>
+      <div class="p-4 rounded-xl info-box"><p class="text-xs mb-1" style="color:#64748b;">Status</p><span class="px-2 py-1 rounded-full text-xs font-medium {% if withdrawal.status == 'COMPLETED' %}badge-approved{% elif withdrawal.status == 'REJECTED' %}badge-rejected{% else %}badge-pending{% endif %}">{{ withdrawal.get_status_display }}</span></div>
+      <div class="p-4 rounded-xl info-box"><p class="text-xs mb-1" style="color:#64748b;">Requested</p><p class="text-navy-800 text-sm">{{ withdrawal.created_at|date:"d M Y, H:i" }}</p></div>
     </div>
   </div>
 
   {% if withdrawal.status == 'PENDING' or withdrawal.status == 'PROCESSING' %}
   <div class="card p-6 fade-up fade-up-2">
-    <h3 class="font-display font-bold text-navy-900 text-lg mb-5">Take Action</h3>
+    <h3 class="font-display font-bold text-lg mb-5" style="color:#e2e8f0;">Take Action</h3>
     <div class="grid sm:grid-cols-3 gap-3">
       <form method="post">{% csrf_token %}<input type="hidden" name="action" value="approve">
       <button type="submit" class="w-full py-3 rounded-xl font-bold text-white text-sm btn-navy">✓ Approve</button></form>
@@ -37,6 +37,6 @@
     </div>
   </div>
   {% endif %}
-  <a href="{% url 'admin_withdrawals' %}" class="text-sm text-navy-600 hover:text-gold-600">← Back to Withdrawals</a>
+  <a href="{% url 'admin_withdrawals' %}" class="text-sm hover:text-gold-400" style="color:#94a3b8;">← Back to Withdrawals</a>
 </div>
 {% endblock %}

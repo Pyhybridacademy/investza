@@ -31,9 +31,9 @@
   </div>
 
   <!-- Actions bar -->
-  <div class="flex items-center justify-between gap-4 fade-up fade-up-2">
+  <div class="flex items-start sm:items-center justify-between gap-3 flex-wrap fade-up fade-up-2">
     <!-- Filter tabs -->
-    <div class="flex items-center gap-1 p-1 rounded-xl" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+    <div class="flex items-center gap-1 p-1 rounded-xl flex-wrap" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
       {% for label, val in status_tabs %}
       <a href="?status={{ val }}"
          class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all
@@ -51,7 +51,7 @@
   <!-- Table -->
   <div class="card overflow-hidden fade-up fade-up-2">
     <div class="overflow-x-auto">
-      <table class="data-table w-full">
+      <table class="data-table table-responsive-stack w-full">
         <thead>
           <tr>
             <th>Reference</th>
@@ -67,17 +67,17 @@
         <tbody>
           {% for inv in investments %}
           <tr class="hover:bg-white/5 transition-colors">
-            <td><span class="font-mono text-xs text-navy-300">{{ inv.reference }}</span></td>
-            <td>
+            <td data-label="Reference"><span class="font-mono text-xs" style="color:#94a3b8;">{{ inv.reference }}</span></td>
+            <td data-label="User">
               <p class="font-semibold text-white text-sm">{{ inv.user.get_full_name }}</p>
               <p class="text-gray-500 text-xs">{{ inv.user.email }}</p>
             </td>
-            <td>
-              <p class="text-gray-200 text-sm">{{ inv.plan.name }}</p>
-              <p class="text-gray-500 text-xs">{{ inv.plan.category.name }} · {{ inv.plan.roi_percentage }}%</p>
+            <td data-label="Plan">
+              <p class="text-sm" style="color:#e2e8f0;">{{ inv.plan.name }}</p>
+              <p class="text-xs" style="color:#64748b;">{{ inv.plan.category.name }} · {{ inv.plan.roi_percentage }}%</p>
             </td>
-            <td><span class="font-mono font-bold text-white">R {{ inv.amount_invested|floatformat:2 }}</span></td>
-            <td><span class="font-mono text-green-400 font-bold">R {{ inv.expected_roi|floatformat:2 }}</span></td>
+            <td data-label="Amount"><span class="font-mono font-bold text-white">R {{ inv.amount_invested|floatformat:2 }}</span></td>
+            <td data-label="ROI"><span class="font-mono font-bold" style="color:#4ade80;">R {{ inv.expected_roi|floatformat:2 }}</span></td>
             <td>
               {% if inv.status == 'ACTIVE' %}
                 <span class="badge-approved px-2.5 py-1 rounded-full text-xs font-bold">Active</span>
