@@ -191,3 +191,29 @@ VAPID_PUBLIC_KEY  = config('VAPID_PUBLIC_KEY',  default='')
 VAPID_CLAIMS      = {
     'sub': 'mailto:' + config('SUPPORT_EMAIL', default='support@investza.co.za'),
 } if config('VAPID_PRIVATE_KEY', default='') else None
+
+
+# ─── LOGGING (shows push notification activity in Render logs) ────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[{levelname}] {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'apps.notifications': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

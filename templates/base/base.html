@@ -907,27 +907,71 @@
 
     function izSubscribePush(reg) {
       if (!reg || !reg.pushManager) return;
-      // VAPID public key — replace with your own key if you set up VAPID
-      // For basic push (no VAPID), we subscribe without applicationServerKey
-      var subOptions = { userVisibleOnly: true };
+
       var vapidKey = '{{ VAPID_PUBLIC_KEY|default:"" }}';
-      if (vapidKey) {
-        subOptions.applicationServerKey = urlBase64ToUint8Array(vapidKey);
+
+      // Chrome on Android/Desktop REQUIRES applicationServerKey (VAPID).
+      // Without it the subscribe() call rejects immediately on Chrome.
+      // If no VAPID key is configured we skip silently — the admin can still
+      // see 0 subscribers and the prompt won't show again until VAPID is set.
+      if (!vapidKey) {
+        console.warn('[InvestZA Push] No VAPID_PUBLIC_KEY configured. Push subscription skipped. See README.');
+        return;
       }
-      reg.pushManager.subscribe(subOptions)
-        .then(function(sub) {
-          var json = sub.toJSON();
-          fetch('/notifications/subscribe/', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': izGetCsrf() },
-            body:    JSON.stringify({ endpoint: json.endpoint, keys: json.keys }),
-          }).catch(function(){});
-          localStorage.setItem('iz_push_decision', 'granted');
-        })
-        .catch(function(err) {
-          console.warn('Push subscription failed:', err);
-          localStorage.setItem('iz_push_decision', 'denied');
+
+      var subOptions = {
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidKey),
+      };
+
+      reg.pushManager.getSubscription().then(function(existing) {
+        // Reuse existing subscription rather than creating a new one
+        return existing || reg.pushManager.subscribe(subOptions);
+      })
+      .then(function(sub) {
+        // Extract keys safely — works across all browsers
+        var rawKey  = sub.getKey ? sub.getKey('p256dh') : null;
+        var rawAuth = sub.getKey ? sub.getKey('auth')   : null;
+
+        function buf2b64(buf) {
+          return btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+        }
+
+        var payload = {
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: rawKey  ? buf2b64(rawKey)  : (sub.toJSON().keys || {}).p256dh || '',
+            auth:   rawAuth ? buf2b64(rawAuth) : (sub.toJSON().keys || {}).auth   || '',
+          }
+        };
+
+        return fetch('/notifications/subscribe/', {
+          method:  'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken':  izGetCsrf(),
+          },
+          body: JSON.stringify(payload),
         });
+      })
+      .then(function(response) {
+        if (response && response.ok) {
+          localStorage.setItem('iz_push_decision', 'granted');
+          console.log('[InvestZA Push] Subscribed successfully.');
+        } else if (response) {
+          response.text().then(function(t){ console.warn('[InvestZA Push] Server error:', response.status, t); });
+          // Don't permanently set denied — let it retry next visit
+          localStorage.removeItem('iz_push_decision');
+        }
+      })
+      .catch(function(err) {
+        console.warn('[InvestZA Push] Subscription error:', err);
+        // Only mark denied if the browser itself denied permission
+        if (err && err.name === 'NotAllowedError') {
+          localStorage.setItem('iz_push_decision', 'denied');
+        }
+        // For all other errors (network, VAPID mismatch etc.) don't lock out
+      });
     }
 
     function izGetCsrf() {
