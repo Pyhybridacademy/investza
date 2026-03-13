@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'apps.deposits',
     'apps.withdrawals',
     'apps.administration',
+    'apps.notifications',
 ]
 
 MIDDLEWARE = [
@@ -180,3 +181,13 @@ SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', default=86400, cast=int)
 
 
 CSRF_TRUSTED_ORIGINS = ['https://investza.onrender.com']
+
+# ─── WEB PUSH / VAPID ─────────────────────────────────────────────────────────
+# Optional: generate VAPID keys with: pip install pywebpush && vapid --gen
+# Then set in .env:  VAPID_PRIVATE_KEY=...  VAPID_PUBLIC_KEY=...
+# Without VAPID, push still works on most browsers via the fallback path.
+VAPID_PRIVATE_KEY = config('VAPID_PRIVATE_KEY', default='')
+VAPID_PUBLIC_KEY  = config('VAPID_PUBLIC_KEY',  default='')
+VAPID_CLAIMS      = {
+    'sub': 'mailto:' + config('SUPPORT_EMAIL', default='support@investza.co.za'),
+} if config('VAPID_PRIVATE_KEY', default='') else None

@@ -63,3 +63,10 @@ urlpatterns += [
     path('plans/<uuid:pk>/toggle/', admin_views.admin_plan_toggle, name='admin_plan_toggle'),
     path('plans/<uuid:pk>/delete/', admin_views.admin_plan_delete, name='admin_plan_delete'),
 ]
+
+# Push notifications
+from apps.notifications import views as notif_views
+urlpatterns += [
+    path('notifications/',       notif_views.admin_notifications,    name='admin_notifications'),
+    path('notifications/send/',  notif_views.admin_send_notification, name='admin_send_notification'),
+]

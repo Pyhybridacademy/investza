@@ -99,6 +99,9 @@ urlpatterns = [
 
     # Admin Panel (custom)
     path('admin-panel/', include('apps.administration.urls')),
+
+    # Push notification subscription endpoints (public)
+    path('notifications/', include('apps.notifications.urls')),
 ]
 
 if settings.DEBUG:

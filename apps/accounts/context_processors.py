@@ -24,6 +24,7 @@ def platform_settings(request):
             'MIN_WITHDRAWAL':           ps.min_withdrawal,
             'MAX_WITHDRAWAL':           ps.max_withdrawal,
             'MAINTENANCE_MODE':         ps.maintenance_mode,
+            'VAPID_PUBLIC_KEY':         getattr(settings, 'VAPID_PUBLIC_KEY', ''),
         }
     except Exception:
         # Fallback to .env / settings defaults if DB not yet migrated
@@ -42,6 +43,7 @@ def platform_settings(request):
             'MIN_WITHDRAWAL':           getattr(settings, 'MIN_WITHDRAWAL', 200),
             'MAX_WITHDRAWAL':           getattr(settings, 'MAX_WITHDRAWAL', 1000000),
             'MAINTENANCE_MODE':         False,
+            'VAPID_PUBLIC_KEY':         getattr(settings, 'VAPID_PUBLIC_KEY', ''),
         }
 
 

@@ -871,13 +871,123 @@
               var newWorker = reg.installing;
               newWorker.addEventListener('statechange', function() {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New version available — show subtle refresh nudge
                   showUpdateBanner();
                 }
               });
             });
+
+            // ── Push notification permission prompt ──────────────────────
+            // Only show if: push is supported, user hasn't decided yet,
+            // and they haven't permanently dismissed it.
+            if ('PushManager' in window && 'Notification' in window) {
+              var pushDecision = localStorage.getItem('iz_push_decision');
+              if (!pushDecision && Notification.permission === 'default') {
+                // Small delay so it doesn't pop up immediately on landing
+                setTimeout(function() { showPushPrompt(reg); }, 4000);
+              } else if (Notification.permission === 'granted' && !pushDecision) {
+                // Already granted (e.g. returning user) — silently subscribe
+                izSubscribePush(reg);
+              }
+            }
           })
           .catch(function(err) { console.warn('SW registration failed:', err); });
+      });
+    }
+
+    // ── Push notification helpers ─────────────────────────────────────────
+
+    function urlBase64ToUint8Array(base64String) {
+      var padding = '='.repeat((4 - base64String.length % 4) % 4);
+      var base64  = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+      var raw     = window.atob(base64);
+      var output  = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; ++i) { output[i] = raw.charCodeAt(i); }
+      return output;
+    }
+
+    function izSubscribePush(reg) {
+      if (!reg || !reg.pushManager) return;
+      // VAPID public key — replace with your own key if you set up VAPID
+      // For basic push (no VAPID), we subscribe without applicationServerKey
+      var subOptions = { userVisibleOnly: true };
+      var vapidKey = '{{ VAPID_PUBLIC_KEY|default:"" }}';
+      if (vapidKey) {
+        subOptions.applicationServerKey = urlBase64ToUint8Array(vapidKey);
+      }
+      reg.pushManager.subscribe(subOptions)
+        .then(function(sub) {
+          var json = sub.toJSON();
+          fetch('/notifications/subscribe/', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': izGetCsrf() },
+            body:    JSON.stringify({ endpoint: json.endpoint, keys: json.keys }),
+          }).catch(function(){});
+          localStorage.setItem('iz_push_decision', 'granted');
+        })
+        .catch(function(err) {
+          console.warn('Push subscription failed:', err);
+          localStorage.setItem('iz_push_decision', 'denied');
+        });
+    }
+
+    function izGetCsrf() {
+      var match = document.cookie.match(/csrftoken=([^;]+)/);
+      return match ? match[1] : '';
+    }
+
+    function showPushPrompt(reg) {
+      if (document.getElementById('iz-push-prompt')) return;
+
+      var card = document.createElement('div');
+      card.id = 'iz-push-prompt';
+      card.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:12px;">' +
+          '<div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:rgba(245,152,10,0.15);display:flex;align-items:center;justify-content:center;">' +
+            '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#f5980a" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>' +
+          '</div>' +
+          '<div style="flex:1;">' +
+            '<p style="font-weight:700;font-size:0.85rem;color:#e2e8f0;margin:0 0 3px;">Stay informed</p>' +
+            '<p style="font-size:0.78rem;color:#94a3b8;margin:0 0 14px;line-height:1.5;">Allow <strong style="color:#fac660;">InvestZA</strong> to send you important account alerts and updates.</p>' +
+            '<div style="display:flex;gap:8px;">' +
+              '<button id="iz-push-allow" style="flex:1;padding:8px 0;background:linear-gradient(135deg,#e08900,#f8af35);color:#03071e;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:pointer;">Allow</button>' +
+              '<button id="iz-push-deny" style="flex:1;padding:8px 0;background:rgba(255,255,255,0.07);color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-weight:600;font-size:0.78rem;cursor:pointer;">Not now</button>' +
+            '</div>' +
+          '</div>' +
+          '<button id="iz-push-x" style="flex-shrink:0;background:none;border:none;color:rgba(255,255,255,0.25);font-size:1.2rem;cursor:pointer;line-height:1;padding:0;">&times;</button>' +
+        '</div>';
+
+      document.body.appendChild(card);
+
+      // Animate in
+      requestAnimationFrame(function(){
+        card.style.transform = 'translateY(0)';
+        card.style.opacity   = '1';
+      });
+
+      function dismissPrompt() {
+        card.style.opacity   = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(function(){ card.remove(); }, 300);
+      }
+
+      document.getElementById('iz-push-allow').addEventListener('click', function() {
+        dismissPrompt();
+        Notification.requestPermission().then(function(perm) {
+          if (perm === 'granted') {
+            izSubscribePush(reg);
+          } else {
+            localStorage.setItem('iz_push_decision', 'denied');
+          }
+        });
+      });
+
+      document.getElementById('iz-push-deny').addEventListener('click', function() {
+        dismissPrompt();
+        localStorage.setItem('iz_push_decision', 'dismissed');
+      });
+
+      document.getElementById('iz-push-x').addEventListener('click', function() {
+        dismissPrompt();
       });
     }
 
@@ -941,8 +1051,6 @@
 
   <style>
   #iz-pwa-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
     z-index: 9998;
     background: linear-gradient(135deg, #03071e, #0a1f44);
     border-top: 1px solid rgba(245,152,10,0.25);
@@ -976,6 +1084,31 @@
     transition: color 0.15s;
   }
   #iz-pwa-close:hover { color: rgba(255,255,255,0.7); }
+
+  /* ── Push notification prompt card ─────────────────────────────── */
+  #iz-push-prompt {
+    position: fixed;
+    bottom: 20px;
+    right: 16px;
+    z-index: 9999;
+    width: 300px;
+    background: linear-gradient(135deg, #0d1f3c, #0a1f44);
+    border: 1px solid rgba(245, 152, 10, 0.25);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  }
+  @media (max-width: 400px) {
+    #iz-push-prompt {
+      width: calc(100vw - 24px);
+      right: 12px;
+      bottom: 12px;
+    }
+  }
   </style>
   <!-- ══ END PWA ══════════════════════════════════════════════════════════ -->
 
