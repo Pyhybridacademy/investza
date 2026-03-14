@@ -102,6 +102,9 @@ urlpatterns = [
 
     # Push notification subscription endpoints (public)
     path('notifications/', include('apps.notifications.urls')),
+
+    # Live support chat (user side)
+    path('support/', include('apps.support.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,174 @@
+{% extends "base/admin_base.html" %}
+{% block title %}Support Chat{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold" style="color:#e2e8f0;font-family:'Playfair Display',serif;">Support Inbox</h1>
+      <p class="text-sm mt-1" style="color:#64748b;">Real-time chat with users. New messages appear instantly.</p>
+    </div>
+    <div id="inbox-badge" class="hidden items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
+         style="background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.3);color:#f87171;">
+      <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse inline-block"></span>
+      <span id="inbox-badge-count">0</span> unread
+    </div>
+  </div>
+
+  <!-- Open sessions -->
+  <div class="rounded-2xl overflow-hidden mb-6" style="background:#0f1a2e;border:1px solid rgba(255,255,255,0.07);">
+    <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <h2 class="text-sm font-semibold" style="color:#e2e8f0;">Open Conversations</h2>
+      <span id="open-count" class="text-xs px-2 py-0.5 rounded-full font-semibold"
+            style="background:rgba(74,222,128,0.12);color:#4ade80;">{{ open_sessions.count }}</span>
+    </div>
+    <div id="session-list">
+      {% for s in open_sessions %}
+      {% with last=s.last_message %}
+      <a href="{% url 'admin_chat_session' s.id %}"
+         class="session-row flex items-center gap-4 px-6 py-4 transition-colors"
+         data-session="{{ s.id }}"
+         style="border-bottom:1px solid rgba(255,255,255,0.04);"
+         onmouseover="this.style.background='rgba(255,255,255,0.03)'"
+         onmouseout="this.style.background=''">
+        <!-- Avatar -->
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+             style="background:linear-gradient(135deg,#0a1f44,#153a78);color:#fac660;">
+          {{ s.user.first_name|first|upper }}{{ s.user.last_name|first|upper }}
+        </div>
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold" style="color:#e2e8f0;">{{ s.user.get_full_name }}</p>
+          <p class="text-xs truncate mt-0.5" style="color:#64748b;">
+            {% if last %}{{ last.body|truncatechars:55 }}{% else %}No messages yet{% endif %}
+          </p>
+        </div>
+        <!-- Meta -->
+        <div class="text-right shrink-0">
+          {% if last %}<p class="text-xs mb-1" style="color:#475569;">{{ last.created_at|time:"H:i" }}</p>{% endif %}
+          {% if s.unread_by_admin > 0 %}
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold"
+                style="background:#ef4444;color:#fff;">{{ s.unread_by_admin }}</span>
+          {% endif %}
+        </div>
+      </a>
+      {% endwith %}
+      {% empty %}
+      <div class="px-6 py-10 text-center" id="empty-state">
+        <p class="text-sm" style="color:#475569;">No open conversations yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Closed sessions -->
+  {% if closed_sessions %}
+  <div class="rounded-2xl overflow-hidden" style="background:#0f1a2e;border:1px solid rgba(255,255,255,0.07);">
+    <div class="px-6 py-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <h2 class="text-sm font-semibold" style="color:#64748b;">Recently Closed</h2>
+    </div>
+    {% for s in closed_sessions %}
+    {% with last=s.last_message %}
+    <a href="{% url 'admin_chat_session' s.id %}"
+       class="flex items-center gap-4 px-6 py-3 transition-colors"
+       style="border-bottom:1px solid rgba(255,255,255,0.03);opacity:0.6;"
+       onmouseover="this.style.background='rgba(255,255,255,0.02)'"
+       onmouseout="this.style.background=''">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+           style="background:rgba(255,255,255,0.07);color:#64748b;">
+        {{ s.user.first_name|first|upper }}{{ s.user.last_name|first|upper }}
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs font-medium" style="color:#94a3b8;">{{ s.user.get_full_name }}</p>
+        <p class="text-xs truncate" style="color:#475569;">{% if last %}{{ last.body|truncatechars:50 }}{% endif %}</p>
+      </div>
+      <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(255,255,255,0.05);color:#475569;">Closed</span>
+    </a>
+    {% endwith %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Notification sound (tiny base64 beep) -->
+<audio id="chat-sound" preload="auto">
+  <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhS0phmLPDuZZvUUFKaJayvbCUc1dKSlZ2nrq2opJwWU9NVHSer7ero5F3YlZPT1d2oLOzq6GQeGVcV1VZa4mmqaqjkn5rX1hVVml+l6WoopOAb2NcWFhebnuSoaWfkn9vZF1ZWF9uda+3rp+LeW5mX1xdZXOFlJ6dkX5sYFpYWmNwgI+YmZCCcGNaV1hibnuJkZWSiHhpXlhXW2dzhpCTkIZ3aF1YV1tma3qHj5GLgnFkWldXXGdzhI6QjIJwY1lXV1xna3mEjI6Kf29iWFZYXWhzf4mMioByY1lXV1xobnl/h4qHfm5hV1VXW2ZveX6Gh4V8bGBXVVdbZW55fIWGg3tqX1ZTWF9mbnl7goSBeWhcVlNXXmVueXqAgoB4Z1tWU1deZG14eX6Bgn5zYlhUUlZeZGx3en5/gXxwX1ZUUlZeZGt2eHt9f3ttXFVTU1ZdY2t1d3l7fXxrWlRTU1ZdYmpzdnh5ent5aVlUU1NWXGJpc3V3eHl4Z1hTU1NVXGFocnR2d3h2ZVZSU1NVW2BncXN1dXd2ZFRSU1NUW2BmcHJ0dHV0YlNRUlNTWl9lcHFzc3R0YVJRU1NTWl5lcHFzc3RzX1FRUVNZW2RvcHJycnFdUFBRUlJZWmNub3BxcG9aT09QUVFYWmJtbW9vbm1ZTk5PUFBXWWFsbW5ubGtYTU5OT09WV19ra2xta2pXTE1NT05WVl5pamtramhWT01MTk5UV11oaWppZ2dWS0tMTU1TVFxnZ2loZmVUS0pLS0xSU1toZmhnZGNTS0pKS0xSUlpmZWZmZGJRSUpKS0tQUVlkY2RkYmBPSElJS0tPUFhmYmNjYV9OSElJS0tPT1dkYGJiX11NS0lIS0tOT1ZiX2FhXlxMS0lIS0tOTlViXmBhXVtLS0lIS0tOTlRhXV9gXFpKSklJS0tNTVJgXF9fW1lJSklIS0tMTVFfW15eWldISElIS0tMTVBdWl1dWVZHSElIS0xMTE9cWVxcWFVGR0hIS0xMTE9bWFtbV1VGR0hISkxMS0xaVlpaVlNFRkdIS0tMTE5YVFlZVFJFRUZIS0tLTE1XV1lYU1FERkZIS0tKS0xWVVhXUlBDRUZIS0tKS0tVVFhXUU9CRERHSEpLSkpKVFNXVlBPQ0RFR0hKSkpKUlJVVU5OQ0NEBQdHSUpJS0pRUFRTTUxCQkMFBkdJSUlKSlBQU1JMTEJBQQUDQ0hISUlKUE9SUVVNTUJAQQQCRUZHR0lJUE9RUExLS0A/QANBRUVHR0lPTlBQS0pKPz9CA0FFRUVGSE5OT09KSUk+PkIDQERERkZHTk1OTklIST09QQNAQERFRUZNTM1MSEhIPD1BBEBERUVGTM3MSwcHPDxABEA/Q0RFRktLzEsHBzo6PgQ+PkJDRURKSstJBgY4OD0DPDxAQkNDSUjKSAUFNzc8AzwwP0FCQ0hIyUcEBDU1OwM6MD5AQUJHRshGAwMzNDoC" type="audio/wav">
+</audio>
+
+<script>
+(function () {
+  var sound = document.getElementById('chat-sound');
+  var WS_URL = 'wss://' + window.location.host + '/ws/support/inbox/';
+  if (window.location.protocol === 'http:') WS_URL = 'ws://' + window.location.host + '/ws/support/inbox/';
+
+  var ws = null;
+  var totalUnread = 0;
+
+  function connect() {
+    ws = new WebSocket(WS_URL);
+
+    ws.onmessage = function (e) {
+      var data = JSON.parse(e.data);
+
+      if (data.type === 'inbox_snapshot') {
+        renderSessions(data.sessions);
+      }
+
+      if (data.type === 'new_user_message') {
+        // Play sound
+        if (sound) { sound.currentTime = 0; sound.play().catch(function(){}); }
+
+        // Show browser notification if page not focused
+        if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+          new Notification('New support message — ' + data.user_name, {
+            body: data.preview,
+            icon: '/static/icons/icon-192.svg',
+          });
+        }
+
+        // Update badge
+        totalUnread++;
+        var badge = document.getElementById('inbox-badge');
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+        document.getElementById('inbox-badge-count').textContent = totalUnread;
+        document.title = '(' + totalUnread + ') Support Inbox';
+      }
+    };
+
+    ws.onclose = function () { setTimeout(connect, 3000); };
+    ws.onerror = function () { ws.close(); };
+  }
+
+  function renderSessions(sessions) {
+    var list = document.getElementById('session-list');
+    if (!list) return;
+    if (sessions.length === 0) {
+      list.innerHTML = '<div class="px-6 py-10 text-center"><p class="text-sm" style="color:#475569;">No open conversations yet.</p></div>';
+      document.getElementById('open-count').textContent = '0';
+      return;
+    }
+    document.getElementById('open-count').textContent = sessions.length;
+    list.innerHTML = sessions.map(function (s) {
+      var unreadBadge = s.unread > 0
+        ? '<span class="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold" style="background:#ef4444;color:#fff;">' + s.unread + '</span>'
+        : '';
+      return '<a href="/admin-panel/chat/' + s.session_id + '/" class="flex items-center gap-4 px-6 py-4 transition-colors" style="border-bottom:1px solid rgba(255,255,255,0.04);" onmouseover="this.style.background=\'rgba(255,255,255,0.03)\'" onmouseout="this.style.background=\'\'">'
+        + '<div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0" style="background:linear-gradient(135deg,#0a1f44,#153a78);color:#fac660;">' + (s.user_name[0] || '?').toUpperCase() + '</div>'
+        + '<div class="flex-1 min-w-0">'
+        + '<p class="text-sm font-semibold" style="color:#e2e8f0;">' + s.user_name + '</p>'
+        + '<p class="text-xs truncate mt-0.5" style="color:#64748b;">' + (s.last_message || 'No messages yet') + '</p>'
+        + '</div>'
+        + '<div class="text-right shrink-0">'
+        + '<p class="text-xs mb-1" style="color:#475569;">' + (s.last_time || '') + '</p>'
+        + unreadBadge
+        + '</div></a>';
+    }).join('');
+  }
+
+  connect();
+})();
+</script>
+{% endblock %}

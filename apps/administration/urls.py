@@ -70,3 +70,7 @@ urlpatterns += [
     path('notifications/',       notif_views.admin_notifications,    name='admin_notifications'),
     path('notifications/send/',  notif_views.admin_send_notification, name='admin_send_notification'),
 ]
+
+# Live support chat (admin side)
+from apps.support.urls import admin_urlpatterns as chat_urls
+urlpatterns += chat_urls

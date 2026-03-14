@@ -134,6 +134,15 @@
         Push Notifications
       </a>
 
+      <a href="{% url 'admin_chat_inbox' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+        </svg>
+        Support Chat
+        <span id="admin-chat-badge" class="ml-auto hidden text-xs font-bold px-1.5 py-0.5 rounded-full"
+              style="background:#ef4444;color:#fff;min-width:18px;text-align:center;">0</span>
+      </a>
+
       <a href="{% url 'admin_platform_settings' %}" class="admin-nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all duration-150" style="color:#94a3b8;">
         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>
         Platform Settings
@@ -452,4 +461,53 @@
 </script>
 
 {% block extra_js %}{% endblock %}
+
+{% if user.is_staff or user.is_superuser %}
+<script>
+/* Live unread chat badge in admin sidebar */
+(function () {
+  var badge    = document.getElementById('admin-chat-badge');
+  var sound    = null; // sound only plays on the inbox/session pages
+  var WS_PROTO = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  var WS_URL   = WS_PROTO + '://' + window.location.host + '/ws/support/inbox/';
+  var ws;
+
+  function connect() {
+    ws = new WebSocket(WS_URL);
+    ws.onmessage = function (e) {
+      var data = JSON.parse(e.data);
+      if (data.type === 'inbox_snapshot') {
+        var total = data.sessions.reduce(function (sum, s) { return sum + (s.unread || 0); }, 0);
+        if (badge) {
+          if (total > 0) {
+            badge.textContent = total;
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
+        }
+      }
+      if (data.type === 'new_user_message') {
+        /* Play a subtle sound if on any admin page */
+        try {
+          var ctx = new (window.AudioContext || window.webkitAudioContext)();
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = 880;
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToConstantAtTime(0.0001, ctx.currentTime + 0.4);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.4);
+        } catch (err) {}
+      }
+    };
+    ws.onclose = function () { setTimeout(connect, 4000); };
+    ws.onerror = function () { ws.close(); };
+  }
+
+  connect();
+})();
+</script>
+{% endif %}
 {% endblock %}

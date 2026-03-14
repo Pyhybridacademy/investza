@@ -4,11 +4,9 @@
 {% block title %}Push Notifications{% endblock %}
 
 {% block content %}
-
 <div class="max-w-4xl mx-auto px-4 py-8">
 
   <!-- Header -->
-
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="text-2xl font-bold" style="color:#e2e8f0;font-family:'Playfair Display',serif;">
@@ -36,8 +34,8 @@
     </div>
   </div>
 
-{% if not vapid_configured %}
-
+  {% if not vapid_configured %}
+  <!-- ⚠️ VAPID not configured warning -->
   <div class="rounded-xl px-5 py-4 mb-6 flex gap-3"
        style="background:rgba(234,88,12,0.1);border:1px solid rgba(234,88,12,0.3);">
     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#fb923c" stroke-width="2" class="shrink-0 mt-0.5">
@@ -46,102 +44,304 @@
     <div>
       <p class="text-sm font-bold mb-1" style="color:#fb923c;">VAPID keys not configured — push will not work</p>
       <p class="text-xs leading-relaxed" style="color:#94a3b8;">
-        Chrome and most browsers require VAPID keys to allow push subscriptions.
+        Chrome and most browsers <strong style="color:#e2e8f0;">require VAPID keys</strong> to allow push subscriptions.
+        Without them, the browser will silently reject the subscription and 0 subscribers will be recorded.
+        Follow the steps below to fix this.
+      </p>
+      <div class="mt-3 rounded-lg px-4 py-3 text-xs font-mono leading-loose"
+           style="background:rgba(0,0,0,0.3);color:#94a3b8;border:1px solid rgba(255,255,255,0.06);">
+        <span style="color:#4ade80;"># 1. Install pywebpush on your server</span><br>
+        pip install pywebpush<br><br>
+        <span style="color:#4ade80;"># 2. Generate VAPID keys</span><br>
+        vapid --gen<br><br>
+        <span style="color:#4ade80;"># 3. Add to your Render environment variables:</span><br>
+        VAPID_PRIVATE_KEY = &lt;private_key from output&gt;<br>
+        VAPID_PUBLIC_KEY  = &lt;public_key from output&gt;<br><br>
+        <span style="color:#4ade80;"># 4. Add pywebpush to requirements.txt</span><br>
+        echo "pywebpush" >> requirements.txt
+      </div>
+      <p class="text-xs mt-2" style="color:#64748b;">
+        After adding the env vars, redeploy on Render. Users who previously allowed notifications will need to revisit the site once for their subscription to register.
       </p>
     </div>
   </div>
   {% endif %}
 
   <!-- Compose Form -->
-
   <div class="rounded-2xl p-6 mb-8" style="background:#0f1a2e;border:1px solid rgba(255,255,255,0.07);">
     <h2 class="text-base font-semibold mb-5" style="color:#e2e8f0;">Compose Notification</h2>
 
-```
-<form method="POST" action="{% url 'admin_send_notification' %}">
-  {% csrf_token %}
+    <form method="POST" action="{% url 'admin_send_notification' %}">
+      {% csrf_token %}
 
-  <div class="grid gap-4">
+      <div class="grid gap-4">
+        <!-- Title -->
+        <div>
+          <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
+            Title <span style="color:#f87171;">*</span>
+          </label>
+          <input type="text" name="title" maxlength="100" required
+                 placeholder="e.g. Important Account Update"
+                 class="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                 style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"
+                 onfocus="this.style.borderColor='rgba(245,152,10,0.5)'"
+                 onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
 
-    <div>
-      <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
-        Title *
-      </label>
-      <input type="text" name="title" maxlength="100" required
-             placeholder="e.g. Important Account Update"
-             class="w-full rounded-xl px-4 py-3 text-sm outline-none"
-             style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;">
-    </div>
+        <!-- Body -->
+        <div>
+          <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
+            Message <span style="color:#f87171;">*</span>
+          </label>
+          <textarea name="body" maxlength="500" required rows="3"
+                    placeholder="Write your provisional message here…"
+                    class="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all resize-none"
+                    style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"
+                    onfocus="this.style.borderColor='rgba(245,152,10,0.5)'"
+                    onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+          <p class="text-xs mt-1" style="color:#475569;">Max 500 characters.</p>
+        </div>
 
-    <div>
-      <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
-        Message *
-      </label>
-      <textarea name="body" maxlength="500" required rows="3"
-                placeholder="Write your provisional message here…"
-                class="w-full rounded-xl px-4 py-3 text-sm outline-none resize-none"
-                style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"></textarea>
-    </div>
+        <!-- URL -->
+        <div>
+          <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
+            Link (tap action)
+          </label>
+          <input type="text" name="url" value="/"
+                 placeholder="/dashboard/"
+                 class="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                 style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"
+                 onfocus="this.style.borderColor='rgba(245,152,10,0.5)'"
+                 onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+      </div>
 
-    <div>
-      <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
-        Link
-      </label>
-      <input type="text" name="url" value="/"
-             placeholder="/dashboard/"
-             class="w-full rounded-xl px-4 py-3 text-sm outline-none"
-             style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;">
-    </div>
-
+      <div class="flex items-center justify-between mt-6 pt-5"
+           style="border-top:1px solid rgba(255,255,255,0.06);">
+        <p class="text-xs" style="color:#475569;">
+          Delivers instantly to <strong style="color:#94a3b8;">{{ subscriber_count }}</strong> browser(s).
+        </p>
+        <button type="submit"
+                {% if not vapid_configured %}disabled title="Configure VAPID keys first"{% endif %}
+                onclick="return confirm('Send this notification to {{ subscriber_count }} subscriber(s)?')"
+                class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style="background:{% if vapid_configured %}linear-gradient(135deg,#e08900,#f8af35){% else %}rgba(255,255,255,0.1){% endif %};color:{% if vapid_configured %}#03071e{% else %}#475569{% endif %};cursor:{% if vapid_configured %}pointer{% else %}not-allowed{% endif %};">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+          Send to All
+        </button>
+      </div>
+    </form>
   </div>
 
-  <div class="flex items-center justify-between mt-6 pt-5"
-       style="border-top:1px solid rgba(255,255,255,0.06);">
-    <p class="text-xs" style="color:#475569;">
-      Delivers instantly to <strong style="color:#94a3b8;">{{ subscriber_count }}</strong> browser(s).
-    </p>
-    <button type="submit"
-            onclick="return confirm('Send this notification to {{ subscriber_count }} subscriber(s)?')"
-            class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold"
-            style="background:linear-gradient(135deg,#e08900,#f8af35);color:#03071e;">
-      Send to All
-    </button>
-  </div>
-
-</form>
-```
-
-  </div>
-
-  <!-- History -->
-
+  <!-- Sent History -->
   <div class="rounded-2xl overflow-hidden" style="background:#0f1a2e;border:1px solid rgba(255,255,255,0.07);">
     <div class="px-6 py-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
       <h2 class="text-base font-semibold" style="color:#e2e8f0;">Notification History</h2>
     </div>
 
-```
-{% if notifications %}
-<div class="divide-y">
-  {% for n in notifications %}
-  <div class="px-6 py-4 flex items-start justify-between gap-4">
-    <div class="flex-1 min-w-0">
-      <p class="text-sm font-semibold" style="color:#e2e8f0;">{{ n.title }}</p>
-      <p class="text-xs mt-1" style="color:#64748b;">{{ n.body }}</p>
+    {% if notifications %}
+    <div class="divide-y" style="border-color:rgba(255,255,255,0.05);">
+      {% for n in notifications %}
+      <div class="px-6 py-4 flex items-start justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            {% if n.status == 'SENT' %}
+            <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style="background:rgba(34,197,94,0.15);color:#4ade80;">SENT</span>
+            {% elif n.status == 'FAILED' %}
+            <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style="background:rgba(248,113,113,0.15);color:#f87171;">FAILED</span>
+            {% else %}
+            <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style="background:rgba(148,163,184,0.15);color:#94a3b8;">DRAFT</span>
+            {% endif %}
+            <span class="text-xs" style="color:#475569;">
+              {% if n.sent_at %}{{ n.sent_at|date:"d M Y, H:i" }}{% else %}—{% endif %}
+            </span>
+          </div>
+          <p class="text-sm font-semibold" style="color:#e2e8f0;">{{ n.title }}</p>
+          <p class="text-xs mt-0.5 truncate" style="color:#64748b;">{{ n.body }}</p>
+        </div>
+        <div class="text-right shrink-0">
+          <p class="text-sm font-bold" style="color:#4ade80;">{{ n.total_sent }} sent</p>
+          {% if n.total_failed %}
+          <p class="text-xs" style="color:#f87171;">{{ n.total_failed }} failed</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    <div class="text-right shrink-0">
-      <p class="text-sm font-bold" style="color:#4ade80;">{{ n.total_sent }} sent</p>
+    {% else %}
+    <div class="px-6 py-12 text-center">
+      <p class="text-sm" style="color:#475569;">No notifications sent yet.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block title %}Push Notifications{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold" style="color:#e2e8f0;font-family:'Playfair Display',serif;">
+        Push Notifications
+      </h1>
+      <p class="text-sm mt-1" style="color:#64748b;">
+        Send provisional messages to all subscribed users' browsers and phones.
+      </p>
+    </div>
+    <div class="flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-semibold"
+         style="background:rgba(245,152,10,0.12);border:1px solid rgba(245,152,10,0.3);color:#fac660;">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+      {{ subscriber_count }} active subscriber{{ subscriber_count|pluralize }}
     </div>
   </div>
-  {% endfor %}
-</div>
-{% else %}
-<div class="px-6 py-12 text-center">
-  <p class="text-sm" style="color:#475569;">No notifications sent yet.</p>
-</div>
-{% endif %}
-```
 
+  <!-- Compose Form -->
+  <div class="rounded-2xl p-6 mb-8" style="background:#0f1a2e;border:1px solid rgba(255,255,255,0.07);">
+    <h2 class="text-base font-semibold mb-5" style="color:#e2e8f0;">Compose Notification</h2>
+
+    <form method="POST" action="{% url 'admin_send_notification' %}">
+      {% csrf_token %}
+
+      <div class="grid gap-4">
+        <!-- Title -->
+        <div>
+          <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
+            Title <span style="color:#f87171;">*</span>
+          </label>
+          <input type="text" name="title" maxlength="100" required
+                 placeholder="e.g. Important Account Update"
+                 class="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                 style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"
+                 onfocus="this.style.borderColor='rgba(245,152,10,0.5)'"
+                 onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        </div>
+
+        <!-- Body -->
+        <div>
+          <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
+            Message <span style="color:#f87171;">*</span>
+          </label>
+          <textarea name="body" maxlength="500" required rows="3"
+                    placeholder="Write your provisional message here…"
+                    class="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all resize-none"
+                    style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"
+                    onfocus="this.style.borderColor='rgba(245,152,10,0.5)'"
+                    onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+          <p class="text-xs mt-1" style="color:#475569;">Max 500 characters.</p>
+        </div>
+
+        <!-- URL -->
+        <div>
+          <label class="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style="color:#94a3b8;">
+            Link (tap action)
+          </label>
+          <input type="text" name="url" value="/"
+                 placeholder="/dashboard/"
+                 class="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                 style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"
+                 onfocus="this.style.borderColor='rgba(245,152,10,0.5)'"
+                 onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+          <p class="text-xs mt-1" style="color:#475569;">
+            Page to open when the user taps the notification. Use a relative path e.g. <code style="color:#fac660;">/dashboard/</code>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-6 pt-5"
+           style="border-top:1px solid rgba(255,255,255,0.06);">
+        <p class="text-xs" style="color:#475569;">
+          This will be delivered instantly to all <strong style="color:#94a3b8;">{{ subscriber_count }}</strong> browser(s) that allowed notifications.
+        </p>
+        <button type="submit"
+                onclick="return confirm('Send this notification to {{ subscriber_count }} subscriber(s)?')"
+                class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style="background:linear-gradient(135deg,#e08900,#f8af35);color:#03071e;"
+                onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+          Send to All
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sent History -->
+  <div class="rounded-2xl overflow-hidden" style="background:#0f1a2e;border:1px solid rgba(255,255,255,0.07);">
+    <div class="px-6 py-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <h2 class="text-base font-semibold" style="color:#e2e8f0;">Notification History</h2>
+    </div>
+
+    {% if notifications %}
+    <div class="divide-y" style="border-color:rgba(255,255,255,0.05);">
+      {% for n in notifications %}
+      <div class="px-6 py-4 flex items-start justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            {% if n.status == 'SENT' %}
+            <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style="background:rgba(34,197,94,0.15);color:#4ade80;">SENT</span>
+            {% elif n.status == 'FAILED' %}
+            <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style="background:rgba(248,113,113,0.15);color:#f87171;">FAILED</span>
+            {% else %}
+            <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style="background:rgba(148,163,184,0.15);color:#94a3b8;">DRAFT</span>
+            {% endif %}
+            <span class="text-xs" style="color:#475569;">
+              {% if n.sent_at %}{{ n.sent_at|date:"d M Y, H:i" }}{% else %}—{% endif %}
+            </span>
+          </div>
+          <p class="text-sm font-semibold" style="color:#e2e8f0;">{{ n.title }}</p>
+          <p class="text-xs mt-0.5 truncate" style="color:#64748b;">{{ n.body }}</p>
+          {% if n.url and n.url != '/' %}
+          <p class="text-xs mt-0.5" style="color:#475569;">→ {{ n.url }}</p>
+          {% endif %}
+        </div>
+        <div class="text-right shrink-0">
+          <p class="text-sm font-bold" style="color:#4ade80;">{{ n.total_sent }} sent</p>
+          {% if n.total_failed %}
+          <p class="text-xs" style="color:#f87171;">{{ n.total_failed }} failed</p>
+          {% endif %}
+          {% if n.sent_by %}
+          <p class="text-xs mt-1" style="color:#475569;">by {{ n.sent_by.get_short_name }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="px-6 py-12 text-center">
+      <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+           stroke-width="1.5" class="mx-auto mb-3" style="color:#334155;">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+      <p class="text-sm" style="color:#475569;">No notifications sent yet.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Info box -->
+  <div class="mt-6 rounded-xl px-5 py-4 text-xs leading-relaxed"
+       style="background:rgba(10,31,68,0.5);border:1px solid rgba(255,255,255,0.06);color:#64748b;">
+    <strong style="color:#94a3b8;">How it works:</strong>
+    Users who clicked <em>Allow</em> on the notification permission popup when visiting the site will receive these messages directly on their phone or desktop — even when the site is not open.
+    Users who blocked notifications will not receive them (and won't be asked again by the browser).
+    Subscriber count updates in real time as new users opt in.
   </div>
 
 </div>

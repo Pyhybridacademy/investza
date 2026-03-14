@@ -763,4 +763,247 @@ window.addEventListener('load',()=>{
 </script>
 
 {% block extra_js %}{% endblock %}
+
+<!-- ══ LIVE SUPPORT CHAT BUBBLE ══════════════════════════════════════════════ -->
+{% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
+<style>
+  #iz-chat-bubble {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9000;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, #e08900, #f8af35);
+    box-shadow: 0 4px 20px rgba(224,137,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  #iz-chat-bubble:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(224,137,0,0.6); }
+  #iz-chat-unread {
+    position: absolute; top: -3px; right: -3px;
+    background: #ef4444; color: #fff;
+    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    display: none;
+  }
+  #iz-chat-panel {
+    position: fixed; bottom: 88px; right: 24px; z-index: 9001;
+    width: 340px; height: 480px;
+    background: #0d1b30;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 20px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    display: none; flex-direction: column;
+    overflow: hidden;
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+  #iz-chat-panel.open { display: flex; }
+  .iz-chat-header {
+    padding: 14px 16px; background: linear-gradient(135deg,#0a1f44,#0f2d5e);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex; align-items: center; gap: 10px;
+  }
+  #iz-chat-msgs {
+    flex: 1; overflow-y: auto; padding: 14px; display: flex;
+    flex-direction: column; gap: 8px;
+  }
+  #iz-chat-msgs::-webkit-scrollbar { width: 4px; }
+  #iz-chat-msgs::-webkit-scrollbar-track { background: transparent; }
+  #iz-chat-msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+  .iz-chat-footer {
+    padding: 10px; border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; gap: 8px;
+  }
+  .iz-chat-footer input {
+    flex: 1; background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 8px 12px; font-size: 0.8rem;
+    color: #e2e8f0; outline: none;
+  }
+  .iz-chat-footer input:focus { border-color: rgba(245,152,10,0.4); }
+  .iz-chat-footer button {
+    background: linear-gradient(135deg,#e08900,#f8af35);
+    color: #03071e; border: none; border-radius: 10px;
+    padding: 8px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer;
+  }
+  @media (max-width: 400px) {
+    #iz-chat-panel { width: calc(100vw - 24px); right: 12px; bottom: 80px; }
+    #iz-chat-bubble { bottom: 16px; right: 16px; }
+  }
+</style>
+
+<!-- Bubble button -->
+<div id="iz-chat-bubble" onclick="izChatToggle()" title="Support Chat">
+  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#03071e" stroke-width="2.2">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+  </svg>
+  <span id="iz-chat-unread">0</span>
+</div>
+
+<!-- Chat panel -->
+<div id="iz-chat-panel">
+  <!-- Header -->
+  <div class="iz-chat-header">
+    <div style="width:32px;height:32px;border-radius:50%;background:rgba(245,152,10,0.15);display:flex;align-items:center;justify-content:center;">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#f5980a" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+      </svg>
+    </div>
+    <div style="flex:1;">
+      <p style="font-size:0.82rem;font-weight:700;color:#e2e8f0;">InvestZA Support</p>
+      <p style="font-size:0.7rem;color:#64748b;" id="iz-chat-status">Connecting…</p>
+    </div>
+    <button onclick="izChatToggle()"
+            style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:1.2rem;cursor:pointer;line-height:1;padding:2px;">×</button>
+  </div>
+
+  <!-- Messages -->
+  <div id="iz-chat-msgs">
+    <p style="text-align:center;font-size:0.72rem;color:#334155;padding:16px 0;" id="iz-chat-loading">Loading…</p>
+  </div>
+
+  <!-- Input -->
+  <div class="iz-chat-footer">
+    <input id="iz-chat-input" type="text" maxlength="2000" placeholder="Type a message…" autocomplete="off">
+    <button id="iz-chat-send">Send</button>
+  </div>
+</div>
+
+<audio id="iz-chat-sound" preload="auto">
+  <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhS0phmLPDuZZvUUFKaJayvbCUc1dKSlZ2nrq2opJwWU9NVHSer7ero5F3YlZPT1d2oLOzq6GQeGVcV1VZa4mmqaqjkn5rX1hVVml+l6WoopOAb2NcWFhebnuSoaWfkn9vZF1ZWF9uda+3rp+LeW5mX1xdZXOFlJ6dkX5sYFpYWmNwgI+YmZCCcGNaV1hibnuJkZWSiHhpXlhXW2dzhpCTkIZ3aF1YV1tma3qHj5GLgnFkWldXXGdzhI6QjIJwY1lXV1xobnl/h4qHfm5hV1VXW2ZveX6Gh4V8bGBXVVdbZW55fIWGg3tqX1ZTWF9mbnl7goSBeWhcVlNXXmVueXqAgoB4Z1tWU1deZG14eX6Bgn5zYlhUUlZeZGx3en5/gXxwX1ZUUlZeZGt2eHt9f3ttXFVTU1ZdY2t1d3l7fXxrWlRTU1ZdYmpzdnh5ent5aVlUU1NWXGJpc3V3eHl4Z1hTU1NVXGFocnR2d3h2ZVZSU1NVW2BncXN1dXd2ZFRSU1NUW2BmcHJ0dHV0YlNRUlNTWl9lcHFzc3R0YVJRU1NTWl5lcHFzc3RzX1FRUVNZW2RvcHJycnFdUFBRUlJZWmNub3BxcG9aT09QUVFYWmJtbW9vbm1ZTk5PUFBXWWFsbW5ubGtYTU5OT09WV19ra2xta2pXTE1NT05WVl5pamtramhWT01MTk5UV11oaWppZ2dWS0tMTU1TVFxnZ2loZmVUS0pLS0xSU1toZmhnZGNTS0pKS0xSUlpmZWZmZGJRSUpKS0tQUVlkY2RkYmBPSElJS0tPUFhmYmNjYV9OSElIS0tPT1dkYGJiX11MS0lIS0tOTlViXmBhXVtMS0lIS0tOTlRhXV9gXFpKSklJS0tNTVJgXF9fW1lJSklIS0tMTVFfW15eWldISElIS0tMTVBdWl1dWVZHSElIS0xMTE9cWVxcWFVGR0hIS0xMTE9bWFtbV1VGR0hISkxMS0xaVlpaVlNFRkdIS0tMTE5YVFlZVFJFRUZIS0tLTE1XV1lYU1FERkZIS0tKS0xWVVhXUlBDRUZIS0tKS0tVVFhXUU9CRERHSEpLSkpKVFNXVlBPQ0RFR0hKSkpKUlJVVU5OQ0MEBQdHSUpJS0pRUFRTTUxCQkMFBkdJSUlKSlBQU1JMTEJBQQUDQ0hISUlKUE9SUVVNTUJAQQQCRUZHR0lJUE9RUExLS0A/QANBRUVHR0lPTlBQS0pKPz9CA0FFRUVGSE5OT09KSUk+PkIDQERERkZHTk1OTklIST09QQNAQERFRUZNTM1MSEhIPD1BBEBERUVGTM3MSwcHPDxABEA/Q0RFRktLzEsHBzo6PgQ+PkJDRURKSstJBgY4OD0DPDxAQkNDSUjKSAUFNzc8AzwwP0FCQ0hIyUcEBDU1OwM6MD5AQUJHRshGAwMzNDoC" type="audio/wav">
+</audio>
+
+<script>
+(function () {
+  var panel    = document.getElementById('iz-chat-panel');
+  var msgs     = document.getElementById('iz-chat-msgs');
+  var input    = document.getElementById('iz-chat-input');
+  var sendBtn  = document.getElementById('iz-chat-send');
+  var badge    = document.getElementById('iz-chat-unread');
+  var status   = document.getElementById('iz-chat-status');
+  var sound    = document.getElementById('iz-chat-sound');
+  var unread   = 0;
+  var isOpen   = false;
+  var ws       = null;
+  var historyLoaded = false;
+
+  var WS_PROTO = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  var WS_URL   = WS_PROTO + '://' + window.location.host + '/ws/support/user/';
+
+  window.izChatToggle = function () {
+    isOpen = !isOpen;
+    if (isOpen) {
+      panel.classList.add('open');
+      unread = 0;
+      badge.style.display = 'none';
+      badge.textContent   = '0';
+      setTimeout(function () { if (input) input.focus(); }, 100);
+    } else {
+      panel.classList.remove('open');
+    }
+  };
+
+  function connect() {
+    ws = new WebSocket(WS_URL);
+
+    ws.onopen = function () {
+      status.textContent = 'Connected — we\'ll reply shortly';
+      status.style.color = '#4ade80';
+    };
+
+    ws.onclose = function () {
+      status.textContent = 'Reconnecting…';
+      status.style.color = '#f87171';
+      setTimeout(connect, 3000);
+    };
+
+    ws.onerror = function () { ws.close(); };
+
+    ws.onmessage = function (e) {
+      var data = JSON.parse(e.data);
+
+      if (data.type === 'history') {
+        msgs.innerHTML = '';
+        historyLoaded  = true;
+        if (data.messages.length === 0) {
+          msgs.innerHTML = '<p style="text-align:center;font-size:0.72rem;color:#334155;padding:20px 0;">Hi! Send us a message and we\'ll reply as soon as possible.</p>';
+        } else {
+          data.messages.forEach(function (m) { appendMsg(m); });
+        }
+        scrollBottom();
+        return;
+      }
+
+      if (data.type === 'chat_message') {
+        appendMsg(data.message);
+        scrollBottom();
+        if (data.message.sender === 'admin') {
+          if (sound) { sound.currentTime = 0; sound.play().catch(function(){}); }
+          if (!isOpen) {
+            unread++;
+            badge.style.display = 'flex';
+            badge.textContent   = unread;
+          }
+        }
+        return;
+      }
+
+      if (data.type === 'session_closed') {
+        appendSystem('This chat session has been closed by support.');
+        input.disabled   = true;
+        sendBtn.disabled = true;
+        status.textContent = 'Session closed';
+        status.style.color = '#f87171';
+      }
+    };
+  }
+
+  function appendMsg(m) {
+    var isAdmin = m.sender === 'admin';
+    var el = document.createElement('div');
+    el.style.display        = 'flex';
+    el.style.justifyContent = isAdmin ? 'flex-start' : 'flex-end';
+    el.innerHTML =
+      '<div style="max-width:75%;padding:8px 12px;border-radius:' +
+      (isAdmin ? '16px 16px 16px 4px' : '16px 16px 4px 16px') + ';font-size:0.78rem;' +
+      (isAdmin ? 'background:#1e293b;color:#e2e8f0;' : 'background:linear-gradient(135deg,#e08900,#f8af35);color:#03071e;') + '">'
+      + '<p style="word-break:break-word;">' + escHtml(m.body) + '</p>'
+      + '<p style="font-size:0.65rem;margin-top:3px;opacity:0.5;text-align:' + (isAdmin ? 'left' : 'right') + ';">' + m.created_at + '</p>'
+      + '</div>';
+    msgs.appendChild(el);
+  }
+
+  function appendSystem(txt) {
+    var el = document.createElement('p');
+    el.style.cssText   = 'text-align:center;font-size:0.7rem;color:#475569;padding:6px 0;';
+    el.textContent = txt;
+    msgs.appendChild(el);
+    scrollBottom();
+  }
+
+  function scrollBottom() { msgs.scrollTop = msgs.scrollHeight; }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function send() {
+    if (!ws || ws.readyState !== 1) return;
+    var body = input.value.trim();
+    if (!body) return;
+    ws.send(JSON.stringify({ body: body }));
+    input.value = '';
+    input.focus();
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+
+  connect();
+})();
+</script>
+{% endif %}
+<!-- ══ END SUPPORT CHAT ══════════════════════════════════════════════════════ -->
+
 {% endblock %}

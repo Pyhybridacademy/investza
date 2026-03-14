@@ -16,6 +16,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,investza.on
 
 # ─── APPLICATIONS ─────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
+    'daphne',
     'django_daisy',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,6 +32,7 @@ INSTALLED_APPS = [
     'crispy_tailwind',
     'widget_tweaks',
     'corsheaders',
+    'channels',
 
     # Platform apps
     'apps.accounts',
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'apps.withdrawals',
     'apps.administration',
     'apps.notifications',
+    'apps.support',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +86,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # seconds — prevents "database is locked" with async Channels
+        },
     }
 }
 
@@ -215,5 +221,15 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+    },
+}
+
+
+# ─── DJANGO CHANNELS ──────────────────────────────────────────────────────────
+ASGI_APPLICATION = 'investza.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }

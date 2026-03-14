@@ -1,0 +1,199 @@
+{% extends "base/admin_base.html" %}
+{% block title %}Chat — {{ session.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-6 flex flex-col" style="height:calc(100vh - 80px);">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4 shrink-0">
+    <div class="flex items-center gap-3">
+      <a href="{% url 'admin_chat_inbox' %}"
+         class="p-2 rounded-lg transition-colors"
+         style="color:#64748b;background:rgba(255,255,255,0.05);"
+         onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+      </a>
+      <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+           style="background:linear-gradient(135deg,#0a1f44,#153a78);color:#fac660;">
+        {{ session.user.first_name|first|upper }}{{ session.user.last_name|first|upper }}
+      </div>
+      <div>
+        <p class="text-sm font-semibold" style="color:#e2e8f0;">{{ session.user.get_full_name }}</p>
+        <p class="text-xs" style="color:#64748b;">{{ session.user.email }}</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="conn-indicator" class="flex items-center gap-1.5 text-xs" style="color:#64748b;">
+        <span class="w-2 h-2 rounded-full" style="background:#475569;" id="conn-dot"></span>
+        Connecting…
+      </span>
+      {% if session.status == 'open' %}
+      <form method="POST" action="{% url 'admin_close_session' session.id %}" class="inline">
+        {% csrf_token %}
+        <button type="submit"
+                onclick="return confirm('Close this chat session?')"
+                class="text-xs px-3 py-1.5 rounded-lg transition-colors"
+                style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);color:#f87171;">
+          Close Session
+        </button>
+      </form>
+      {% else %}
+      <span class="text-xs px-3 py-1.5 rounded-lg" style="background:rgba(255,255,255,0.05);color:#475569;">Closed</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Message area -->
+  <div id="msg-area"
+       class="flex-1 overflow-y-auto rounded-2xl p-4 space-y-3 mb-4"
+       style="background:#0a1220;border:1px solid rgba(255,255,255,0.06);">
+    <p class="text-center text-xs py-4" style="color:#334155;" id="loading-msg">Loading messages…</p>
+  </div>
+
+  <!-- Input -->
+  {% if session.status == 'open' %}
+  <div class="flex gap-3 shrink-0">
+    <input id="msg-input" type="text" maxlength="2000"
+           placeholder="Type a reply…"
+           autocomplete="off"
+           class="flex-1 rounded-xl px-4 py-3 text-sm outline-none"
+           style="background:#0f1a2e;border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;"
+           onfocus="this.style.borderColor='rgba(245,152,10,0.4)'"
+           onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+    <button id="send-btn"
+            class="px-5 py-3 rounded-xl text-sm font-bold transition-all shrink-0"
+            style="background:linear-gradient(135deg,#e08900,#f8af35);color:#03071e;">
+      Send
+    </button>
+  </div>
+  {% else %}
+  <p class="text-center text-sm py-3" style="color:#475569;">This session is closed.</p>
+  {% endif %}
+</div>
+
+<audio id="chat-sound" preload="auto">
+  <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhS0phmLPDuZZvUUFKaJayvbCUc1dKSlZ2nrq2opJwWU9NVHSer7ero5F3YlZPT1d2oLOzq6GQeGVcV1VZa4mmqaqjkn5rX1hVVml+l6WoopOAb2NcWFhebnuSoaWfkn9vZF1ZWF9uda+3rp+LeW5mX1xdZXOFlJ6dkX5sYFpYWmNwgI+YmZCCcGNaV1hibnuJkZWSiHhpXlhXW2dzhpCTkIZ3aF1YV1tma3qHj5GLgnFkWldXXGdzhI6QjIJwY1lXV1xobnl/h4qHfm5hV1VXW2ZveX6Gh4V8bGBXVVdbZW55fIWGg3tqX1ZTWF9mbnl7goSBeWhcVlNXXmVueXqAgoB4Z1tWU1deZG14eX6Bgn5zYlhUUlZeZGx3en5/gXxwX1ZUUlZeZGt2eHt9f3ttXFVTU1ZdY2t1d3l7fXxrWlRTU1ZdYmpzdnh5ent5aVlUU1NWXGJpc3V3eHl4Z1hTU1NVXGFocnR2d3h2ZVZSU1NVW2BncXN1dXd2ZFRSU1NUW2BmcHJ0dHV0YlNRUlNTWl9lcHFzc3R0YVJRU1NTWl5lcHFzc3RzX1FRUVNZW2RvcHJycnFdUFBRUlJZWmNub3BxcG9aT09QUVFYWmJtbW9vbm1ZTk5PUFBXWWFsbW5ubGtYTU5OT09WV19ra2xta2pXTE1NT05WVl5pamtramhWT01MTk5UV11oaWppZ2dWS0tMTU1TVFxnZ2loZmVUS0pLS0xSU1toZmhnZGNTS0pKS0xSUlpmZWZmZGJRSUpKS0tQUVlkY2RkYmBPSElJS0tPUFhmYmNjYV9OSElIS0tPT1dkYGJiX11MS0lIS0tOTlViXmBhXVtMS0lIS0tOTlRhXV9gXFpKSklJS0tNTVJgXF9fW1lJSklIS0tMTVFfW15eWldISElIS0tMTVBdWl1dWVZHSElIS0xMTE9cWVxcWFVGR0hIS0xMTE9bWFtbV1VGR0hISkxMS0xaVlpaVlNFRkdIS0tMTE5YVFlZVFJFRUZIS0tLTE1XV1lYU1FERkZIS0tKS0xWVVhXUlBDRUZIS0tKS0tVVFhXUU9CRERHSEpLSkpKVFNXVlBPQ0RFR0hKSkpKUlJVVU5OQ0MEBQdHSUpJS0pRUFRTTUxCQkMFBkdJSUlKSlBQU1JMTEJBQQUDQ0hISUlKUE9SUVVNTUJAQQQCRUZHR0lJUE9RUExLS0A/QANBRUVHR0lPTlBQS0pKPz9CA0FFRUVGSE5OT09KSUk+PkIDQERERkZHTk1OTklIST09QQNAQERFRUZNTM1MSEhIPD1BBEBERUVGTM3MSwcHPDxABEA/Q0RFRktLzEsHBzo6PgQ+PkJDRURKSstJBgY4OD0DPDxAQkNDSUjKSAUFNzc8AzwwP0FCQ0hIyUcEBDU1OwM6MD5AQUJHRshGAwMzNDoC" type="audio/wav">
+</audio>
+
+<script>
+(function () {
+  var SESSION_ID = '{{ session.id }}';
+  var STATUS     = '{{ session.status }}';
+  var sound      = document.getElementById('chat-sound');
+  var area       = document.getElementById('msg-area');
+  var input      = document.getElementById('msg-input');
+  var sendBtn    = document.getElementById('send-btn');
+  var connDot    = document.getElementById('conn-dot');
+  var connLabel  = document.getElementById('conn-indicator');
+
+  var WS_PROTO = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  var WS_URL   = WS_PROTO + '://' + window.location.host + '/ws/support/admin/' + SESSION_ID + '/';
+
+  var ws = null;
+  var historyLoaded = false;
+
+  function connect() {
+    ws = new WebSocket(WS_URL);
+
+    ws.onopen = function () {
+      connDot.style.background   = '#4ade80';
+      connLabel.style.color      = '#4ade80';
+      connLabel.querySelector('span:last-child') && (connLabel.innerHTML =
+        '<span class="w-2 h-2 rounded-full" style="background:#4ade80;" id="conn-dot"></span> Connected');
+    };
+
+    ws.onclose = function () {
+      connDot = document.getElementById('conn-dot');
+      if (connDot) connDot.style.background = '#ef4444';
+      setTimeout(connect, 3000);
+    };
+
+    ws.onmessage = function (e) {
+      var data = JSON.parse(e.data);
+
+      if (data.type === 'history') {
+        area.innerHTML = '';
+        historyLoaded  = true;
+        if (data.messages.length === 0) {
+          area.innerHTML = '<p class="text-center text-xs py-6" style="color:#334155;">No messages yet. The user hasn\'t started chatting.</p>';
+        } else {
+          data.messages.forEach(function (m) { appendMsg(m); });
+        }
+        scrollBottom();
+        return;
+      }
+
+      if (data.type === 'chat_message') {
+        if (data.message.sender === 'user') {
+          if (sound) { sound.currentTime = 0; sound.play().catch(function(){}); }
+        }
+        appendMsg(data.message);
+        scrollBottom();
+        return;
+      }
+
+      if (data.type === 'session_closed') {
+        appendSystem('This session has been closed.');
+        if (input) input.disabled = true;
+        if (sendBtn) sendBtn.disabled = true;
+      }
+    };
+
+    ws.onerror = function () { ws.close(); };
+  }
+
+  function appendMsg(m) {
+    var isAdmin = m.sender === 'admin';
+    var wrap = document.createElement('div');
+    wrap.className = 'flex ' + (isAdmin ? 'justify-end' : 'justify-start');
+    wrap.innerHTML =
+      '<div class="max-w-xs lg:max-w-md px-4 py-2.5 rounded-2xl text-sm" style="'
+      + (isAdmin
+          ? 'background:linear-gradient(135deg,#e08900,#f8af35);color:#03071e;border-radius:18px 18px 4px 18px;'
+          : 'background:#1e293b;color:#e2e8f0;border-radius:18px 18px 18px 4px;')
+      + '">'
+      + '<p style="word-break:break-word;">' + escHtml(m.body) + '</p>'
+      + '<p class="text-xs mt-1 ' + (isAdmin ? 'text-right' : '') + '" style="opacity:0.55;">' + m.created_at + '</p>'
+      + '</div>';
+    area.appendChild(wrap);
+  }
+
+  function appendSystem(txt) {
+    var el = document.createElement('p');
+    el.className = 'text-center text-xs py-2';
+    el.style.color = '#475569';
+    el.textContent = txt;
+    area.appendChild(el);
+    scrollBottom();
+  }
+
+  function scrollBottom() {
+    area.scrollTop = area.scrollHeight;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function send() {
+    if (!input || !ws || ws.readyState !== 1) return;
+    var body = input.value.trim();
+    if (!body) return;
+    ws.send(JSON.stringify({ body: body }));
+    input.value = '';
+    input.focus();
+  }
+
+  if (STATUS === 'open') {
+    if (sendBtn) sendBtn.addEventListener('click', send);
+    if (input) input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+  }
+
+  connect();
+})();
+</script>
+{% endblock %}
